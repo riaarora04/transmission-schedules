@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Transmission Job Schedules</title>
+
+    <!-- SAP UI5 Core -->
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <!-- SAP UI5 Web Components -->
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/CheckBox.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/Link.js";
+    </script>
+
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Design Tokens */
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapLinkColor: #0064d9;
+            --sapPositiveTextColor: #256f3a;
+            --sapNegativeTextColor: #aa0808;
+            --sapCriticalTextColor: #b44f00;
+            --sapNeutralTextColor: #1d2d3e;
+            --sapContent_LabelColor: #556b82;
+            --sapField_Background: white;
+            --sapField_TextColor: #131e29;
+            --sapField_PlaceholderTextColor: #556b82;
+            --sapField_BorderColor: #e5e5e5;
+            --sapField_BorderCornerRadius: 4px;
+            --sapObjectHeader_Background: white;
+            --sapObjectHeader_Title_TextColor: #1d2d3e;
+            --sapObjectHeader_BorderColor: #d9d9d9;
+            --sapList_Background: white;
+            --sapList_TextColor: #131e29;
+            --sapList_HeaderBackground: white;
+            --sapList_HeaderTextColor: #131e29;
+            --sapList_HeaderBorderColor: #a8b3bd;
+            --sapList_BorderColor: #e5e5e5;
+            --sapList_SelectionBackgroundColor: #ebf8ff;
+            --sapList_SelectionBorderColor: #0064d9;
+            --sapGroup_TitleBackground: white;
+            --sapGroup_TitleTextColor: #1d2d3e;
+            --sapGroup_TitleBorderColor: #a8b3bd;
+            --sapGroup_ContentBackground: white;
+            --sapButton_Emphasized_Background: #0070f2;
+            --sapButton_Emphasized_BorderColor: #0070f2;
+            --sapButton_Success_Background: #2da44e;
+            --sapButton_Negative_Background: #d73a49;
+            --sapToolbar_SeparatorColor: #d9d9d9;
+            --sapInformationBorderColor: #0070f2;
+        }
+
+        /* Base Typography */
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor);
+            color: var(--sapTextColor);
+        }
+
+        /* App Container */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* List Report Page */
+        .list-report-page {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--sapBackgroundColor);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: var(--sapObjectHeader_Background);
+            padding: 8px 48px 16px 48px;
+            box-shadow: 0 2px 2px rgba(34, 53, 72, 0.05);
+            position: relative;
+            z-index: 2;
+        }
+
+        .filter-bar-title-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .filter-variant-title {
+            font-family: '72-Black', sans-serif;
+            font-size: 24px;
+            color: var(--sapLinkColor);
+        }
+
+        .filter-fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: flex-end;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 256px;
+            padding-bottom: 3px;
+        }
+
+        .filter-field ui5-label {
+            color: var(--sapContent_LabelColor);
+            font-size: 14px;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 3px 0;
+        }
+
+        .filter-collapse-controls {
+            position: absolute;
+            bottom: -11px;
+            left: 48px;
+            right: 48px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .filter-collapse-line {
+            position: relative;
+            height: 24px;
+            width: 100%;
+        }
+
+        .filter-collapse-buttons {
+            display: flex;
+            gap: 8px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Table Container */
+        .table-container {
+            flex: 1;
+            padding: 16px 48px;
+            overflow: auto;
+        }
+
+        .table-wrapper {
+            background: var(--sapList_Background);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-toolbar {
+            background: var(--sapGroup_TitleBackground);
+            border-bottom: 1px solid var(--sapGroup_TitleBorderColor);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 8px;
+            min-height: 44px;
+        }
+
+        .table-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 16px;
+            color: var(--sapGroup_TitleTextColor);
+            padding-left: 8px;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            height: 26px;
+            background: var(--sapToolbar_SeparatorColor);
+        }
+
+        /* Table Styles */
+        ui5-table {
+            width: 100%;
+        }
+
+        ui5-table-column {
+            font-family: '72-Semibold_Duplex', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        ui5-table-row {
+            cursor: pointer;
+        }
+
+        ui5-table-row:hover {
+            background: #f7f8f9;
+        }
+
+        ui5-table-cell {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        /* Status Colors */
+        .status-active {
+            color: var(--sapPositiveTextColor);
+        }
+
+        .status-inactive {
+            color: var(--sapNeutralTextColor);
+        }
+
+        .status-error {
+            color: var(--sapNegativeTextColor);
+        }
+
+        .status-pending {
+            color: var(--sapCriticalTextColor);
+        }
+
+        /* Object Page */
+        .object-page {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--sapBackgroundColor);
+            display: none;
+        }
+
+        .object-page.active {
+            display: flex;
+        }
+
+        .object-header {
+            background: var(--sapObjectHeader_Background);
+            padding: 0 48px;
+            box-shadow: 0 2px 2px rgba(34, 53, 72, 0.05);
+            z-index: 2;
+        }
+
+        .object-header-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+        }
+
+        .object-title-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .object-title-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 5px;
+        }
+
+        .object-title-text {
+            font-family: '72-Black', sans-serif;
+            font-size: 24px;
+            color: var(--sapGroup_TitleTextColor);
+        }
+
+        .object-subtitle {
+            font-size: 14px;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .object-header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            padding-left: 8px;
+        }
+
+        .object-header-facets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            padding: 16px 0;
+        }
+
+        .facet {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .facet-label {
+            font-size: 14px;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .facet-value {
+            font-size: 14px;
+            color: var(--sapTextColor);
+        }
+
+        .facet-number {
+            font-size: 24px;
+        }
+
+        /* Icon Tab Bar */
+        .icon-tab-bar {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+            padding: 0 48px;
+            background: var(--sapObjectHeader_Background);
+            box-shadow: 0 -1px 0 0 #d9d9d9 inset;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 3px;
+            margin-bottom: -3px;
+            height: 44px;
+            text-decoration: none;
+            color: var(--sapTextColor);
+            font-family: '72-Bold', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-item.active {
+            color: var(--sapHighlightColor);
+            border-bottom-color: var(--sapHighlightColor);
+        }
+
+        /* Object Page Body */
+        .object-page-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 48px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 20px;
+            color: var(--sapGroup_TitleTextColor);
+            height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-content {
+            background: var(--sapGroup_ContentBackground);
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding-bottom: 3px;
+        }
+
+        .form-item ui5-label {
+            color: var(--sapContent_LabelColor);
+            font-size: 14px;
+        }
+
+        .form-item.readonly ui5-input {
+            background: #eaecee;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .filter-bar,
+            .table-container,
+            .object-header,
+            .icon-tab-bar,
+            .object-page-body {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+
+        /* Link styling */
+        .link-text {
+            color: var(--sapLinkColor);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .link-text:hover {
+            text-decoration: underline;
+        }
+
+        /* Row highlight */
+        .row-highlight {
+            border-left: 6px solid var(--sapHighlightColor) !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- List Report Page -->
+        <div class="list-report-page" id="listReportPage">
+            <!-- Shell Bar -->
+            <ui5-shellbar
+                primary-title="Manage Transmission Job Schedules"
+                show-co-pilot
+                show-search-field
+                show-notifications
+                show-product-switch>
+            </ui5-shellbar>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-bar-title-area">
+                    <div class="filter-variant-title">Standard</div>
+                    <div>
+                        <ui5-button design="Transparent" icon="slim-arrow-down"></ui5-button>
+                    </div>
+                </div>
+
+                <div class="filter-fields">
+                    <div class="filter-field">
+                        <ui5-input
+                            placeholder="Search"
+                            show-suggestions>
+                            <ui5-icon slot="icon" name="search"></ui5-icon>
+                        </ui5-input>
+                    </div>
+
+                    <div class="filter-field">
+                        <ui5-label>Schedule ID:</ui5-label>
+                        <ui5-input placeholder="Enter Schedule ID"></ui5-input>
+                    </div>
+
+                    <div class="filter-field">
+                        <ui5-label>Category:</ui5-label>
+                        <ui5-select>
+                            <ui5-option selected>All</ui5-option>
+                            <ui5-option>Orders</ui5-option>
+                            <ui5-option>Invoices</ui5-option>
+                            <ui5-option>Delivery Notes</ui5-option>
+                        </ui5-select>
+                    </div>
+
+                    <div class="filter-field">
+                        <ui5-label>Destination:</ui5-label>
+                        <ui5-input placeholder="Enter Destination"></ui5-input>
+                    </div>
+
+                    <div class="filter-field">
+                        <ui5-label>Activity Status:</ui5-label>
+                        <ui5-select>
+                            <ui5-option selected>All</ui5-option>
+                            <ui5-option>Active</ui5-option>
+                            <ui5-option>Inactive</ui5-option>
+                        </ui5-select>
+                    </div>
+
+                    <div class="filter-field">
+                        <ui5-label>Last Run Status:</ui5-label>
+                        <ui5-select>
+                            <ui5-option selected>All</ui5-option>
+                            <ui5-option>Success</ui5-option>
+                            <ui5-option>Error</ui5-option>
+                            <ui5-option>Pending</ui5-option>
+                        </ui5-select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <ui5-button design="Emphasized">Go</ui5-button>
+                        <ui5-button design="Transparent">Adapt Filters</ui5-button>
+                    </div>
+                </div>
+
+                <div class="filter-collapse-controls">
+                    <div class="filter-collapse-line">
+                        <div class="filter-collapse-buttons">
+                            <ui5-button design="Default" icon="collapse"></ui5-button>
+                            <ui5-button design="Default" icon="pushpin-off"></ui5-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <!-- Table Toolbar -->
+                    <div class="table-toolbar">
+                        <div class="table-title">Transmission Job Schedules (10)</div>
+                        <div class="table-actions">
+                            <ui5-input placeholder="Search" style="width: 280px;">
+                                <ui5-icon slot="icon" name="search"></ui5-icon>
+                            </ui5-input>
+                            <ui5-button design="Transparent" icon="add">Create</ui5-button>
+                            <ui5-button design="Transparent" icon="play">Run Now</ui5-button>
+                            <ui5-button design="Transparent" icon="delete">Delete</ui5-button>
+                            <ui5-button design="Transparent" icon="activity-items">View Application Logs</ui5-button>
+                            <ui5-button design="Transparent" icon="display" id="viewDetailsButton">View Details</ui5-button>
+                            <div class="toolbar-separator"></div>
+                            <ui5-button design="Transparent" icon="action-settings"></ui5-button>
+                            <div class="toolbar-separator"></div>
+                            <ui5-button design="Transparent" icon="excel-attachment"></ui5-button>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <ui5-table id="scheduleTable" sticky-column-header>
+                        <ui5-table-column slot="columns" min-width="50px">
+                            <ui5-checkbox></ui5-checkbox>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns">Schedule ID</ui5-table-column>
+                        <ui5-table-column slot="columns">Category</ui5-table-column>
+                        <ui5-table-column slot="columns">Destination</ui5-table-column>
+                        <ui5-table-column slot="columns">Last Run Status</ui5-table-column>
+                        <ui5-table-column slot="columns">Issue Type</ui5-table-column>
+                        <ui5-table-column slot="columns">Sender</ui5-table-column>
+                        <ui5-table-column slot="columns">Sold-to Party</ui5-table-column>
+                        <ui5-table-column slot="columns">Sales Organization</ui5-table-column>
+                        <ui5-table-column slot="columns">Activity Status</ui5-table-column>
+
+                        <!-- Table Rows -->
+                        <ui5-table-row class="schedule-row" data-schedule-id="SCH-2024-001">
+                            <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                            <ui5-table-cell><span class="link-text">SCH-2024-001</span></ui5-table-cell>
+                            <ui5-table-cell>Orders</ui5-table-cell>
+                            <ui5-table-cell>SAP-EDI-Gateway</ui5-table-cell>
+                            <ui5-table-cell><span class="status-active">Success</span></ui5-table-cell>
+                            <ui5-table-cell>Sales Order</ui5-table-cell>
+                            <ui5-table-cell>Customer Portal</ui5-table-cell>
+                            <ui5-table-cell>ACME Corp</ui5-table-cell>
+                            <ui5-table-cell>1000</ui5-table-cell>
+                            <ui5-table-cell><span class="status-active">Active</span></ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row class="schedule-row" data-schedule-id="SCH-2024-002">
+                            <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                            <ui5-table-cell><span class="link-text">SCH-2024-002</span></ui5-table-cell>
+                            <ui5-table-cell>Invoices</ui5-table-cell>
+                            <ui5-table-cell>Email-Server-01</ui5-table-cell>
+                            <ui5-table-cell><span class="status-error">Error</span></ui5-table-cell>
+                            <ui5-table-cell>Invoice</ui5-table-cell>
+                            <ui5-table-cell>Finance System</ui5-table-cell>
+                            <ui5-table-cell>TechCorp LLC</ui5-table-cell>
+                            <ui5-table-cell>2000</ui5-table-cell>
+                            <ui5-table-cell><span class="status-active">Active</span></ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row class="schedule-row" data-schedule-id="SCH-2024-003">
+                            <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                            <ui5-table-cell><span class="link-text">SCH-2024-003</span></ui5-table-cell>
+                            <ui5-table-cell>Delivery Notes</ui5-table-cell>
+                            <ui5-table-cell>FTP-Server-Main</ui5-table-cell>
+                            <ui5-table-cell><span class="status-active">Success</span></ui5-table-cell>
+                            <ui5-table-cell>Delivery</ui5-table-cell>
+                            <ui5-table-cell>Warehouse</ui5-table-cell>
+                            <ui5-table-cell>Global Industries</ui5-table-cell>
+                            <ui5-table-cell>3000</ui5-table-cell>
+                            <ui5-table-cell><span class="status-active">Active</span></ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row class="schedule-row" data-schedule-id="SCH-2024-004">
+                            <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                            <ui5-table-cell><span class="link-text">SCH-2024-004</span></ui5-table-cell>
+                            <ui5-table-cell>Orders</ui5-table-cell>
+                            <ui5-table-cell>API-Endpoint-01</ui5-table-cell>
+                            <ui5-table-cell><span class="status-pending">Pending</span></ui5-table-cell>
+                            <ui5-table-cell>Purchase Order</ui5-table-cell>
+                            <ui5-table-cell>Procurement</ui5-table-cell>
+                            <ui5-table-cell>Sunrise Trading</ui5-table-cell>
+                            <ui5-table-cell>1000</ui5-table-cell>
+                            <ui5-table-cell><span class="status-inactive">Inactive</span></ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row class="schedule-row" data-schedule-id="SCH-2024-005">
+                            <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                            <ui5-table-cell><span class="link-text">SCH-2024-005</span></ui5-table-cell>
+                            <ui5-table-cell>Invoices</ui5-table-cell>
+                            <ui5-table-cell>SFTP-Backup</ui5-table-cell>
+                            <ui5-table-cell><span class="status-active">Success</span></ui5-table-cell>
+                            <ui5-table-cell>Credit Memo</ui5-table-cell>
+                            <ui5-table-cell>Accounts Payable</ui5-table-cell>
+                            <ui5-table-cell>Beta Solutions</ui5-table-cell>
+                            <ui5-table-cell>2000</ui5-table-cell>
+                            <ui5-table-cell><span class="status-active">Active</span></ui5-table-cell>
+                        </ui5-table-row>
+                    </ui5-table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Object Page (Hidden by default) -->
+        <div class="object-page" id="objectPage">
+            <!-- Shell Bar -->
+            <ui5-shellbar
+                primary-title="Manage Transmission Job Schedules"
+                show-co-pilot
+                show-search-field
+                show-notifications
+                show-product-switch>
+                <ui5-button slot="startButton" icon="nav-back" design="Transparent" id="backButton"></ui5-button>
+            </ui5-shellbar>
+
+            <!-- Object Header -->
+            <div class="object-header">
+                <div class="object-header-title">
+                    <div class="object-title-content">
+                        <div class="object-title-main">
+                            <span class="object-title-text" id="scheduleTitle">SCH-2024-001</span>
+                            <ui5-button design="Transparent" icon="edit">Edit</ui5-button>
+                        </div>
+                        <span class="object-subtitle">Transmission Job Schedule</span>
+                    </div>
+                    <div class="object-header-actions">
+                        <ui5-button design="Default">Run Now</ui5-button>
+                        <ui5-button design="Default">View Logs</ui5-button>
+                        <ui5-button design="Transparent" icon="action"></ui5-button>
+                    </div>
+                </div>
+
+                <div class="object-header-facets">
+                    <div class="facet">
+                        <div class="facet-label">Category:</div>
+                        <div class="facet-value" id="facetCategory">Orders</div>
+                    </div>
+                    <div class="facet">
+                        <div class="facet-label">Destination:</div>
+                        <div class="facet-value" id="facetDestination">SAP-EDI-Gateway</div>
+                    </div>
+                    <div class="facet">
+                        <div class="facet-label">Last Run Status</div>
+                        <div class="facet-value facet-number status-active" id="facetStatus">Success</div>
+                    </div>
+                    <div class="facet">
+                        <div class="facet-label">Last Run Time</div>
+                        <div class="facet-value facet-number" id="facetRunTime">2 Hours Ago</div>
+                    </div>
+                    <div class="facet">
+                        <div class="facet-label">Activity Status</div>
+                        <div class="facet-value facet-number status-active" id="facetActivityStatus">Active</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Icon Tab Bar -->
+            <div class="icon-tab-bar">
+                <a href="#" class="tab-item active" data-tab="general">General Information</a>
+                <a href="#" class="tab-item" data-tab="schedule">Schedule Configuration</a>
+                <a href="#" class="tab-item" data-tab="transmission">Transmission Details</a>
+            </div>
+
+            <!-- Object Page Body -->
+            <div class="object-page-body">
+                <!-- General Information Section -->
+                <div class="section">
+                    <div class="section-title">General Information</div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Schedule ID: *</ui5-label>
+                                <ui5-input value="SCH-2024-001" readonly></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Category: *</ui5-label>
+                                <ui5-select>
+                                    <ui5-option selected>Orders</ui5-option>
+                                    <ui5-option>Invoices</ui5-option>
+                                    <ui5-option>Delivery Notes</ui5-option>
+                                </ui5-select>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Issue Type: *</ui5-label>
+                                <ui5-input value="Sales Order"></ui5-input>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Destination: *</ui5-label>
+                                <ui5-input value="SAP-EDI-Gateway"></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Sender: *</ui5-label>
+                                <ui5-input value="Customer Portal"></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Sold-to Party:</ui5-label>
+                                <ui5-input value="ACME Corp"></ui5-input>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Sales Organization:</ui5-label>
+                                <ui5-input value="1000"></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Activity Status: *</ui5-label>
+                                <ui5-select>
+                                    <ui5-option selected>Active</ui5-option>
+                                    <ui5-option>Inactive</ui5-option>
+                                </ui5-select>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Created By:</ui5-label>
+                                <ui5-input value="John Smith" readonly></ui5-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule Configuration Section -->
+                <div class="section">
+                    <div class="section-title">Schedule Configuration</div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Frequency: *</ui5-label>
+                                <ui5-select>
+                                    <ui5-option>Hourly</ui5-option>
+                                    <ui5-option selected>Daily</ui5-option>
+                                    <ui5-option>Weekly</ui5-option>
+                                    <ui5-option>Monthly</ui5-option>
+                                </ui5-select>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Start Time: *</ui5-label>
+                                <ui5-input value="08:00 AM"></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Time Zone:</ui5-label>
+                                <ui5-select>
+                                    <ui5-option selected>UTC</ui5-option>
+                                    <ui5-option>EST</ui5-option>
+                                    <ui5-option>PST</ui5-option>
+                                </ui5-select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Last Run Date:</ui5-label>
+                                <ui5-input value="2024-03-19 08:00:00" readonly></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Next Run Date:</ui5-label>
+                                <ui5-input value="2024-03-20 08:00:00" readonly></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Retry Count:</ui5-label>
+                                <ui5-input value="3"></ui5-input>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Last Run Status:</ui5-label>
+                                <ui5-input value="Success" readonly></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Records Processed:</ui5-label>
+                                <ui5-input value="1,245" readonly></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Duration (seconds):</ui5-label>
+                                <ui5-input value="45" readonly></ui5-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transmission Details Section -->
+                <div class="section">
+                    <div class="section-title">Transmission Details</div>
+                    <div class="section-content">
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Protocol:</ui5-label>
+                                <ui5-select>
+                                    <ui5-option>HTTP</ui5-option>
+                                    <ui5-option>HTTPS</ui5-option>
+                                    <ui5-option>FTP</ui5-option>
+                                    <ui5-option selected>SFTP</ui5-option>
+                                    <ui5-option>Email</ui5-option>
+                                </ui5-select>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Host URL:</ui5-label>
+                                <ui5-input value="sftp://edi.sapgateway.com"></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Port:</ui5-label>
+                                <ui5-input value="22"></ui5-input>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Username:</ui5-label>
+                                <ui5-input value="edi_user_001"></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Authentication Method:</ui5-label>
+                                <ui5-select>
+                                    <ui5-option>Password</ui5-option>
+                                    <ui5-option selected>SSH Key</ui5-option>
+                                    <ui5-option>OAuth</ui5-option>
+                                </ui5-select>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>File Format:</ui5-label>
+                                <ui5-select>
+                                    <ui5-option>XML</ui5-option>
+                                    <ui5-option selected>JSON</ui5-option>
+                                    <ui5-option>CSV</ui5-option>
+                                    <ui5-option>EDI</ui5-option>
+                                </ui5-select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-item">
+                                <ui5-label>Target Directory:</ui5-label>
+                                <ui5-input value="/inbound/orders"></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>File Name Pattern:</ui5-label>
+                                <ui5-input value="ORDER_{YYYYMMDD}_{HHmmss}.json"></ui5-input>
+                            </div>
+                            <div class="form-item">
+                                <ui5-label>Compression:</ui5-label>
+                                <ui5-select>
+                                    <ui5-option selected>None</ui5-option>
+                                    <ui5-option>ZIP</ui5-option>
+                                    <ui5-option>GZIP</ui5-option>
+                                </ui5-select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const scheduleData = {
+            'SCH-2024-001': {
+                id: 'SCH-2024-001',
+                category: 'Orders',
+                destination: 'SAP-EDI-Gateway',
+                status: 'Success',
+                issueType: 'Sales Order',
+                sender: 'Customer Portal',
+                soldToParty: 'ACME Corp',
+                salesOrg: '1000',
+                activityStatus: 'Active'
+            },
+            'SCH-2024-002': {
+                id: 'SCH-2024-002',
+                category: 'Invoices',
+                destination: 'Email-Server-01',
+                status: 'Error',
+                issueType: 'Invoice',
+                sender: 'Finance System',
+                soldToParty: 'TechCorp LLC',
+                salesOrg: '2000',
+                activityStatus: 'Active'
+            },
+            'SCH-2024-003': {
+                id: 'SCH-2024-003',
+                category: 'Delivery Notes',
+                destination: 'FTP-Server-Main',
+                status: 'Success',
+                issueType: 'Delivery',
+                sender: 'Warehouse',
+                soldToParty: 'Global Industries',
+                salesOrg: '3000',
+                activityStatus: 'Active'
+            },
+            'SCH-2024-004': {
+                id: 'SCH-2024-004',
+                category: 'Orders',
+                destination: 'API-Endpoint-01',
+                status: 'Pending',
+                issueType: 'Purchase Order',
+                sender: 'Procurement',
+                soldToParty: 'Sunrise Trading',
+                salesOrg: '1000',
+                activityStatus: 'Inactive'
+            },
+            'SCH-2024-005': {
+                id: 'SCH-2024-005',
+                category: 'Invoices',
+                destination: 'SFTP-Backup',
+                status: 'Success',
+                issueType: 'Credit Memo',
+                sender: 'Accounts Payable',
+                soldToParty: 'Beta Solutions',
+                salesOrg: '2000',
+                activityStatus: 'Active'
+            }
+        };
+
+        // Navigation handlers
+        const listReportPage = document.getElementById('listReportPage');
+        const objectPage = document.getElementById('objectPage');
+        const backButton = document.getElementById('backButton');
+
+        // Handle row clicks
+        document.querySelectorAll('.schedule-row').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (e.target.tagName === 'UI5-CHECKBOX') return;
+
+                const scheduleId = this.getAttribute('data-schedule-id');
+                const data = scheduleData[scheduleId];
+
+                if (data) {
+                    // Update object page with data
+                    document.getElementById('scheduleTitle').textContent = data.id;
+                    document.getElementById('facetCategory').textContent = data.category;
+                    document.getElementById('facetDestination').textContent = data.destination;
+                    document.getElementById('facetStatus').textContent = data.status;
+
+                    // Apply status color
+                    const statusElement = document.getElementById('facetStatus');
+                    statusElement.className = 'facet-value facet-number';
+                    if (data.status === 'Success') statusElement.classList.add('status-active');
+                    else if (data.status === 'Error') statusElement.classList.add('status-error');
+                    else if (data.status === 'Pending') statusElement.classList.add('status-pending');
+
+                    document.getElementById('facetActivityStatus').textContent = data.activityStatus;
+                    const activityStatusElement = document.getElementById('facetActivityStatus');
+                    activityStatusElement.className = 'facet-value facet-number';
+                    if (data.activityStatus === 'Active') activityStatusElement.classList.add('status-active');
+                    else activityStatusElement.classList.add('status-inactive');
+
+                    // Show object page
+                    listReportPage.style.display = 'none';
+                    objectPage.classList.add('active');
+                }
+            });
+        });
+
+        // Handle back button
+        backButton.addEventListener('click', function() {
+            objectPage.classList.remove('active');
+            listReportPage.style.display = 'flex';
+        });
+
+        // Handle tab clicks
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Handle link clicks in table
+        document.querySelectorAll('.link-text').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const row = this.closest('.schedule-row');
+                if (row) row.click();
+            });
+        });
+
+        // Handle View Details button
+        const viewDetailsButton = document.getElementById('viewDetailsButton');
+        viewDetailsButton.addEventListener('click', function() {
+            // Get selected rows
+            const checkboxes = document.querySelectorAll('ui5-table-row ui5-checkbox');
+            let selectedScheduleId = null;
+
+            checkboxes.forEach((checkbox, index) => {
+                if (checkbox.checked && index > 0) { // Skip header checkbox
+                    const row = checkbox.closest('ui5-table-row');
+                    selectedScheduleId = row.getAttribute('data-schedule-id');
+                }
+            });
+
+            // If a row is selected, navigate to object page
+            if (selectedScheduleId) {
+                const data = scheduleData[selectedScheduleId];
+                if (data) {
+                    // Update object page with data
+                    document.getElementById('scheduleTitle').textContent = data.id;
+                    document.getElementById('facetCategory').textContent = data.category;
+                    document.getElementById('facetDestination').textContent = data.destination;
+                    document.getElementById('facetStatus').textContent = data.status;
+
+                    // Apply status color
+                    const statusElement = document.getElementById('facetStatus');
+                    statusElement.className = 'facet-value facet-number';
+                    if (data.status === 'Success') statusElement.classList.add('status-active');
+                    else if (data.status === 'Error') statusElement.classList.add('status-error');
+                    else if (data.status === 'Pending') statusElement.classList.add('status-pending');
+
+                    document.getElementById('facetActivityStatus').textContent = data.activityStatus;
+                    const activityStatusElement = document.getElementById('facetActivityStatus');
+                    activityStatusElement.className = 'facet-value facet-number';
+                    if (data.activityStatus === 'Active') activityStatusElement.classList.add('status-active');
+                    else activityStatusElement.classList.add('status-inactive');
+
+                    // Show object page
+                    listReportPage.style.display = 'none';
+                    objectPage.classList.add('active');
+                }
+            } else {
+                alert('Please select a schedule to view details');
+            }
+        });
+    </script>
+</body>
+</html>

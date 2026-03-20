@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Transmission Job Schedule</title>
+
+    <!-- SAP UI5 -->
+    <script id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.uxap"
+        data-sap-ui-resourceroots='{}'
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-bindingSyntax="complex"
+        data-sap-ui-frameOptions="allow">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function () {
+            "use strict";
+
+            // Sample Data
+            var aSchedules = [
+                {
+                    scheduleId: 'SCH-001', category: 'Invoice', destination: 'CUST-001',
+                    lastRunStatus: 'Success', lastRunStatusState: 'Success', issueType: 'Standard Invoice',
+                    sender: 'SENDER-001', soldToParty: 'PARTY-001', salesOrg: 'ORG-001',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 14:30:00',
+                    recordsProcessed: 125, duration: '2m 15s', frequency: 'Daily', startTime: '14:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-20 14:00:00', description: 'Invoice Transmission to CUST-001'
+                },
+                {
+                    scheduleId: 'SCH-002', category: 'Order', destination: 'CUST-002',
+                    lastRunStatus: 'Success', lastRunStatusState: 'Success', issueType: 'Sales Order',
+                    sender: 'SENDER-002', soldToParty: 'PARTY-002', salesOrg: 'ORG-002',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 15:00:00',
+                    recordsProcessed: 98, duration: '1m 45s', frequency: 'Daily', startTime: '15:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 15:00:00', description: 'Order Transmission to CUST-002'
+                },
+                {
+                    scheduleId: 'SCH-003', category: 'Delivery', destination: 'CUST-003',
+                    lastRunStatus: 'Error', lastRunStatusState: 'Error', issueType: 'Delivery Note',
+                    sender: 'SENDER-003', soldToParty: 'PARTY-003', salesOrg: 'ORG-003',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 16:00:00',
+                    recordsProcessed: 0, duration: '0m 05s', frequency: 'Hourly', startTime: '16:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 16:00:00', description: 'Delivery Transmission to CUST-003'
+                },
+                {
+                    scheduleId: 'SCH-004', category: 'Payment', destination: 'CUST-004',
+                    lastRunStatus: 'Success', lastRunStatusState: 'Success', issueType: 'Payment Advice',
+                    sender: 'SENDER-004', soldToParty: 'PARTY-004', salesOrg: 'ORG-004',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-17 10:00:00',
+                    recordsProcessed: 45, duration: '1m 10s', frequency: 'Weekly', startTime: '10:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-24 10:00:00', description: 'Payment Transmission to CUST-004'
+                },
+                {
+                    scheduleId: 'SCH-005', category: 'Invoice', destination: 'CUST-005',
+                    lastRunStatus: 'Warning', lastRunStatusState: 'Warning', issueType: 'Credit Note',
+                    sender: 'SENDER-005', soldToParty: 'PARTY-005', salesOrg: 'ORG-005',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 12:00:00',
+                    recordsProcessed: 67, duration: '1m 55s', frequency: 'Daily', startTime: '12:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 12:00:00', description: 'Credit Note Transmission to CUST-005'
+                },
+                {
+                    scheduleId: 'SCH-006', category: 'Order', destination: 'CUST-006',
+                    lastRunStatus: 'Success', lastRunStatusState: 'Success', issueType: 'Purchase Order',
+                    sender: 'SENDER-006', soldToParty: 'PARTY-006', salesOrg: 'ORG-006',
+                    activityStatus: 'Inactive', activityStatusState: 'None', lastRunDate: '2026-03-15 09:00:00',
+                    recordsProcessed: 112, duration: '2m 30s', frequency: 'Daily', startTime: '09:00:00',
+                    timeZone: 'UTC+1', nextRun: '-', description: 'Purchase Order Transmission to CUST-006'
+                },
+                {
+                    scheduleId: 'SCH-007', category: 'Delivery', destination: 'CUST-007',
+                    lastRunStatus: 'Success', lastRunStatusState: 'Success', issueType: 'Shipment Notice',
+                    sender: 'SENDER-007', soldToParty: 'PARTY-007', salesOrg: 'ORG-007',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 08:00:00',
+                    recordsProcessed: 89, duration: '1m 35s', frequency: 'Daily', startTime: '08:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 08:00:00', description: 'Shipment Notice Transmission to CUST-007'
+                },
+                {
+                    scheduleId: 'SCH-008', category: 'Invoice', destination: 'CUST-008',
+                    lastRunStatus: 'Success', lastRunStatusState: 'Success', issueType: 'Proforma Invoice',
+                    sender: 'SENDER-008', soldToParty: 'PARTY-008', salesOrg: 'ORG-008',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 11:30:00',
+                    recordsProcessed: 156, duration: '3m 05s', frequency: 'Daily', startTime: '11:30:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 11:30:00', description: 'Proforma Invoice Transmission to CUST-008'
+                },
+                {
+                    scheduleId: 'SCH-009', category: 'Payment', destination: 'CUST-009',
+                    lastRunStatus: 'Error', lastRunStatusState: 'Error', issueType: 'Remittance Advice',
+                    sender: 'SENDER-009', soldToParty: 'PARTY-009', salesOrg: 'ORG-009',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 13:00:00',
+                    recordsProcessed: 0, duration: '0m 08s', frequency: 'Daily', startTime: '13:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 13:00:00', description: 'Remittance Advice Transmission to CUST-009'
+                },
+                {
+                    scheduleId: 'SCH-010', category: 'Order', destination: 'CUST-010',
+                    lastRunStatus: 'Success', lastRunStatusState: 'Success', issueType: 'Order Confirmation',
+                    sender: 'SENDER-010', soldToParty: 'PARTY-010', salesOrg: 'ORG-010',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 07:00:00',
+                    recordsProcessed: 203, duration: '3m 45s', frequency: 'Daily', startTime: '07:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 07:00:00', description: 'Order Confirmation Transmission to CUST-010'
+                },
+                {
+                    scheduleId: 'SCH-011', category: 'Delivery', destination: 'CUST-011',
+                    lastRunStatus: 'Warning', lastRunStatusState: 'Warning', issueType: 'Goods Receipt',
+                    sender: 'SENDER-011', soldToParty: 'PARTY-011', salesOrg: 'ORG-011',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 10:00:00',
+                    recordsProcessed: 78, duration: '2m 00s', frequency: 'Hourly', startTime: '10:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 10:00:00', description: 'Goods Receipt Transmission to CUST-011'
+                },
+                {
+                    scheduleId: 'SCH-012', category: 'Invoice', destination: 'CUST-012',
+                    lastRunStatus: 'Success', lastRunStatusState: 'Success', issueType: 'Tax Invoice',
+                    sender: 'SENDER-012', soldToParty: 'PARTY-012', salesOrg: 'ORG-012',
+                    activityStatus: 'Active', activityStatusState: 'Success', lastRunDate: '2026-03-18 17:00:00',
+                    recordsProcessed: 134, duration: '2m 25s', frequency: 'Daily', startTime: '17:00:00',
+                    timeZone: 'UTC+1', nextRun: '2026-03-19 17:00:00', description: 'Tax Invoice Transmission to CUST-012'
+                }
+            ];
+
+            var oModel = new sap.ui.model.json.JSONModel({
+                schedules: aSchedules,
+                selectedSchedule: null
+            });
+
+            // ========== LIST REPORT PAGE ==========
+
+            // Filter Bar
+            var oFilterBar = new sap.m.VBox({
+                items: [
+                    new sap.m.Title({ text: "Filters", level: sap.ui.core.TitleLevel.H4 }).addStyleClass("sapUiSmallMarginBottom"),
+                    new sap.m.HBox({
+                        wrap: sap.m.FlexWrap.Wrap,
+                        items: [
+                            new sap.m.VBox({ width: "15rem", items: [
+                                new sap.m.Label({ text: "Schedule ID" }),
+                                new sap.m.Input({ placeholder: "Enter Schedule ID" })
+                            ]}).addStyleClass("sapUiSmallMarginEnd sapUiSmallMarginBottom"),
+                            new sap.m.VBox({ width: "15rem", items: [
+                                new sap.m.Label({ text: "Category" }),
+                                new sap.m.Select({ items: [
+                                    new sap.ui.core.Item({ key: "", text: "All" }),
+                                    new sap.ui.core.Item({ key: "Invoice", text: "Invoice" }),
+                                    new sap.ui.core.Item({ key: "Order", text: "Order" }),
+                                    new sap.ui.core.Item({ key: "Delivery", text: "Delivery" }),
+                                    new sap.ui.core.Item({ key: "Payment", text: "Payment" })
+                                ]})
+                            ]}).addStyleClass("sapUiSmallMarginEnd sapUiSmallMarginBottom"),
+                            new sap.m.VBox({ width: "15rem", items: [
+                                new sap.m.Label({ text: "Destination" }),
+                                new sap.m.Input({ placeholder: "Enter Destination" })
+                            ]}).addStyleClass("sapUiSmallMarginEnd sapUiSmallMarginBottom"),
+                            new sap.m.VBox({ width: "15rem", items: [
+                                new sap.m.Label({ text: "Last Run Status" }),
+                                new sap.m.Select({ items: [
+                                    new sap.ui.core.Item({ key: "", text: "All" }),
+                                    new sap.ui.core.Item({ key: "Success", text: "Success" }),
+                                    new sap.ui.core.Item({ key: "Error", text: "Error" }),
+                                    new sap.ui.core.Item({ key: "Warning", text: "Warning" })
+                                ]})
+                            ]}).addStyleClass("sapUiSmallMarginEnd sapUiSmallMarginBottom"),
+                            new sap.m.VBox({ width: "15rem", items: [
+                                new sap.m.Label({ text: "Activity Status" }),
+                                new sap.m.Select({ items: [
+                                    new sap.ui.core.Item({ key: "", text: "All" }),
+                                    new sap.ui.core.Item({ key: "Active", text: "Active" }),
+                                    new sap.ui.core.Item({ key: "Inactive", text: "Inactive" })
+                                ]})
+                            ]}).addStyleClass("sapUiSmallMarginEnd sapUiSmallMarginBottom"),
+                            new sap.m.VBox({ width: "15rem", items: [
+                                new sap.m.Label({ text: "Sender" }),
+                                new sap.m.Input({ placeholder: "Enter Sender" })
+                            ]}).addStyleClass("sapUiSmallMarginEnd sapUiSmallMarginBottom"),
+                            new sap.m.VBox({ width: "15rem", items: [
+                                new sap.m.Label({ text: "Sold-to Party" }),
+                                new sap.m.Input({ placeholder: "Enter Sold-to Party" })
+                            ]}).addStyleClass("sapUiSmallMarginEnd sapUiSmallMarginBottom"),
+                            new sap.m.VBox({ width: "15rem", items: [
+                                new sap.m.Label({ text: "Sales Organisation" }),
+                                new sap.m.Input({ placeholder: "Enter Sales Organisation" })
+                            ]}).addStyleClass("sapUiSmallMarginEnd sapUiSmallMarginBottom")
+                        ]
+                    }),
+                    new sap.m.OverflowToolbar({
+                        content: [
+                            new sap.m.Button({ text: "Go", type: sap.m.ButtonType.Emphasized, press: function() {
+                                sap.m.MessageToast.show("Applying filters...");
+                            }}),
+                            new sap.m.Button({ text: "Adapt Filters", press: function() {
+                                sap.m.MessageToast.show("Adapt Filters");
+                            }}),
+                            new sap.m.Button({ text: "Clear", press: function() {
+                                sap.m.MessageToast.show("Filters cleared");
+                            }})
+                        ]
+                    }).addStyleClass("sapUiSmallMarginTop")
+                ]
+            }).addStyleClass("sapUiSmallMargin");
+
+            // Table
+            var oTable = new sap.m.Table({
+                mode: sap.m.ListMode.MultiSelect,
+                growing: true,
+                growingThreshold: 20,
+                columns: [
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Schedule ID" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Category" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Destination" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Last Run Status" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Issue Type" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Sender" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Sold-to Party" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Sales Organisation" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Activity Status" }) }),
+                    new sap.m.Column({ header: new sap.m.Label({ text: "Last Run Date" }) })
+                ],
+                items: {
+                    path: "/schedules",
+                    template: new sap.m.ColumnListItem({
+                        type: sap.m.ListType.Navigation,
+                        press: function(oEvent) {
+                            var oContext = oEvent.getSource().getBindingContext();
+                            var oData = oContext.getObject();
+                            oModel.setProperty("/selectedSchedule", oData);
+                            oListReportPage.setVisible(false);
+                            oObjectPage.setVisible(true);
+                        },
+                        cells: [
+                            new sap.m.ObjectIdentifier({ title: "{scheduleId}" }),
+                            new sap.m.Text({ text: "{category}" }),
+                            new sap.m.Text({ text: "{destination}" }),
+                            new sap.m.ObjectStatus({ text: "{lastRunStatus}", state: "{lastRunStatusState}" }),
+                            new sap.m.Text({ text: "{issueType}" }),
+                            new sap.m.Text({ text: "{sender}" }),
+                            new sap.m.Text({ text: "{soldToParty}" }),
+                            new sap.m.Text({ text: "{salesOrg}" }),
+                            new sap.m.ObjectStatus({ text: "{activityStatus}", state: "{activityStatusState}" }),
+                            new sap.m.Text({ text: "{lastRunDate}" })
+                        ]
+                    })
+                }
+            });
+
+            // Dynamic Page Title
+            var oListPageTitle = new sap.f.DynamicPageTitle({
+                heading: new sap.m.Title({ text: "Manage Transmission Job Schedule" }),
+                actions: [
+                    new sap.m.Button({ text: "Create", type: sap.m.ButtonType.Emphasized, press: function() {
+                        sap.m.MessageToast.show("Create dialog - feature in progress");
+                    }}),
+                    new sap.m.Button({ text: "Run Now", press: function() {
+                        sap.m.MessageToast.show("Running selected schedules...");
+                    }}),
+                    new sap.m.Button({ text: "Delete", press: function() {
+                        sap.m.MessageToast.show("Delete selected schedules");
+                    }}),
+                    new sap.m.Button({ text: "View Application Logs", press: function() {
+                        sap.m.MessageToast.show("Opening application logs...");
+                    }})
+                ]
+            });
+
+            // Dynamic Page Header
+            var oListPageHeader = new sap.f.DynamicPageHeader({
+                content: [oFilterBar]
+            });
+
+            // List Report Page
+            var oListReportPage = new sap.f.DynamicPage({
+                title: oListPageTitle,
+                header: oListPageHeader,
+                content: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.OverflowToolbar({
+                                content: [
+                                    new sap.m.Title({
+                                        text: "Transmission Job Schedules (" + aSchedules.length + ")",
+                                        level: sap.ui.core.TitleLevel.H2
+                                    }),
+                                    new sap.m.ToolbarSpacer(),
+                                    new sap.m.SearchField({ width: "200px", placeholder: "Search" })
+                                ]
+                            }),
+                            oTable
+                        ]
+                    }).addStyleClass("sapUiSmallMargin")
+                ]
+            });
+
+            // ========== OBJECT PAGE ==========
+
+            var oObjectPage = new sap.uxap.ObjectPageLayout({
+                visible: false,
+                showTitleInHeaderContent: true,
+                upperCaseAnchorBar: false,
+                headerTitle: new sap.uxap.ObjectPageHeader({
+                    objectTitle: "{/selectedSchedule/scheduleId}",
+                    objectSubtitle: "{/selectedSchedule/description}",
+                    actions: [
+                        new sap.m.Button({ text: "Edit", type: sap.m.ButtonType.Emphasized }),
+                        new sap.m.Button({ text: "Run Now" }),
+                        new sap.m.Button({ text: "Delete" }),
+                        new sap.m.Button({ text: "View Logs" })
+                    ],
+                    navigationBar: new sap.m.Bar({
+                        contentLeft: [
+                            new sap.m.Button({
+                                icon: "sap-icon://nav-back",
+                                type: sap.m.ButtonType.Transparent,
+                                press: function() {
+                                    oObjectPage.setVisible(false);
+                                    oListReportPage.setVisible(true);
+                                }
+                            })
+                        ]
+                    })
+                }),
+                headerContent: [
+                    new sap.m.VBox({ items: [
+                        new sap.m.Label({ text: "Category" }),
+                        new sap.m.Text({ text: "{/selectedSchedule/category}" })
+                    ]}).addStyleClass("sapUiSmallMarginEnd"),
+                    new sap.m.VBox({ items: [
+                        new sap.m.Label({ text: "Destination" }),
+                        new sap.m.Text({ text: "{/selectedSchedule/destination}" })
+                    ]}).addStyleClass("sapUiSmallMarginEnd"),
+                    new sap.m.VBox({ items: [
+                        new sap.m.Label({ text: "Last Run Status" }),
+                        new sap.m.ObjectStatus({ text: "{/selectedSchedule/lastRunStatus}", state: "{/selectedSchedule/lastRunStatusState}" })
+                    ]}).addStyleClass("sapUiSmallMarginEnd"),
+                    new sap.m.VBox({ items: [
+                        new sap.m.Label({ text: "Activity Status" }),
+                        new sap.m.ObjectStatus({ text: "{/selectedSchedule/activityStatus}", state: "{/selectedSchedule/activityStatusState}" })
+                    ]}).addStyleClass("sapUiSmallMarginEnd")
+                ],
+                sections: [
+                    new sap.uxap.ObjectPageSection({
+                        title: "General Information",
+                        subSections: [
+                            new sap.uxap.ObjectPageSubSection({
+                                title: "Basic Information",
+                                blocks: [
+                                    new sap.ui.layout.form.SimpleForm({
+                                        editable: false,
+                                        layout: sap.ui.layout.form.SimpleFormLayout.ResponsiveGridLayout,
+                                        labelSpanXL: 4, labelSpanL: 4, labelSpanM: 4, labelSpanS: 12,
+                                        columnsXL: 2, columnsL: 2, columnsM: 1,
+                                        content: [
+                                            new sap.m.Label({ text: "Schedule ID" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/scheduleId}" }),
+                                            new sap.m.Label({ text: "Category" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/category}" }),
+                                            new sap.m.Label({ text: "Destination" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/destination}" }),
+                                            new sap.m.Label({ text: "Activity Status" }),
+                                            new sap.m.ObjectStatus({ text: "{/selectedSchedule/activityStatus}", state: "{/selectedSchedule/activityStatusState}" }),
+                                            new sap.m.Label({ text: "Issue Type" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/issueType}" }),
+                                            new sap.m.Label({ text: "Sender" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/sender}" }),
+                                            new sap.m.Label({ text: "Sold-to Party" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/soldToParty}" }),
+                                            new sap.m.Label({ text: "Sales Organisation" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/salesOrg}" })
+                                        ]
+                                    })
+                                ]
+                            }),
+                            new sap.uxap.ObjectPageSubSection({
+                                title: "Last Run Information",
+                                blocks: [
+                                    new sap.ui.layout.form.SimpleForm({
+                                        editable: false,
+                                        layout: sap.ui.layout.form.SimpleFormLayout.ResponsiveGridLayout,
+                                        labelSpanXL: 4, labelSpanL: 4, labelSpanM: 4, labelSpanS: 12,
+                                        columnsXL: 2, columnsL: 2, columnsM: 1,
+                                        content: [
+                                            new sap.m.Label({ text: "Last Run Status" }),
+                                            new sap.m.ObjectStatus({ text: "{/selectedSchedule/lastRunStatus}", state: "{/selectedSchedule/lastRunStatusState}" }),
+                                            new sap.m.Label({ text: "Last Run Date" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/lastRunDate}" }),
+                                            new sap.m.Label({ text: "Records Processed" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/recordsProcessed}" }),
+                                            new sap.m.Label({ text: "Duration" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/duration}" })
+                                        ]
+                                    })
+                                ]
+                            })
+                        ]
+                    }),
+                    new sap.uxap.ObjectPageSection({
+                        title: "Schedule Settings",
+                        subSections: [
+                            new sap.uxap.ObjectPageSubSection({
+                                title: "Schedule Configuration",
+                                blocks: [
+                                    new sap.ui.layout.form.SimpleForm({
+                                        editable: false,
+                                        layout: sap.ui.layout.form.SimpleFormLayout.ResponsiveGridLayout,
+                                        labelSpanXL: 4, labelSpanL: 4, labelSpanM: 4, labelSpanS: 12,
+                                        columnsXL: 2, columnsL: 2, columnsM: 1,
+                                        content: [
+                                            new sap.m.Label({ text: "Frequency" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/frequency}" }),
+                                            new sap.m.Label({ text: "Start Time" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/startTime}" }),
+                                            new sap.m.Label({ text: "Time Zone" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/timeZone}" }),
+                                            new sap.m.Label({ text: "Next Run" }),
+                                            new sap.m.Text({ text: "{/selectedSchedule/nextRun}" })
+                                        ]
+                                    })
+                                ]
+                            })
+                        ]
+                    }),
+                    new sap.uxap.ObjectPageSection({
+                        title: "Run History",
+                        subSections: [
+                            new sap.uxap.ObjectPageSubSection({
+                                title: "Recent Runs",
+                                blocks: [
+                                    new sap.m.Table({
+                                        columns: [
+                                            new sap.m.Column({ header: new sap.m.Label({ text: "Run Date" }) }),
+                                            new sap.m.Column({ header: new sap.m.Label({ text: "Status" }) }),
+                                            new sap.m.Column({ header: new sap.m.Label({ text: "Records Processed" }) }),
+                                            new sap.m.Column({ header: new sap.m.Label({ text: "Duration" }) }),
+                                            new sap.m.Column({ header: new sap.m.Label({ text: "Message" }) })
+                                        ],
+                                        items: [
+                                            new sap.m.ColumnListItem({ cells: [
+                                                new sap.m.Text({ text: "2026-03-18 14:30:00" }),
+                                                new sap.m.ObjectStatus({ text: "Success", state: sap.ui.core.ValueState.Success }),
+                                                new sap.m.Text({ text: "125" }),
+                                                new sap.m.Text({ text: "2m 15s" }),
+                                                new sap.m.Text({ text: "All records transmitted successfully" })
+                                            ]}),
+                                            new sap.m.ColumnListItem({ cells: [
+                                                new sap.m.Text({ text: "2026-03-17 14:30:00" }),
+                                                new sap.m.ObjectStatus({ text: "Success", state: sap.ui.core.ValueState.Success }),
+                                                new sap.m.Text({ text: "132" }),
+                                                new sap.m.Text({ text: "2m 20s" }),
+                                                new sap.m.Text({ text: "All records transmitted successfully" })
+                                            ]}),
+                                            new sap.m.ColumnListItem({ cells: [
+                                                new sap.m.Text({ text: "2026-03-16 14:30:00" }),
+                                                new sap.m.ObjectStatus({ text: "Warning", state: sap.ui.core.ValueState.Warning }),
+                                                new sap.m.Text({ text: "128" }),
+                                                new sap.m.Text({ text: "2m 45s" }),
+                                                new sap.m.Text({ text: "3 records failed validation" })
+                                            ]})
+                                        ]
+                                    })
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            });
+
+            // Set model and place app
+            oListReportPage.setModel(oModel);
+            oObjectPage.setModel(oModel);
+            oTable.setModel(oModel);
+
+            var oApp = new sap.m.App({
+                pages: [oListReportPage, oObjectPage]
+            });
+
+            oApp.placeAt("content");
+        });
+    </script>
+</head>
+<body class="sapUiBody" id="content"></body>
+</html>

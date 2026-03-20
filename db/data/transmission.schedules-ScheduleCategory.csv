@@ -1,0 +1,7 @@
+code,name,descr
+INVOICE,Invoice,Invoice transmission
+DELIVERY,Delivery,Delivery note transmission
+ORDER,Order,Order confirmation transmission
+PAYMENT,Payment,Payment advice transmission
+REPORT,Report,Report transmission
+NOTIFICATION,Notification,Notification transmission

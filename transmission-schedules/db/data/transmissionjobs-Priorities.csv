@@ -1,0 +1,4 @@
+code,name,descr,criticality
+HIGH,High,High priority schedule,1
+MEDIUM,Medium,Medium priority schedule,2
+LOW,Low,Low priority schedule,3

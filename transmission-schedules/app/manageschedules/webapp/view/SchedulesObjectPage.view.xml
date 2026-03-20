@@ -1,0 +1,335 @@
+<mvc:View
+    controllerName="transmissionjobs.manageschedules.controller.SchedulesObjectPage"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:card="sap.f.cards"
+    height="100%">
+    <f:DynamicPage
+        id="objectPageId"
+        toggleHeaderOnTitleClick="false"
+        headerExpanded="{objectView>/headerExpanded}"
+        busy="{objectView>/busy}">
+        <f:title>
+            <f:DynamicPageTitle>
+                <f:heading>
+                    <Title text="{scheduleID}"/>
+                </f:heading>
+                <f:actions>
+                    <Button
+                        text="Edit"
+                        type="Emphasized"
+                        press=".onEdit"
+                        visible="{= !${objectView>/editMode}}"/>
+                    <Button
+                        text="Save"
+                        type="Emphasized"
+                        press=".onSave"
+                        visible="{objectView>/editMode}"/>
+                    <Button
+                        text="Cancel"
+                        press=".onCancel"
+                        visible="{objectView>/editMode}"/>
+                    <Button
+                        text="Delete"
+                        type="Reject"
+                        press=".onDelete"
+                        visible="{= !${objectView>/editMode}}"/>
+                    <Button
+                        icon="sap-icon://decline"
+                        tooltip="Close"
+                        press=".onClose"/>
+                </f:actions>
+            </f:DynamicPageTitle>
+        </f:title>
+        <f:header>
+            <f:DynamicPageHeader pinnable="true">
+                <f:content>
+                    <HBox>
+                        <VBox class="sapUiSmallMarginEnd">
+                            <ObjectStatus
+                                text="{status/name}"
+                                state="{path: 'status/criticality', formatter: '.formatter.formatCriticality'}"/>
+                            <Label text="Status"/>
+                        </VBox>
+                        <VBox class="sapUiSmallMarginEnd">
+                            <ObjectNumber
+                                number="{executionCount}"
+                                emphasized="false"/>
+                            <Label text="Total Executions"/>
+                        </VBox>
+                        <VBox class="sapUiSmallMarginEnd">
+                            <ObjectNumber
+                                number="{successCount}"
+                                emphasized="false"
+                                state="Success"/>
+                            <Label text="Successful Executions"/>
+                        </VBox>
+                    </HBox>
+                </f:content>
+            </f:DynamicPageHeader>
+        </f:header>
+        <f:content>
+            <IconTabBar
+                id="iconTabBar"
+                class="sapUiResponsiveContentPadding"
+                expandable="false">
+                <items>
+                    <IconTabFilter text="General Information" key="general">
+                        <VBox class="sapUiSmallMargin">
+                            <f:Card>
+                                <f:header>
+                                    <card:Header title="Schedule Details"/>
+                                </f:header>
+                                <f:content>
+                                    <form:SimpleForm
+                                        editable="true"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="4"
+                                        labelSpanL="3"
+                                        labelSpanM="4"
+                                        labelSpanS="12"
+                                        adjustLabelSpan="false"
+                                        emptySpanXL="0"
+                                        emptySpanL="4"
+                                        emptySpanM="0"
+                                        emptySpanS="0"
+                                        columnsXL="2"
+                                        columnsL="2"
+                                        columnsM="1"
+                                        singleContainerFullSize="false">
+                                        <form:content>
+                                            <Label text="Schedule ID" required="true"/>
+                                            <Input
+                                                value="{scheduleID}"
+                                                editable="{objectView>/editMode}"/>
+
+                                            <Label text="Status" required="true"/>
+                                            <Select
+                                                selectedKey="{status_code}"
+                                                editable="{objectView>/editMode}"
+                                                items="{/Statuses}">
+                                                <core:Item key="{code}" text="{name}"/>
+                                            </Select>
+
+                                            <Label text="Priority" required="true"/>
+                                            <Select
+                                                selectedKey="{priority_code}"
+                                                editable="{objectView>/editMode}"
+                                                items="{/Priorities}">
+                                                <core:Item key="{code}" text="{name}"/>
+                                            </Select>
+
+                                            <Label text="Category" required="true"/>
+                                            <Select
+                                                selectedKey="{category_code}"
+                                                editable="{objectView>/editMode}"
+                                                items="{/Categories}">
+                                                <core:Item key="{code}" text="{name}"/>
+                                            </Select>
+
+                                            <Label text="Issue Type" required="true"/>
+                                            <Select
+                                                selectedKey="{issueType_code}"
+                                                editable="{objectView>/editMode}"
+                                                items="{/IssueTypes}">
+                                                <core:Item key="{code}" text="{name}"/>
+                                            </Select>
+
+                                            <Label text="Description"/>
+                                            <TextArea
+                                                value="{description}"
+                                                rows="3"
+                                                editable="{objectView>/editMode}"/>
+                                        </form:content>
+                                    </form:SimpleForm>
+                                </f:content>
+                            </f:Card>
+
+                            <f:Card>
+                                <f:header>
+                                    <card:Header title="Party Information"/>
+                                </f:header>
+                                <f:content>
+                                    <form:SimpleForm
+                                        editable="true"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="4"
+                                        labelSpanL="3"
+                                        labelSpanM="4"
+                                        labelSpanS="12"
+                                        adjustLabelSpan="false"
+                                        emptySpanXL="0"
+                                        emptySpanL="4"
+                                        emptySpanM="0"
+                                        emptySpanS="0"
+                                        columnsXL="2"
+                                        columnsL="2"
+                                        columnsM="1"
+                                        singleContainerFullSize="false">
+                                        <form:content>
+                                            <Label text="Sold-to Party" required="true"/>
+                                            <Input
+                                                value="{soldToParty}"
+                                                editable="{objectView>/editMode}"/>
+
+                                            <Label text="Sold-to Party Name"/>
+                                            <Input
+                                                value="{soldToPartyName}"
+                                                editable="{objectView>/editMode}"/>
+                                        </form:content>
+                                    </form:SimpleForm>
+                                </f:content>
+                            </f:Card>
+                        </VBox>
+                    </IconTabFilter>
+
+                    <IconTabFilter text="Transmission Settings" key="transmission">
+                        <VBox class="sapUiSmallMargin">
+                            <f:Card>
+                                <f:header>
+                                    <card:Header title="Schedule Configuration"/>
+                                </f:header>
+                                <f:content>
+                                    <form:SimpleForm
+                                        editable="true"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="4"
+                                        labelSpanL="3"
+                                        labelSpanM="4"
+                                        labelSpanS="12"
+                                        adjustLabelSpan="false"
+                                        emptySpanXL="0"
+                                        emptySpanL="4"
+                                        emptySpanM="0"
+                                        emptySpanS="0"
+                                        columnsXL="2"
+                                        columnsL="2"
+                                        columnsM="1"
+                                        singleContainerFullSize="false">
+                                        <form:content>
+                                            <Label text="Start Date" required="true"/>
+                                            <DatePicker
+                                                value="{path: 'startDate', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'yyyy-MM-dd'}}"
+                                                editable="{objectView>/editMode}"/>
+
+                                            <Label text="End Date" required="true"/>
+                                            <DatePicker
+                                                value="{path: 'endDate', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'yyyy-MM-dd'}}"
+                                                editable="{objectView>/editMode}"/>
+
+                                            <Label text="Frequency" required="true"/>
+                                            <Select
+                                                selectedKey="{frequency_code}"
+                                                editable="{objectView>/editMode}"
+                                                items="{/Frequencies}">
+                                                <core:Item key="{code}" text="{name}"/>
+                                            </Select>
+
+                                            <Label text="Transmission Time"/>
+                                            <TimePicker
+                                                value="{path: 'transmissionTime', type: 'sap.ui.model.type.Time', formatOptions: {pattern: 'HH:mm:ss'}}"
+                                                editable="{objectView>/editMode}"/>
+                                        </form:content>
+                                    </form:SimpleForm>
+                                </f:content>
+                            </f:Card>
+                        </VBox>
+                    </IconTabFilter>
+
+                    <IconTabFilter text="Contact Information" key="contact">
+                        <VBox class="sapUiSmallMargin">
+                            <f:Card>
+                                <f:header>
+                                    <card:Header title="Contact Details"/>
+                                </f:header>
+                                <f:content>
+                                    <form:SimpleForm
+                                        editable="true"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="4"
+                                        labelSpanL="3"
+                                        labelSpanM="4"
+                                        labelSpanS="12"
+                                        adjustLabelSpan="false"
+                                        emptySpanXL="0"
+                                        emptySpanL="4"
+                                        emptySpanM="0"
+                                        emptySpanS="0"
+                                        columnsXL="2"
+                                        columnsL="2"
+                                        columnsM="1"
+                                        singleContainerFullSize="false">
+                                        <form:content>
+                                            <Label text="Contact Person"/>
+                                            <Input
+                                                value="{contactPerson}"
+                                                editable="{objectView>/editMode}"/>
+
+                                            <Label text="Contact Email"/>
+                                            <Input
+                                                value="{contactEmail}"
+                                                type="Email"
+                                                editable="{objectView>/editMode}"/>
+                                        </form:content>
+                                    </form:SimpleForm>
+                                </f:content>
+                            </f:Card>
+                        </VBox>
+                    </IconTabFilter>
+
+                    <IconTabFilter text="Execution Statistics" key="statistics">
+                        <VBox class="sapUiSmallMargin">
+                            <f:Card>
+                                <f:header>
+                                    <card:Header title="Transmission History"/>
+                                </f:header>
+                                <f:content>
+                                    <form:SimpleForm
+                                        editable="false"
+                                        layout="ResponsiveGridLayout"
+                                        labelSpanXL="4"
+                                        labelSpanL="3"
+                                        labelSpanM="4"
+                                        labelSpanS="12"
+                                        adjustLabelSpan="false"
+                                        emptySpanXL="0"
+                                        emptySpanL="4"
+                                        emptySpanM="0"
+                                        emptySpanS="0"
+                                        columnsXL="2"
+                                        columnsL="2"
+                                        columnsM="1"
+                                        singleContainerFullSize="false">
+                                        <form:content>
+                                            <Label text="Last Transmission"/>
+                                            <Text text="{path: 'lastTransmission', type: 'sap.ui.model.type.DateTime', formatOptions: {pattern: 'dd.MM.yyyy HH:mm:ss'}}"/>
+
+                                            <Label text="Next Transmission"/>
+                                            <Text text="{path: 'nextTransmission', type: 'sap.ui.model.type.DateTime', formatOptions: {pattern: 'dd.MM.yyyy HH:mm:ss'}}"/>
+
+                                            <Label text="Total Executions"/>
+                                            <Text text="{executionCount}"/>
+
+                                            <Label text="Successful Executions"/>
+                                            <ObjectNumber
+                                                number="{successCount}"
+                                                state="Success"/>
+
+                                            <Label text="Failed Executions"/>
+                                            <ObjectNumber
+                                                number="{failureCount}"
+                                                state="Error"/>
+                                        </form:content>
+                                    </form:SimpleForm>
+                                </f:content>
+                            </f:Card>
+                        </VBox>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>

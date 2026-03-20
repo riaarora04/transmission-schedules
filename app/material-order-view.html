@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PD-001 : Material Order</title>
+
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/TextArea.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor, #f5f6f7);
+            color: var(--sapTextColor, #1d2d3e);
+        }
+
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapPositiveTextColor: #256f3a;
+            --sapObjectHeader_Background: white;
+            --sapGroup_TitleBackground: white;
+            --sapContent_LabelColor: #556b82;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .object-header {
+            background: white;
+            padding: 1.5rem 3rem 1rem;
+            border-bottom: 1px solid #d9d9d9;
+        }
+
+        .object-title {
+            font-family: '72-Black', sans-serif;
+            font-size: 1.5rem;
+            color: var(--sapTextColor);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            background: transparent;
+            color: var(--sapPositiveTextColor);
+            font-size: 0.875rem;
+            font-family: '72-Semibold', sans-serif;
+        }
+
+        .object-attributes {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .object-attribute {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .attribute-label {
+            color: var(--sapContent_LabelColor);
+        }
+
+        .attribute-value {
+            color: var(--sapTextColor);
+            font-weight: 600;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 2rem;
+            background: white;
+            padding: 0 3rem;
+            border-bottom: 1px solid #d9d9d9;
+            box-shadow: 0px 2px 2px rgba(85, 107, 130, 0.05);
+        }
+
+        .tab-item {
+            padding: 0.75rem 0.25rem;
+            font-family: '72-Bold', sans-serif;
+            font-size: 0.875rem;
+            color: var(--sapTextColor);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .tab-item.active {
+            color: var(--sapHighlightColor);
+            border-bottom-color: var(--sapHighlightColor);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 3rem 5rem;
+        }
+
+        .section-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1rem;
+            color: var(--sapTextColor);
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-grid-3col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-field ui5-label {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .status-flow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 0;
+        }
+
+        .status-indicator {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .status-indicator.complete {
+            background: var(--sapPositiveTextColor);
+            color: white;
+        }
+
+        .status-indicator.empty {
+            background: #e5e5e5;
+            border: 2px solid #d9d9d9;
+        }
+
+        .status-separator {
+            width: 3rem;
+            height: 2px;
+            background: #d9d9d9;
+        }
+
+        .status-label {
+            font-size: 0.75rem;
+            color: var(--sapContent_LabelColor);
+            text-align: center;
+            margin-top: 0.25rem;
+        }
+
+        .planning-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .planning-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .planning-item {
+            text-align: center;
+        }
+
+        .planning-value {
+            font-size: 1.5rem;
+            font-family: '72-Bold', sans-serif;
+            color: var(--sapTextColor);
+            margin-bottom: 0.25rem;
+        }
+
+        .planning-label {
+            font-size: 0.75rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .chart-placeholder {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sapContent_LabelColor);
+            border: 2px dashed #d9d9d9;
+        }
+
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--sapGroup_TitleBackground);
+            border-bottom: 1px solid #a8b3bd;
+        }
+
+        .table-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1rem;
+        }
+
+        .floating-footer {
+            position: fixed;
+            bottom: 1rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0px 0px 0px 1px rgba(34,54,73,0.48), 0px 2px 8px 0px rgba(34,54,73,0.3);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 1200px) {
+            .object-header,
+            .tab-container,
+            .content-area {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            primary-title="Product"
+            show-notifications
+            show-product-switch
+            show-co-pilot>
+            <img slot="logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Cpath fill='%230070F2' d='M0 0h60v30H0z'/%3E%3Cpath fill='white' d='M10 8h8v2h-8zm0 4h12v2H10zm0 4h10v2H10z'/%3E%3C/svg%3E"/>
+        </ui5-shellbar>
+
+        <!-- Object Header -->
+        <div class="object-header">
+            <div class="object-title">
+                PD-001 : Material Order
+                <ui5-button design="Transparent" icon="slim-arrow-down">
+                    <span class="status-badge">Approved</span>
+                </ui5-button>
+            </div>
+            <div class="object-attributes">
+                <div class="object-attribute">
+                    <span class="attribute-label">Material</span>
+                    <span class="attribute-value">Blue Pallet XL</span>
+                </div>
+                <div class="object-attribute">
+                    <span class="attribute-label">Business Partner</span>
+                    <span class="attribute-value">Rolf Motors</span>
+                </div>
+                <div class="object-attribute">
+                    <span class="attribute-label">Requested Quantity</span>
+                    <span class="attribute-value">500</span>
+                </div>
+                <div class="object-attribute">
+                    <span class="attribute-label">Expected Delivery</span>
+                    <span class="attribute-value">Dec 22, 2024</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-container">
+            <a href="#" class="tab-item active" onclick="showTab(event, 'details')">Material Order Details</a>
+            <a href="#" class="tab-item" onclick="showTab(event, 'planning')">Planning Overview</a>
+            <a href="#" class="tab-item" onclick="showTab(event, 'chart')">Proposed Replenishment Chart</a>
+            <a href="#" class="tab-item" onclick="showTab(event, 'changelog')">Change Log</a>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+            <!-- Material Order Details Tab -->
+            <div id="details-tab" class="tab-content active">
+                <!-- Status Flow -->
+                <div class="form-section">
+                    <div class="status-flow">
+                        <div>
+                            <div class="status-indicator complete">✓</div>
+                            <div class="status-label">Requested</div>
+                        </div>
+                        <div class="status-separator"></div>
+                        <div>
+                            <div class="status-indicator complete">✓</div>
+                            <div class="status-label">Approved</div>
+                        </div>
+                        <div class="status-separator"></div>
+                        <div>
+                            <div class="status-indicator empty"></div>
+                            <div class="status-label">Delivered</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Material Details Section -->
+                <div class="section-title">Material Details</div>
+                <div class="form-section">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <ui5-label for="material-description">Material Description:</ui5-label>
+                            <ui5-input id="material-description" value="Blue Pallet XL" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="material-code">Material Code:</ui5-label>
+                            <ui5-input id="material-code" value="PD-001" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="packaging-account">Packaging Account:</ui5-label>
+                            <ui5-input id="packaging-account" value="Account A" readonly></ui5-input>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Request Details Section -->
+                <div class="section-title">Order Request Details</div>
+                <div class="form-section">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <ui5-label for="business-partner">Business Partner:</ui5-label>
+                            <ui5-input id="business-partner" value="Rolf Motors" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="location-partner">Location Partner:</ui5-label>
+                            <ui5-input id="location-partner" value="Plant Georgia" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="external-reference">External Reference:</ui5-label>
+                            <ui5-input id="external-reference" value="REF-2024-001" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="plant">Plant:</ui5-label>
+                            <ui5-input id="plant" value="1000 - Plant Georgia" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="exchange-partner">Exchange Partner:</ui5-label>
+                            <ui5-input id="exchange-partner" value="EXC-001" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="requested-quantity">Requested Quantity:</ui5-label>
+                            <ui5-input id="requested-quantity" value="500" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="expected-delivery-date">Expected Delivery Date:</ui5-label>
+                            <ui5-date-picker id="expected-delivery-date" value="Dec 22, 2024" readonly disabled></ui5-date-picker>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="order-requested-on">Order Requested On:</ui5-label>
+                            <ui5-date-picker id="order-requested-on" value="Nov 15, 2024" readonly disabled></ui5-date-picker>
+                        </div>
+                        <div class="form-field full-width">
+                            <ui5-label for="requester-comments">Requester Comments:</ui5-label>
+                            <ui5-textarea id="requester-comments" rows="3" value="Urgent requirement for Q1 production ramp-up" readonly></ui5-textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approval Details Section -->
+                <div class="section-title">Approval Details</div>
+                <div class="form-section">
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <ui5-label for="approved-quantity">Approved Quantity:</ui5-label>
+                            <ui5-input id="approved-quantity" value="500" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="order-approved-on">Order Approved On:</ui5-label>
+                            <ui5-date-picker id="order-approved-on" value="Nov 18, 2024" readonly disabled></ui5-date-picker>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="approval-type">Approval Type:</ui5-label>
+                            <ui5-input id="approval-type" value="Auto-Approval" readonly></ui5-input>
+                        </div>
+                        <div class="form-field full-width">
+                            <ui5-label for="approver-comments">Approver Comments:</ui5-label>
+                            <ui5-textarea id="approver-comments" rows="3" value="Approved based on available inventory levels and forecasted demand" readonly></ui5-textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sales Order Section -->
+                <div class="section-title">Sales Order</div>
+                <div class="form-section">
+                    <div class="form-grid-3col">
+                        <div class="form-field">
+                            <ui5-label for="sales-organisation">Sales Organisation:</ui5-label>
+                            <ui5-input id="sales-organisation" value="Org 1000" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="distribution-channel">Distribution Channel:</ui5-label>
+                            <ui5-input id="distribution-channel" value="Channel 10" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="division">Division:</ui5-label>
+                            <ui5-input id="division" value="Division 01" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="sales-order-number">Sales Order Number:</ui5-label>
+                            <ui5-input id="sales-order-number" value="SO-2024-001234" readonly></ui5-input>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="sales-order-created-on">Sales Order Created On:</ui5-label>
+                            <ui5-date-picker id="sales-order-created-on" value="Nov 20, 2024" readonly disabled></ui5-date-picker>
+                        </div>
+                        <div class="form-field">
+                            <ui5-label for="delivered-quantity">Delivered Quantity:</ui5-label>
+                            <ui5-input id="delivered-quantity" value="0" readonly></ui5-input>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planning Overview Tab -->
+            <div id="planning-tab" class="tab-content">
+                <div class="section-title">Planning Information</div>
+                <div class="planning-section">
+                    <div class="planning-grid">
+                        <div class="planning-item">
+                            <div class="planning-value">2,500</div>
+                            <div class="planning-label">Total Forecast</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">1,000</div>
+                            <div class="planning-label">Max Order Quantity</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">500</div>
+                            <div class="planning-label">Proposed Replenishment</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">850</div>
+                            <div class="planning-label">Forecasted Balance</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">200</div>
+                            <div class="planning-label">Min Reorder Point</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">800</div>
+                            <div class="planning-label">Max Reorder Point</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">14</div>
+                            <div class="planning-label">Lead Time (Days)</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">50</div>
+                            <div class="planning-label">Rounding Value</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Stock Levels</div>
+                <div class="planning-section">
+                    <div class="planning-grid">
+                        <div class="planning-item">
+                            <div class="planning-value">150</div>
+                            <div class="planning-label">Safety Stock</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">1,200</div>
+                            <div class="planning-label">Maximum Stock</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">350</div>
+                            <div class="planning-label">Current Stock</div>
+                        </div>
+                        <div class="planning-item">
+                            <div class="planning-value">Q1 2025</div>
+                            <div class="planning-label">Planning Period</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Proposed Replenishment Chart Tab -->
+            <div id="chart-tab" class="tab-content">
+                <div class="section-title">Replenishment Forecast</div>
+                <div class="chart-placeholder">
+                    <div style="text-align: center;">
+                        <ui5-icon name="bar-chart" style="font-size: 4rem; color: #d9d9d9; margin-bottom: 1rem;"></ui5-icon>
+                        <div>Chart visualization would appear here</div>
+                        <div style="font-size: 0.75rem; margin-top: 0.5rem;">Showing forecasted replenishment needs over time</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Log Tab -->
+            <div id="changelog-tab" class="tab-content">
+                <div class="section-title">Change History</div>
+                <div class="table-wrapper">
+                    <div class="table-toolbar">
+                        <div class="table-title">Changes (5)</div>
+                    </div>
+                    <ui5-table sticky-column-header>
+                        <ui5-table-column slot="columns">
+                            <span style="font-weight: bold;">Date</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns">
+                            <span style="font-weight: bold;">User</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns">
+                            <span style="font-weight: bold;">Field Changed</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns">
+                            <span style="font-weight: bold;">Old Value</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns">
+                            <span style="font-weight: bold;">New Value</span>
+                        </ui5-table-column>
+
+                        <ui5-table-row>
+                            <ui5-table-cell>Nov 20, 2024 10:30</ui5-table-cell>
+                            <ui5-table-cell>System</ui5-table-cell>
+                            <ui5-table-cell>Sales Order Number</ui5-table-cell>
+                            <ui5-table-cell>-</ui5-table-cell>
+                            <ui5-table-cell>SO-2024-001234</ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row>
+                            <ui5-table-cell>Nov 18, 2024 14:22</ui5-table-cell>
+                            <ui5-table-cell>Approver</ui5-table-cell>
+                            <ui5-table-cell>Order Status</ui5-table-cell>
+                            <ui5-table-cell>Requested</ui5-table-cell>
+                            <ui5-table-cell>Approved</ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row>
+                            <ui5-table-cell>Nov 18, 2024 14:22</ui5-table-cell>
+                            <ui5-table-cell>Approver</ui5-table-cell>
+                            <ui5-table-cell>Approved Quantity</ui5-table-cell>
+                            <ui5-table-cell>-</ui5-table-cell>
+                            <ui5-table-cell>500</ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row>
+                            <ui5-table-cell>Nov 15, 2024 09:15</ui5-table-cell>
+                            <ui5-table-cell>Requester</ui5-table-cell>
+                            <ui5-table-cell>Order Status</ui5-table-cell>
+                            <ui5-table-cell>Draft</ui5-table-cell>
+                            <ui5-table-cell>Requested</ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row>
+                            <ui5-table-cell>Nov 15, 2024 09:00</ui5-table-cell>
+                            <ui5-table-cell>Requester</ui5-table-cell>
+                            <ui5-table-cell>Order Created</ui5-table-cell>
+                            <ui5-table-cell>-</ui5-table-cell>
+                            <ui5-table-cell>PD-001</ui5-table-cell>
+                        </ui5-table-row>
+                    </ui5-table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Footer -->
+        <div class="floating-footer">
+            <ui5-button design="Default" onclick="editOrder()">Edit</ui5-button>
+            <ui5-button design="Transparent" onclick="goBack()">Close</ui5-button>
+        </div>
+    </div>
+
+    <script>
+        function showTab(event, tabName) {
+            event.preventDefault();
+
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Add active class to clicked tab
+            event.currentTarget.classList.add('active');
+        }
+
+        function editOrder() {
+            alert('Edit functionality would navigate to edit mode');
+        }
+
+        function goBack() {
+            window.location.href = 'list-report.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<mvc:View
+    controllerName="transmissionschedules.controller.ObjectPage"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns:layout="sap.ui.layout"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+
+    <f:DynamicPage
+        id="objectPageId"
+        toggleHeaderOnTitleClick="false"
+        showFooter="true">
+
+        <!-- Dynamic Page Title -->
+        <f:title>
+            <f:DynamicPageTitle>
+                <f:heading>
+                    <Title
+                        text="{schedules>scheduleId}"
+                        level="H1"/>
+                </f:heading>
+                <f:snappedContent>
+                    <FlexBox
+                        alignItems="Center"
+                        justifyContent="SpaceBetween">
+                        <items>
+                            <ObjectStatus
+                                text="{schedules>status}"
+                                state="{
+                                    path: 'schedules>status',
+                                    formatter: '.formatStatusState'
+                                }"/>
+                        </items>
+                    </FlexBox>
+                </f:snappedContent>
+                <f:expandedContent>
+                    <Text text="{schedules>description}"/>
+                </f:expandedContent>
+                <f:actions>
+                    <Button
+                        text="{i18n>edit}"
+                        type="Emphasized"
+                        press=".onEdit"/>
+                    <Button
+                        text="{i18n>delete}"
+                        type="Transparent"
+                        press=".onDelete"/>
+                </f:actions>
+                <f:navigationActions>
+                    <OverflowToolbarButton
+                        type="Transparent"
+                        icon="sap-icon://decline"
+                        press=".onClose"
+                        tooltip="{i18n>close}"/>
+                </f:navigationActions>
+            </f:DynamicPageTitle>
+        </f:title>
+
+        <!-- Dynamic Page Header -->
+        <f:header>
+            <f:DynamicPageHeader pinnable="true">
+                <f:content>
+                    <layout:HorizontalLayout allowWrapping="true">
+                        <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                            <Label text="{i18n>status}"/>
+                            <ObjectStatus
+                                text="{schedules>status}"
+                                state="{
+                                    path: 'schedules>status',
+                                    formatter: '.formatStatusState'
+                                }"/>
+                        </layout:VerticalLayout>
+                        <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                            <Label text="{i18n>category}"/>
+                            <Text text="{schedules>category}"/>
+                        </layout:VerticalLayout>
+                        <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                            <Label text="{i18n>issueType}"/>
+                            <Text text="{schedules>issueType}"/>
+                        </layout:VerticalLayout>
+                        <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                            <Label text="{i18n>soldToParty}"/>
+                            <Text text="{schedules>soldToParty}"/>
+                        </layout:VerticalLayout>
+                        <layout:VerticalLayout class="sapUiMediumMarginEnd">
+                            <Label text="{i18n>frequency}"/>
+                            <Text text="{schedules>frequency}"/>
+                        </layout:VerticalLayout>
+                    </layout:HorizontalLayout>
+                </f:content>
+            </f:DynamicPageHeader>
+        </f:header>
+
+        <!-- Dynamic Page Content -->
+        <f:content>
+            <IconTabBar
+                id="iconTabBar"
+                expanded="true"
+                expandable="false"
+                class="sapUiResponsiveContentPadding">
+
+                <items>
+                    <!-- General Information Tab -->
+                    <IconTabFilter
+                        text="{i18n>generalInformation}"
+                        key="general">
+                        <form:SimpleForm
+                            editable="false"
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="12"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            columnsXL="2"
+                            columnsL="2"
+                            columnsM="1">
+
+                            <form:content>
+                                <core:Title text="{i18n>basicData}"/>
+                                <Label text="{i18n>scheduleId}"/>
+                                <Text text="{schedules>scheduleId}"/>
+
+                                <Label text="{i18n>description}"/>
+                                <Text text="{schedules>description}"/>
+
+                                <Label text="{i18n>status}"/>
+                                <ObjectStatus
+                                    text="{schedules>status}"
+                                    state="{
+                                        path: 'schedules>status',
+                                        formatter: '.formatStatusState'
+                                    }"/>
+
+                                <Label text="{i18n>category}"/>
+                                <Text text="{schedules>category}"/>
+
+                                <Label text="{i18n>issueType}"/>
+                                <Text text="{schedules>issueType}"/>
+
+                                <Label text="{i18n>priority}"/>
+                                <Text text="{schedules>priority}"/>
+
+                                <core:Title text="{i18n>scheduleDetails}"/>
+                                <Label text="{i18n>frequency}"/>
+                                <Text text="{schedules>frequency}"/>
+
+                                <Label text="{i18n>validFrom}"/>
+                                <Text text="{
+                                    path: 'schedules>validFrom',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy'
+                                    }
+                                }"/>
+
+                                <Label text="{i18n>validTo}"/>
+                                <Text text="{
+                                    path: 'schedules>validTo',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy'
+                                    }
+                                }"/>
+
+                                <Label text="{i18n>nextRun}"/>
+                                <Text text="{
+                                    path: 'schedules>nextRun',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy HH:mm'
+                                    }
+                                }"/>
+
+                                <Label text="{i18n>lastRun}"/>
+                                <Text text="{
+                                    path: 'schedules>lastRun',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy HH:mm'
+                                    }
+                                }"/>
+
+                                <core:Title text="{i18n>businessData}"/>
+                                <Label text="{i18n>soldToParty}"/>
+                                <Text text="{schedules>soldToParty}"/>
+
+                                <Label text="{i18n>soldToPartyName}"/>
+                                <Text text="{schedules>soldToPartyName}"/>
+
+                                <Label text="{i18n>createdBy}"/>
+                                <Text text="{schedules>createdBy}"/>
+
+                                <Label text="{i18n>createdOn}"/>
+                                <Text text="{
+                                    path: 'schedules>createdOn',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy'
+                                    }
+                                }"/>
+
+                                <Label text="{i18n>changedBy}"/>
+                                <Text text="{schedules>changedBy}"/>
+
+                                <Label text="{i18n>changedOn}"/>
+                                <Text text="{
+                                    path: 'schedules>changedOn',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'dd/MM/yyyy'
+                                    }
+                                }"/>
+                            </form:content>
+                        </form:SimpleForm>
+                    </IconTabFilter>
+
+                    <!-- Execution History Tab -->
+                    <IconTabFilter
+                        text="{i18n>executionHistory}"
+                        key="history">
+                        <Table
+                            id="historyTable"
+                            items="{schedules>executionHistory}">
+                            <columns>
+                                <Column>
+                                    <Text text="{i18n>executionDate}"/>
+                                </Column>
+                                <Column>
+                                    <Text text="{i18n>executionStatus}"/>
+                                </Column>
+                                <Column>
+                                    <Text text="{i18n>duration}"/>
+                                </Column>
+                                <Column>
+                                    <Text text="{i18n>recordsProcessed}"/>
+                                </Column>
+                                <Column>
+                                    <Text text="{i18n>errorMessage}"/>
+                                </Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{
+                                            path: 'schedules>executionDate',
+                                            type: 'sap.ui.model.type.Date',
+                                            formatOptions: {
+                                                pattern: 'dd/MM/yyyy HH:mm:ss'
+                                            }
+                                        }"/>
+                                        <ObjectStatus
+                                            text="{schedules>executionStatus}"
+                                            state="{
+                                                path: 'schedules>executionStatus',
+                                                formatter: '.formatExecutionState'
+                                            }"/>
+                                        <Text text="{schedules>duration}"/>
+                                        <Text text="{schedules>recordsProcessed}"/>
+                                        <Text text="{schedules>errorMessage}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+
+                    <!-- Parameters Tab -->
+                    <IconTabFilter
+                        text="{i18n>parameters}"
+                        key="parameters">
+                        <form:SimpleForm
+                            editable="false"
+                            layout="ResponsiveGridLayout"
+                            labelSpanXL="4"
+                            labelSpanL="4"
+                            labelSpanM="12"
+                            emptySpanXL="0"
+                            emptySpanL="0"
+                            emptySpanM="0"
+                            columnsXL="1"
+                            columnsL="1"
+                            columnsM="1">
+                            <form:content>
+                                <core:Title text="{i18n>transmissionParameters}"/>
+                                <Label text="{i18n>transmissionType}"/>
+                                <Text text="{schedules>parameters/transmissionType}"/>
+
+                                <Label text="{i18n>outputFormat}"/>
+                                <Text text="{schedules>parameters/outputFormat}"/>
+
+                                <Label text="{i18n>deliveryMethod}"/>
+                                <Text text="{schedules>parameters/deliveryMethod}"/>
+
+                                <Label text="{i18n>emailRecipients}"/>
+                                <Text text="{schedules>parameters/emailRecipients}"/>
+
+                                <Label text="{i18n>ftpServer}"/>
+                                <Text text="{schedules>parameters/ftpServer}"/>
+
+                                <Label text="{i18n>notifyOnSuccess}"/>
+                                <CheckBox
+                                    selected="{schedules>parameters/notifyOnSuccess}"
+                                    enabled="false"/>
+
+                                <Label text="{i18n>notifyOnFailure}"/>
+                                <CheckBox
+                                    selected="{schedules>parameters/notifyOnFailure}"
+                                    enabled="false"/>
+                            </form:content>
+                        </form:SimpleForm>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </f:content>
+
+        <!-- Footer Bar -->
+        <f:footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button
+                    text="{i18n>activateSchedule}"
+                    type="Emphasized"
+                    press=".onActivate"
+                    visible="{= ${schedules>status} === 'Inactive'}"/>
+                <Button
+                    text="{i18n>deactivateSchedule}"
+                    type="Transparent"
+                    press=".onDeactivate"
+                    visible="{= ${schedules>status} === 'Active'}"/>
+                <Button
+                    text="{i18n>executeNow}"
+                    type="Default"
+                    press=".onExecuteNow"/>
+            </OverflowToolbar>
+        </f:footer>
+    </f:DynamicPage>
+</mvc:View>

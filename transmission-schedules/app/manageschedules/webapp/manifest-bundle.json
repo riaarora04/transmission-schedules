@@ -1,0 +1,25 @@
+{
+    "_version": "1.1.0",
+    "start_url": "index.html",
+    "sap.app": {
+        "id": "transmissionjobs.manageschedules",
+        "type": "application",
+        "applicationVersion": {
+            "version": "1.0.0"
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5"
+    },
+    "sap.ui5": {
+        "dependencies": {}
+    },
+    "sap.flp": {
+        "type": "application",
+        "title": "Manage Transmission Job Schedules",
+        "subTitle": "Create and manage transmission schedules",
+        "icons": {
+            "icon": "sap-icon://calendar"
+        }
+    }
+}

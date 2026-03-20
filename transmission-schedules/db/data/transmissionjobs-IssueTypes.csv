@@ -1,0 +1,6 @@
+code,name,descr
+TECHNICAL,Technical Issue,Technical system issues
+DATA,Data Issue,Data quality or availability issues
+BUSINESS,Business Issue,Business process related issues
+NETWORK,Network Issue,Network connectivity issues
+PERFORMANCE,Performance Issue,Performance degradation issues

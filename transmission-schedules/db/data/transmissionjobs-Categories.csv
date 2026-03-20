@@ -1,0 +1,6 @@
+code,name,descr
+BILLING,Billing,Billing related transmissions
+INVENTORY,Inventory,Inventory management transmissions
+ORDER,Order,Order processing transmissions
+DELIVERY,Delivery,Delivery note transmissions
+INVOICE,Invoice,Invoice document transmissions

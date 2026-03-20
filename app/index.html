@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmission Schedule Management - Launchpad</title>
+    
+    <script
+        id="sap-ui-bootstrap"
+        src="https://ui5.sap.com/1.136.7/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m, sap.ushell"
+        data-sap-ui-bindingSyntax="complex"
+        data-sap-ui-frameOptions="trusted"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-preload="async"
+        data-sap-ui-resourceroots='{
+            "transmissionschedules": "./transmission-schedules/webapp"
+        }'>
+    </script>
+    
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            sap.ui.require([
+                "sap/m/Shell",
+                "sap/m/TileContainer",
+                "sap/m/StandardTile"
+            ], function(Shell, TileContainer, StandardTile) {
+                
+                var oShell = new Shell({
+                    app: new TileContainer({
+                        tiles: [
+                            new StandardTile({
+                                icon: "sap-icon://calendar-schedule",
+                                title: "Manage Transmission Job Schedules",
+                                info: "Schedules",
+                                number: "6",
+                                press: function() {
+                                    window.location.href = "transmission-schedules/webapp/index.html";
+                                }
+                            })
+                        ]
+                    })
+                });
+                
+                oShell.placeAt("content");
+            });
+        });
+    </script>
+    
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+</body>
+</html>

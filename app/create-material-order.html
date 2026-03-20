@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New : Material Order</title>
+
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/TextArea.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/MessageStrip.js";
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor, #f5f6f7);
+            color: var(--sapTextColor, #1d2d3e);
+        }
+
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapObjectHeader_Background: white;
+            --sapGroup_TitleBackground: white;
+            --sapContent_LabelColor: #556b82;
+            --sapField_RequiredColor: #aa0808;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .object-header {
+            background: white;
+            padding: 1.5rem 3rem 1rem;
+            border-bottom: 1px solid #d9d9d9;
+        }
+
+        .object-title {
+            font-family: '72-Black', sans-serif;
+            font-size: 1.5rem;
+            color: var(--sapTextColor);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            background: transparent;
+            color: var(--sapHighlightColor);
+            font-size: 0.875rem;
+            font-family: '72-Semibold', sans-serif;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 2rem;
+            background: white;
+            padding: 0 3rem;
+            border-bottom: 1px solid #d9d9d9;
+            box-shadow: 0px 2px 2px rgba(85, 107, 130, 0.05);
+        }
+
+        .tab-item {
+            padding: 0.75rem 0.25rem;
+            font-family: '72-Bold', sans-serif;
+            font-size: 0.875rem;
+            color: var(--sapTextColor);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .tab-item.active {
+            color: var(--sapHighlightColor);
+            border-bottom-color: var(--sapHighlightColor);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 3rem 5rem;
+        }
+
+        .section-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1rem;
+            color: var(--sapTextColor);
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-grid-3col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-field ui5-label {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--sapField_RequiredColor);
+            font-weight: bold;
+        }
+
+        .floating-footer {
+            position: fixed;
+            bottom: 1rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0px 0px 0px 1px rgba(34,54,73,0.48), 0px 2px 8px 0px rgba(34,54,73,0.3);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        @media (max-width: 1200px) {
+            .object-header,
+            .tab-container,
+            .content-area {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            primary-title="Product"
+            show-notifications
+            show-product-switch
+            show-co-pilot>
+            <img slot="logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Cpath fill='%230070F2' d='M0 0h60v30H0z'/%3E%3Cpath fill='white' d='M10 8h8v2h-8zm0 4h12v2H10zm0 4h10v2H10z'/%3E%3C/svg%3E"/>
+        </ui5-shellbar>
+
+        <!-- Object Header -->
+        <div class="object-header">
+            <div class="object-title">
+                New : Material Order
+                <ui5-button design="Transparent" icon="slim-arrow-down">
+                    <span class="status-badge">Draft</span>
+                </ui5-button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-container">
+            <a href="#" class="tab-item active">Material Order Details</a>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+            <!-- Message Strip -->
+            <ui5-message-strip design="Information" style="margin-bottom: 1rem;">
+                Orders will be processed after clicking 'Raise Request'
+            </ui5-message-strip>
+
+            <!-- Material Details Section -->
+            <div class="section-title">Material Details</div>
+            <div class="form-section">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <ui5-label class="required" for="material-description">Material Description:</ui5-label>
+                        <ui5-input id="material-description" show-suggestions>
+                            <ui5-icon slot="icon" name="value-help"></ui5-icon>
+                        </ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="material-code">Material Code:</ui5-label>
+                        <ui5-input id="material-code" readonly></ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label class="required" for="packaging-account">Packaging Account:</ui5-label>
+                        <ui5-select id="packaging-account">
+                            <ui5-option></ui5-option>
+                            <ui5-option>Account A</ui5-option>
+                            <ui5-option>Account B</ui5-option>
+                        </ui5-select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Request Details Section -->
+            <div class="section-title">Order Request Details</div>
+            <div class="form-section">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <ui5-label class="required" for="business-partner">Business Partner:</ui5-label>
+                        <ui5-select id="business-partner">
+                            <ui5-option></ui5-option>
+                            <ui5-option>Rolf Motors</ui5-option>
+                            <ui5-option>FastTech GmbH</ui5-option>
+                            <ui5-option>Auto Solutions</ui5-option>
+                        </ui5-select>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label class="required" for="location-partner">Location Partner:</ui5-label>
+                        <ui5-input id="location-partner">
+                            <ui5-icon slot="icon" name="value-help"></ui5-icon>
+                        </ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="external-reference">External Reference:</ui5-label>
+                        <ui5-input id="external-reference"></ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="plant">Plant:</ui5-label>
+                        <ui5-input id="plant" readonly></ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="exchange-partner">Exchange Partner:</ui5-label>
+                        <ui5-input id="exchange-partner" readonly></ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label class="required" for="requested-quantity">Requested Quantity:</ui5-label>
+                        <ui5-input id="requested-quantity" type="Number"></ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label class="required" for="expected-delivery-date">Expected Delivery Date:</ui5-label>
+                        <ui5-date-picker id="expected-delivery-date"></ui5-date-picker>
+                    </div>
+                    <div class="form-field full-width">
+                        <ui5-label for="requester-comments">Requester Comments:</ui5-label>
+                        <ui5-textarea id="requester-comments" rows="3" placeholder="Enter comments..."></ui5-textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approval Details Section -->
+            <div class="section-title">Approval Details</div>
+            <div class="form-section">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <ui5-label for="approved-quantity">Approved Quantity:</ui5-label>
+                        <ui5-input id="approved-quantity" type="Number" readonly></ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="order-approved-on">Order Approved On:</ui5-label>
+                        <ui5-date-picker id="order-approved-on" readonly disabled></ui5-date-picker>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="approval-type">Approval Type:</ui5-label>
+                        <ui5-input id="approval-type" readonly></ui5-input>
+                    </div>
+                    <div class="form-field full-width">
+                        <ui5-label for="approver-comments">Approver Comments:</ui5-label>
+                        <ui5-textarea id="approver-comments" rows="3" readonly disabled></ui5-textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales Order Section -->
+            <div class="section-title">Sales Order</div>
+            <div class="form-section">
+                <div class="form-grid-3col">
+                    <div class="form-field">
+                        <ui5-label class="required" for="sales-organisation">Sales Organisation:</ui5-label>
+                        <ui5-select id="sales-organisation">
+                            <ui5-option></ui5-option>
+                            <ui5-option>Org 1000</ui5-option>
+                            <ui5-option>Org 2000</ui5-option>
+                        </ui5-select>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label class="required" for="distribution-channel">Distribution Channel:</ui5-label>
+                        <ui5-select id="distribution-channel">
+                            <ui5-option></ui5-option>
+                            <ui5-option>Channel 10</ui5-option>
+                            <ui5-option>Channel 20</ui5-option>
+                        </ui5-select>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label class="required" for="division">Division:</ui5-label>
+                        <ui5-select id="division">
+                            <ui5-option></ui5-option>
+                            <ui5-option>Division 01</ui5-option>
+                            <ui5-option>Division 02</ui5-option>
+                        </ui5-select>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="sales-order-number">Sales Order Number:</ui5-label>
+                        <ui5-input id="sales-order-number" readonly></ui5-input>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="sales-order-created-on">Sales Order Created On:</ui5-label>
+                        <ui5-date-picker id="sales-order-created-on" readonly disabled></ui5-date-picker>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="delivered-quantity">Delivered Quantity:</ui5-label>
+                        <ui5-input id="delivered-quantity" type="Number" readonly></ui5-input>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Footer -->
+        <div class="floating-footer">
+            <ui5-button design="Emphasized" onclick="saveOrder()">Raise Request</ui5-button>
+            <ui5-button design="Transparent" onclick="discardOrder()">Discard</ui5-button>
+        </div>
+    </div>
+
+    <script>
+        function saveOrder() {
+            // Validate required fields
+            const requiredFields = [
+                'material-description',
+                'packaging-account',
+                'business-partner',
+                'location-partner',
+                'requested-quantity',
+                'expected-delivery-date',
+                'sales-organisation',
+                'distribution-channel',
+                'division'
+            ];
+
+            for (const fieldId of requiredFields) {
+                const field = document.getElementById(fieldId);
+                if (!field.value) {
+                    alert('Please fill all required fields');
+                    field.focus();
+                    return;
+                }
+            }
+
+            alert('Material order created successfully!');
+            window.location.href = 'list-report.html';
+        }
+
+        function discardOrder() {
+            if (confirm('Are you sure you want to discard this order?')) {
+                window.location.href = 'list-report.html';
+            }
+        }
+    </script>
+</body>
+</html>

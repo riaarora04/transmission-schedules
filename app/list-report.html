@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Empty Returnable Materials - List Report</title>
+
+    <!-- SAP UI5 Theme -->
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <!-- SAP UI5 Web Components -->
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/Link.js";
+        import "@ui5/webcomponents/dist/Avatar.js";
+        import "@ui5/webcomponents/dist/Badge.js";
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor, #f5f6f7);
+            color: var(--sapTextColor, #1d2d3e);
+        }
+
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapPositiveTextColor: #256f3a;
+            --sapNegativeTextColor: #aa0808;
+            --sapCriticalTextColor: #b44f00;
+            --sapNeutralTextColor: #1d2d3e;
+            --sapObjectHeader_Background: white;
+            --sapGroup_TitleBackground: white;
+            --sapGroup_TitleBorderColor: #a8b3bd;
+            --sapContent_HeaderShadow: 0px 2px 2px rgba(85, 107, 130, 0.05);
+            --sapField_BorderColor: #e5e5e5;
+            --sapList_Background: white;
+            --sapList_BorderColor: #e5e5e5;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        ui5-shellbar {
+            --_ui5_shellbar_height: 2.75rem;
+        }
+
+        .filter-bar {
+            background: white;
+            padding: 1rem 3rem;
+            box-shadow: var(--sapContent_HeaderShadow);
+            border-bottom: 1px solid var(--sapObjectHeader_BorderColor, #d9d9d9);
+        }
+
+        .filter-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filter-variant-title {
+            font-family: '72-Black', sans-serif;
+            font-size: 1.5rem;
+            color: var(--sapTextColor);
+        }
+
+        .filter-fields {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 220px;
+        }
+
+        .filter-field ui5-label {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor, #556b82);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 2rem;
+            background: white;
+            padding: 0 3rem;
+            border-bottom: 1px solid var(--sapObjectHeader_BorderColor, #d9d9d9);
+            box-shadow: var(--sapContent_HeaderShadow);
+        }
+
+        .tab-item {
+            padding: 0.75rem 0.25rem;
+            font-family: '72-Bold', sans-serif;
+            font-size: 0.875rem;
+            color: var(--sapTextColor);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .tab-item.active {
+            color: var(--sapHighlightColor);
+            border-bottom-color: var(--sapHighlightColor);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 3rem;
+        }
+
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--sapGroup_TitleBackground);
+            border-bottom: 1px solid var(--sapGroup_TitleBorderColor);
+        }
+
+        .table-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1rem;
+            color: var(--sapTextColor);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        ui5-table {
+            width: 100%;
+        }
+
+        .status-requested {
+            color: var(--sapNeutralTextColor);
+        }
+
+        .status-error,
+        .status-rejected {
+            color: var(--sapNegativeTextColor);
+        }
+
+        .status-warning {
+            color: var(--sapCriticalTextColor);
+        }
+
+        .status-approved,
+        .status-delivered {
+            color: var(--sapPositiveTextColor);
+        }
+
+        .row-highlight {
+            border-left: 6px solid var(--sapHighlightColor);
+        }
+
+        @media (max-width: 1200px) {
+            .filter-bar,
+            .tab-container,
+            .content-area {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            primary-title="Order Empty Returnable Materials"
+            show-notifications
+            show-product-switch
+            show-co-pilot>
+            <img slot="logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Cpath fill='%230070F2' d='M0 0h60v30H0z'/%3E%3Cpath fill='white' d='M10 8h8v2h-8zm0 4h12v2H10zm0 4h10v2H10z'/%3E%3C/svg%3E"/>
+        </ui5-shellbar>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-bar-header">
+                <div>
+                    <span class="filter-variant-title">Standard</span>
+                    <ui5-button design="Transparent" icon="slim-arrow-down"></ui5-button>
+                </div>
+                <div>
+                    <ui5-button design="Transparent" icon="action-settings">Settings</ui5-button>
+                </div>
+            </div>
+
+            <div class="filter-fields">
+                <div class="filter-field">
+                    <ui5-label for="material">Material:</ui5-label>
+                    <ui5-input id="material" show-suggestions>
+                        <ui5-icon slot="icon" name="value-help"></ui5-icon>
+                    </ui5-input>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="plant">Plant:</ui5-label>
+                    <ui5-input id="plant" show-suggestions>
+                        <ui5-icon slot="icon" name="value-help"></ui5-icon>
+                    </ui5-input>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="partner">Exchange Partner:</ui5-label>
+                    <ui5-input id="partner" show-suggestions>
+                        <ui5-icon slot="icon" name="value-help"></ui5-icon>
+                    </ui5-input>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="delivery-date">Expected Delivery Date:</ui5-label>
+                    <ui5-date-range-picker id="delivery-date" value="Oct 23, 2024 - Nov 23, 2024"></ui5-date-range-picker>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="status">Order Status:</ui5-label>
+                    <ui5-select id="status">
+                        <ui5-option>All</ui5-option>
+                        <ui5-option>Requested</ui5-option>
+                        <ui5-option>Approved</ui5-option>
+                        <ui5-option>Delivered</ui5-option>
+                        <ui5-option>Rejected</ui5-option>
+                    </ui5-select>
+                </div>
+
+                <div class="filter-actions">
+                    <ui5-button design="Emphasized" onclick="applyFilters()">Go</ui5-button>
+                    <ui5-button design="Transparent">Adapt Filters (1)</ui5-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-container">
+            <a href="#" class="tab-item active" onclick="showTab('materials')">Material Orders</a>
+            <a href="#" class="tab-item" onclick="showTab('packaging')">Packaging Standard Orders</a>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Material Orders Table -->
+            <div id="materials-table" class="table-wrapper">
+                <div class="table-toolbar">
+                    <div class="table-title">Material Orders (15)</div>
+                    <div class="table-actions">
+                        <ui5-input placeholder="Search" style="width: 220px;">
+                            <ui5-icon slot="icon" name="search"></ui5-icon>
+                        </ui5-input>
+                        <ui5-button design="Default" onclick="location.href='create-material-order.html'">Create</ui5-button>
+                        <ui5-button design="Transparent" icon="excel-attachment">Export</ui5-button>
+                        <ui5-button design="Transparent" icon="action-settings">Settings</ui5-button>
+                    </div>
+                </div>
+
+                <ui5-table id="materialsTable" sticky-column-header>
+                    <ui5-table-column slot="columns" min-width="120">
+                        <span style="font-weight: bold;">Order Number</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="200">
+                        <span style="font-weight: bold;">Material Description</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="150">
+                        <span style="font-weight: bold;">Business Partner</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="120">
+                        <span style="font-weight: bold;">Plant</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="100">
+                        <span style="font-weight: bold;">Quantity</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="140">
+                        <span style="font-weight: bold;">Delivery Date</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="120">
+                        <span style="font-weight: bold;">Status</span>
+                    </ui5-table-column>
+
+                    <!-- Sample Data Rows -->
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link onclick="location.href='material-order-view.html'">MO-001</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Pallet XL Blue</ui5-table-cell>
+                        <ui5-table-cell>Rolf Motors</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell>150</ui5-table-cell>
+                        <ui5-table-cell>Dec 15, 2024</ui5-table-cell>
+                        <ui5-table-cell><span class="status-approved">✓ Approved</span></ui5-table-cell>
+                    </ui5-table-row>
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link onclick="location.href='material-order-view.html'">MO-002</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Container L Red</ui5-table-cell>
+                        <ui5-table-cell>FastTech GmbH</ui5-table-cell>
+                        <ui5-table-cell>Plant Berlin</ui5-table-cell>
+                        <ui5-table-cell>200</ui5-table-cell>
+                        <ui5-table-cell>Dec 20, 2024</ui5-table-cell>
+                        <ui5-table-cell><span class="status-requested">Requested</span></ui5-table-cell>
+                    </ui5-table-row>
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link onclick="location.href='material-order-view.html'">MO-003</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Box M Green</ui5-table-cell>
+                        <ui5-table-cell>Auto Solutions</ui5-table-cell>
+                        <ui5-table-cell>Plant Munich</ui5-table-cell>
+                        <ui5-table-cell>300</ui5-table-cell>
+                        <ui5-table-cell>Jan 05, 2025</ui5-table-cell>
+                        <ui5-table-cell><span class="status-delivered">✓ Delivered</span></ui5-table-cell>
+                    </ui5-table-row>
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link onclick="location.href='material-order-view.html'">MO-004</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Pallet S Blue</ui5-table-cell>
+                        <ui5-table-cell>Manufacturing Inc</ui5-table-cell>
+                        <ui5-table-cell>Plant Hamburg</ui5-table-cell>
+                        <ui5-table-cell>100</ui5-table-cell>
+                        <ui5-table-cell>Jan 10, 2025</ui5-table-cell>
+                        <ui5-table-cell><span class="status-warning">⚠ Pending</span></ui5-table-cell>
+                    </ui5-table-row>
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link onclick="location.href='material-order-view.html'">MO-005</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Container XL Yellow</ui5-table-cell>
+                        <ui5-table-cell>Logistics Pro</ui5-table-cell>
+                        <ui5-table-cell>Plant Dresden</ui5-table-cell>
+                        <ui5-table-cell>75</ui5-table-cell>
+                        <ui5-table-cell>Jan 15, 2025</ui5-table-cell>
+                        <ui5-table-cell><span class="status-error">✗ Rejected</span></ui5-table-cell>
+                    </ui5-table-row>
+                </ui5-table>
+            </div>
+
+            <!-- Packaging Standards Table (Hidden initially) -->
+            <div id="packaging-table" class="table-wrapper" style="display: none;">
+                <div class="table-toolbar">
+                    <div class="table-title">Packaging Standard Orders (8)</div>
+                    <div class="table-actions">
+                        <ui5-input placeholder="Search" style="width: 220px;">
+                            <ui5-icon slot="icon" name="search"></ui5-icon>
+                        </ui5-input>
+                        <ui5-button design="Default" onclick="location.href='create-packaging-order.html'">Create</ui5-button>
+                        <ui5-button design="Transparent" icon="excel-attachment">Export</ui5-button>
+                        <ui5-button design="Transparent" icon="action-settings">Settings</ui5-button>
+                    </div>
+                </div>
+
+                <ui5-table sticky-column-header>
+                    <ui5-table-column slot="columns" min-width="120">
+                        <span style="font-weight: bold;">Order Number</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="150">
+                        <span style="font-weight: bold;">Business Partner</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="150">
+                        <span style="font-weight: bold;">Location Partner</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="120">
+                        <span style="font-weight: bold;">Material</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="100">
+                        <span style="font-weight: bold;">Items Count</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" min-width="120">
+                        <span style="font-weight: bold;">Status</span>
+                    </ui5-table-column>
+
+                    <!-- Sample Data Rows -->
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link onclick="location.href='packaging-order-view.html'">PS-001</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Rolf Motors</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell>MAT-001</ui5-table-cell>
+                        <ui5-table-cell>7</ui5-table-cell>
+                        <ui5-table-cell><span class="status-approved">✓ Draft</span></ui5-table-cell>
+                    </ui5-table-row>
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link onclick="location.href='packaging-order-view.html'">PS-002</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>FastTech GmbH</ui5-table-cell>
+                        <ui5-table-cell>Plant Berlin</ui5-table-cell>
+                        <ui5-table-cell>MAT-002</ui5-table-cell>
+                        <ui5-table-cell>5</ui5-table-cell>
+                        <ui5-table-cell><span class="status-requested">Requested</span></ui5-table-cell>
+                    </ui5-table-row>
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link onclick="location.href='packaging-order-view.html'">PS-003</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Auto Solutions</ui5-table-cell>
+                        <ui5-table-cell>Plant Munich</ui5-table-cell>
+                        <ui5-table-cell>MAT-003</ui5-table-cell>
+                        <ui5-table-cell>6</ui5-table-cell>
+                        <ui5-table-cell><span class="status-approved">✓ Approved</span></ui5-table-cell>
+                    </ui5-table-row>
+                </ui5-table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-item');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const materialsTable = document.getElementById('materials-table');
+            const packagingTable = document.getElementById('packaging-table');
+
+            if (tabName === 'materials') {
+                materialsTable.style.display = 'block';
+                packagingTable.style.display = 'none';
+            } else {
+                materialsTable.style.display = 'none';
+                packagingTable.style.display = 'block';
+            }
+        }
+
+        // Filter functionality
+        function applyFilters() {
+            // Implement filter logic here
+            console.log('Filters applied');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Application initialized');
+        });
+    </script>
+</body>
+</html>

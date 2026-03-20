@@ -1,0 +1,5 @@
+code,name,descr
+LOW,Low,Low priority
+MEDIUM,Medium,Medium priority
+HIGH,High,High priority
+CRITICAL,Critical,Critical priority

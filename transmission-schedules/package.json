@@ -1,0 +1,38 @@
+{
+  "name": "transmission-schedules",
+  "version": "1.0.0",
+  "description": "Manage Transmission Job Schedules - SAP Fiori CAP Application",
+  "main": "index.js",
+  "scripts": {
+    "start": "cds run",
+    "watch": "cds watch",
+    "build": "cds build/all",
+    "deploy": "cds deploy"
+  },
+  "keywords": [
+    "SAP",
+    "Fiori",
+    "CAP",
+    "SAPUI5"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sap/cds": "^7.5.0",
+    "express": "^4.18.2",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "@sap/cds-dk": "^7.5.0"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "credentials": {
+          "database": "db.sqlite"
+        }
+      }
+    }
+  }
+}

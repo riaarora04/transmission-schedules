@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packaging Order Details</title>
+
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.uxap,sap.ui.layout"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Get order ID from URL
+            var urlParams = new URLSearchParams(window.location.search);
+            var sOrderId = urlParams.get('id') || 'PO-001';
+
+            // Mock order data
+            var oOrderData = {
+                'PO-001': {
+                    orderId: 'PO-001',
+                    material: 'MAT-100234',
+                    materialDesc: 'Returnable Container A',
+                    packagingStd: 'STD-001',
+                    plant: 'Plant 1000',
+                    storage: 'SL-01',
+                    requiredDate: '2026-03-15',
+                    deliveryDate: '2026-03-20',
+                    status: 'Approved',
+                    quantity: 100,
+                    businessPartner: 'BP-1000',
+                    businessPartnerName: 'SAP SE',
+                    street: 'Dietmar-Hopp-Allee 16',
+                    city: 'Walldorf',
+                    postal: '69190',
+                    country: 'Germany',
+                    items: [
+                        { position: 10, material: 'MAT-100234', materialDesc: 'Returnable Container A', quantity: 100, unit: 'PC', packagingType: 'STD-001', status: 'Approved' }
+                    ],
+                    history: [
+                        { datetime: '2026-03-13T14:23:00', action: 'Approved', description: 'Order approved by manager', user: 'Jane Smith' },
+                        { datetime: '2026-03-13T10:15:00', action: 'Created', description: 'Order created', user: 'John Doe' }
+                    ]
+                }
+            };
+
+            var oOrder = oOrderData[sOrderId] || oOrderData['PO-001'];
+
+            // Create JSON Model
+            var oModel = new sap.ui.model.json.JSONModel(oOrder);
+            sap.ui.getCore().setModel(oModel);
+
+            // Create App
+            var oApp = new sap.m.App();
+
+            // Shell Bar
+            var oShellBar = new sap.f.ShellBar({
+                title: "Packaging Orders",
+                showNotifications: true,
+                showProductSwitcher: true,
+                showCopilot: true,
+                homeIcon: "sap-icon://nav-back",
+                homeIconPressed: function() {
+                    window.location.href = "packaging-orders-ui5.html";
+                },
+                profile: new sap.m.Avatar({
+                    initials: "JD"
+                })
+            });
+
+            // Object Page Header
+            var oObjectPageLayout = new sap.uxap.ObjectPageLayout({
+                showTitleInHeaderContent: true,
+                headerTitle: new sap.uxap.ObjectPageDynamicHeaderTitle({
+                    expandedHeading: new sap.m.Title({
+                        text: "{/orderId}"
+                    }),
+                    snappedHeading: new sap.m.Title({
+                        text: "{/orderId}"
+                    }),
+                    expandedContent: [
+                        new sap.m.Text({
+                            text: "{/material} - {/materialDesc}"
+                        })
+                    ],
+                    snappedContent: [
+                        new sap.m.Text({
+                            text: "{/material} - {/materialDesc}"
+                        })
+                    ],
+                    actions: [
+                        new sap.m.Button({
+                            text: "Edit",
+                            type: "Emphasized"
+                        }),
+                        new sap.m.Button({
+                            text: "Approve",
+                            type: "Default",
+                            press: function() {
+                                sap.m.MessageToast.show("Order approved successfully!");
+                                oModel.setProperty("/status", "Approved");
+                            }
+                        }),
+                        new sap.m.Button({
+                            icon: "sap-icon://overflow",
+                            type: "Transparent"
+                        })
+                    ]
+                }),
+                headerContent: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Status" }),
+                            new sap.m.ObjectStatus({
+                                text: "{/status}",
+                                state: {
+                                    path: "/status",
+                                    formatter: function(sStatus) {
+                                        switch(sStatus) {
+                                            case "Approved": return "Success";
+                                            case "Rejected": return "Error";
+                                            case "Error": return "Error";
+                                            case "Requested": return "None";
+                                            default: return "None";
+                                        }
+                                    }
+                                }
+                            })
+                        ]
+                    }),
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Plant" }),
+                            new sap.m.Text({ text: "{/plant}" })
+                        ]
+                    }),
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Storage Location" }),
+                            new sap.m.Text({ text: "{/storage}" })
+                        ]
+                    }),
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Required Date" }),
+                            new sap.m.Text({
+                                text: {
+                                    path: "/requiredDate",
+                                    formatter: function(sDate) {
+                                        if (!sDate) return "";
+                                        return new Date(sDate).toLocaleDateString("de-DE");
+                                    }
+                                }
+                            })
+                        ]
+                    }),
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Delivery Date" }),
+                            new sap.m.Text({
+                                text: {
+                                    path: "/deliveryDate",
+                                    formatter: function(sDate) {
+                                        if (!sDate) return "";
+                                        return new Date(sDate).toLocaleDateString("de-DE");
+                                    }
+                                }
+                            })
+                        ]
+                    }),
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Packaging Standard" }),
+                            new sap.m.Text({ text: "{/packagingStd}" })
+                        ]
+                    }),
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Business Partner" }),
+                            new sap.m.Text({ text: "{/businessPartner}" })
+                        ]
+                    }),
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Created By" }),
+                            new sap.m.Text({ text: "John Doe" })
+                        ]
+                    })
+                ],
+                sections: [
+                    // Material Order Details Section
+                    new sap.uxap.ObjectPageSection({
+                        title: "Material Order Details",
+                        subSections: [
+                            new sap.uxap.ObjectPageSubSection({
+                                title: "General Information",
+                                blocks: [
+                                    new sap.ui.layout.form.SimpleForm({
+                                        layout: "ResponsiveGridLayout",
+                                        editable: false,
+                                        content: [
+                                            new sap.m.Label({ text: "Material" }),
+                                            new sap.m.Text({ text: "{/material}" }),
+
+                                            new sap.m.Label({ text: "Material Description" }),
+                                            new sap.m.Text({ text: "{/materialDesc}" }),
+
+                                            new sap.m.Label({ text: "Packaging Standard" }),
+                                            new sap.m.Text({ text: "{/packagingStd}" }),
+
+                                            new sap.m.Label({ text: "Quantity" }),
+                                            new sap.m.Text({ text: "{/quantity}" }),
+
+                                            new sap.m.Label({ text: "Plant" }),
+                                            new sap.m.Text({ text: "{/plant}" }),
+
+                                            new sap.m.Label({ text: "Storage Location" }),
+                                            new sap.m.Text({ text: "{/storage}" }),
+
+                                            new sap.m.Label({ text: "Required Date" }),
+                                            new sap.m.Text({
+                                                text: {
+                                                    path: "/requiredDate",
+                                                    formatter: function(sDate) {
+                                                        if (!sDate) return "";
+                                                        return new Date(sDate).toLocaleDateString("de-DE");
+                                                    }
+                                                }
+                                            }),
+
+                                            new sap.m.Label({ text: "Delivery Date" }),
+                                            new sap.m.Text({
+                                                text: {
+                                                    path: "/deliveryDate",
+                                                    formatter: function(sDate) {
+                                                        if (!sDate) return "";
+                                                        return new Date(sDate).toLocaleDateString("de-DE");
+                                                    }
+                                                }
+                                            })
+                                        ]
+                                    })
+                                ]
+                            }),
+                            new sap.uxap.ObjectPageSubSection({
+                                title: "Business Partner Information",
+                                blocks: [
+                                    new sap.ui.layout.form.SimpleForm({
+                                        layout: "ResponsiveGridLayout",
+                                        editable: false,
+                                        content: [
+                                            new sap.m.Label({ text: "Business Partner ID" }),
+                                            new sap.m.Text({ text: "{/businessPartner}" }),
+
+                                            new sap.m.Label({ text: "Business Partner Name" }),
+                                            new sap.m.Text({ text: "{/businessPartnerName}" }),
+
+                                            new sap.m.Label({ text: "Street" }),
+                                            new sap.m.Text({ text: "{/street}" }),
+
+                                            new sap.m.Label({ text: "City" }),
+                                            new sap.m.Text({ text: "{/city}" }),
+
+                                            new sap.m.Label({ text: "Postal Code" }),
+                                            new sap.m.Text({ text: "{/postal}" }),
+
+                                            new sap.m.Label({ text: "Country" }),
+                                            new sap.m.Text({ text: "{/country}" })
+                                        ]
+                                    })
+                                ]
+                            })
+                        ]
+                    }),
+
+                    // Planning Overview Section
+                    new sap.uxap.ObjectPageSection({
+                        title: "Planning Overview",
+                        subSections: [
+                            new sap.uxap.ObjectPageSubSection({
+                                title: "Order Items",
+                                blocks: [
+                                    new sap.m.Table({
+                                        columns: [
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Position" }) }),
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Material" }) }),
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Quantity" }) }),
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Unit" }) }),
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Packaging Type" }) }),
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Status" }) })
+                                        ],
+                                        items: {
+                                            path: "/items",
+                                            template: new sap.m.ColumnListItem({
+                                                cells: [
+                                                    new sap.m.Text({ text: "{position}" }),
+                                                    new sap.m.Text({ text: "{material} - {materialDesc}" }),
+                                                    new sap.m.Text({ text: "{quantity}" }),
+                                                    new sap.m.Text({ text: "{unit}" }),
+                                                    new sap.m.Text({ text: "{packagingType}" }),
+                                                    new sap.m.ObjectStatus({
+                                                        text: "{status}",
+                                                        state: {
+                                                            path: "status",
+                                                            formatter: function(sStatus) {
+                                                                return sStatus === "Approved" ? "Success" : "None";
+                                                            }
+                                                        }
+                                                    })
+                                                ]
+                                            })
+                                        }
+                                    })
+                                ]
+                            })
+                        ]
+                    }),
+
+                    // History Section
+                    new sap.uxap.ObjectPageSection({
+                        title: "History",
+                        subSections: [
+                            new sap.uxap.ObjectPageSubSection({
+                                title: "Order History",
+                                blocks: [
+                                    new sap.m.Table({
+                                        columns: [
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Date/Time" }) }),
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Action" }) }),
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "Description" }) }),
+                                            new sap.m.Column({ header: new sap.m.Text({ text: "User" }) })
+                                        ],
+                                        items: {
+                                            path: "/history",
+                                            template: new sap.m.ColumnListItem({
+                                                cells: [
+                                                    new sap.m.Text({
+                                                        text: {
+                                                            path: "datetime",
+                                                            formatter: function(sDatetime) {
+                                                                if (!sDatetime) return "";
+                                                                var oDate = new Date(sDatetime);
+                                                                return oDate.toLocaleString("de-DE");
+                                                            }
+                                                        }
+                                                    }),
+                                                    new sap.m.Text({ text: "{action}" }),
+                                                    new sap.m.Text({ text: "{description}" }),
+                                                    new sap.m.Text({ text: "{user}" })
+                                                ]
+                                            })
+                                        }
+                                    })
+                                ]
+                            })
+                        ]
+                    }),
+
+                    // Attachments Section
+                    new sap.uxap.ObjectPageSection({
+                        title: "Attachments",
+                        subSections: [
+                            new sap.uxap.ObjectPageSubSection({
+                                blocks: [
+                                    new sap.m.Text({
+                                        text: "No attachments available"
+                                    }).addStyleClass("sapUiSmallMargin")
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            });
+
+            // Create Page Container
+            var oPage = new sap.m.Page({
+                customHeader: oShellBar,
+                content: [oObjectPageLayout],
+                enableScrolling: false
+            });
+
+            oApp.addPage(oPage);
+            oApp.placeAt("content");
+        });
+    </script>
+
+    <style>
+        html, body, #content {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+</body>
+</html>

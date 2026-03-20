@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Packaging Standard Order</title>
+
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.uxap,sap.ui.layout"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Create JSON Model with form data
+            var oModel = new sap.ui.model.json.JSONModel({
+                orderId: 'PO-' + Math.floor(Math.random() * 900000 + 100000),
+                orderDate: new Date(),
+                businessPartner: "",
+                plant: "",
+                storageLocation: "",
+                requiredDate: null,
+                street: "",
+                city: "",
+                postalCode: "",
+                country: "",
+                notes: "",
+                material: "",
+                materialDesc: "",
+                packagingStd: "",
+                quantity: 1,
+                standards: [
+                    { id: 'STD-001', description: 'Euro Container', type: 'Returnable', dimensions: '600x400x420 mm', weight: '5.2 kg' },
+                    { id: 'STD-002', description: 'Standard Pallet', type: 'Pallet', dimensions: '1200x800x144 mm', weight: '25.0 kg' },
+                    { id: 'STD-003', description: 'Industrial Box', type: 'Container', dimensions: '800x600x500 mm', weight: '8.5 kg' }
+                ]
+            });
+            sap.ui.getCore().setModel(oModel);
+
+            // Create App
+            var oApp = new sap.m.App();
+
+            // Shell Bar
+            var oShellBar = new sap.f.ShellBar({
+                title: "Packaging Orders",
+                showNotifications: true,
+                showProductSwitcher: true,
+                showCopilot: true,
+                homeIcon: "sap-icon://nav-back",
+                homeIconPressed: function() {
+                    window.location.href = "packaging-orders-ui5.html";
+                },
+                profile: new sap.m.Avatar({
+                    initials: "JD"
+                })
+            });
+
+            // Business Partner Form
+            var oBusinessPartnerForm = new sap.ui.layout.form.SimpleForm({
+                editable: true,
+                layout: "ResponsiveGridLayout",
+                labelSpanXL: 4,
+                labelSpanL: 4,
+                labelSpanM: 4,
+                labelSpanS: 12,
+                emptySpanXL: 0,
+                emptySpanL: 0,
+                emptySpanM: 0,
+                emptySpanS: 0,
+                columnsXL: 2,
+                columnsL: 2,
+                columnsM: 1,
+                content: [
+                    new sap.ui.core.Title({ text: "General Information" }),
+                    new sap.m.Label({ text: "Order ID", required: true }),
+                    new sap.m.Input({ value: "{/orderId}", enabled: false }),
+
+                    new sap.m.Label({ text: "Order Date", required: true }),
+                    new sap.m.DatePicker({
+                        value: {
+                            path: "/orderDate",
+                            type: new sap.ui.model.type.Date({
+                                pattern: "dd.MM.yyyy",
+                                source: { pattern: "timestamp" }
+                            })
+                        },
+                        displayFormat: "dd.MM.yyyy"
+                    }),
+
+                    new sap.m.Label({ text: "Business Partner", required: true }),
+                    new sap.m.Select({
+                        selectedKey: "{/businessPartner}",
+                        items: [
+                            new sap.ui.core.Item({ key: "", text: "Select Partner" }),
+                            new sap.ui.core.Item({ key: "BP-1000", text: "BP-1000 - SAP SE" }),
+                            new sap.ui.core.Item({ key: "BP-2000", text: "BP-2000 - Acme Corp" }),
+                            new sap.ui.core.Item({ key: "BP-3000", text: "BP-3000 - Global Industries" })
+                        ]
+                    }),
+
+                    new sap.m.Label({ text: "Plant", required: true }),
+                    new sap.m.Select({
+                        selectedKey: "{/plant}",
+                        items: [
+                            new sap.ui.core.Item({ key: "", text: "Select Plant" }),
+                            new sap.ui.core.Item({ key: "Plant 1000", text: "Plant 1000" }),
+                            new sap.ui.core.Item({ key: "Plant 2000", text: "Plant 2000" }),
+                            new sap.ui.core.Item({ key: "Plant 3000", text: "Plant 3000" })
+                        ]
+                    }),
+
+                    new sap.m.Label({ text: "Storage Location", required: true }),
+                    new sap.m.Input({
+                        value: "{/storageLocation}",
+                        placeholder: "Enter storage location"
+                    }),
+
+                    new sap.m.Label({ text: "Required Date", required: true }),
+                    new sap.m.DatePicker({
+                        value: "{/requiredDate}",
+                        displayFormat: "dd.MM.yyyy"
+                    }),
+
+                    new sap.ui.core.Title({ text: "Address Information" }),
+                    new sap.m.Label({ text: "Street" }),
+                    new sap.m.Input({
+                        value: "{/street}",
+                        placeholder: "Enter street address",
+                        width: "100%"
+                    }),
+
+                    new sap.m.Label({ text: "City" }),
+                    new sap.m.Input({
+                        value: "{/city}",
+                        placeholder: "Enter city"
+                    }),
+
+                    new sap.m.Label({ text: "Postal Code" }),
+                    new sap.m.Input({
+                        value: "{/postalCode}",
+                        placeholder: "Enter postal code"
+                    }),
+
+                    new sap.m.Label({ text: "Country" }),
+                    new sap.m.Select({
+                        selectedKey: "{/country}",
+                        items: [
+                            new sap.ui.core.Item({ key: "", text: "Select Country" }),
+                            new sap.ui.core.Item({ key: "Germany", text: "Germany" }),
+                            new sap.ui.core.Item({ key: "United States", text: "United States" }),
+                            new sap.ui.core.Item({ key: "United Kingdom", text: "United Kingdom" }),
+                            new sap.ui.core.Item({ key: "France", text: "France" })
+                        ]
+                    }),
+
+                    new sap.ui.core.Title({ text: "Additional Information" }),
+                    new sap.m.Label({ text: "Notes" }),
+                    new sap.m.TextArea({
+                        value: "{/notes}",
+                        rows: 4,
+                        placeholder: "Enter additional notes",
+                        width: "100%"
+                    })
+                ]
+            });
+
+            // Packaging Standard Form
+            var oPackagingStandardForm = new sap.ui.layout.form.SimpleForm({
+                editable: true,
+                layout: "ResponsiveGridLayout",
+                labelSpanXL: 4,
+                labelSpanL: 4,
+                labelSpanM: 4,
+                labelSpanS: 12,
+                emptySpanXL: 0,
+                emptySpanL: 0,
+                emptySpanM: 0,
+                emptySpanS: 0,
+                columnsXL: 2,
+                columnsL: 2,
+                columnsM: 1,
+                content: [
+                    new sap.ui.core.Title({ text: "Material Information" }),
+                    new sap.m.Label({ text: "Material", required: true }),
+                    new sap.m.Input({
+                        value: "{/material}",
+                        placeholder: "Enter material number",
+                        showSuggestion: true,
+                        change: function(oEvent) {
+                            var sMaterial = oEvent.getParameter("value");
+                            var oModel = sap.ui.getCore().getModel();
+
+                            // Simulate material description lookup
+                            var mMaterialDescriptions = {
+                                'MAT-100234': 'Returnable Container A',
+                                'MAT-100567': 'Pallet Type B',
+                                'MAT-100891': 'Container Box C'
+                            };
+
+                            var sDesc = mMaterialDescriptions[sMaterial] || '';
+                            oModel.setProperty("/materialDesc", sDesc);
+                        }
+                    }),
+
+                    new sap.m.Label({ text: "Material Description" }),
+                    new sap.m.Input({
+                        value: "{/materialDesc}",
+                        placeholder: "Auto-filled",
+                        enabled: false
+                    }),
+
+                    new sap.m.Label({ text: "Packaging Standard", required: true }),
+                    new sap.m.Select({
+                        selectedKey: "{/packagingStd}",
+                        items: [
+                            new sap.ui.core.Item({ key: "", text: "Select Standard" }),
+                            new sap.ui.core.Item({ key: "STD-001", text: "STD-001 - Euro Container" }),
+                            new sap.ui.core.Item({ key: "STD-002", text: "STD-002 - Standard Pallet" }),
+                            new sap.ui.core.Item({ key: "STD-003", text: "STD-003 - Industrial Box" }),
+                            new sap.ui.core.Item({ key: "STD-004", text: "STD-004 - Transport Crate" })
+                        ]
+                    }),
+
+                    new sap.m.Label({ text: "Quantity", required: true }),
+                    new sap.m.Input({
+                        value: "{/quantity}",
+                        type: "Number"
+                    })
+                ]
+            });
+
+            // Standards Table
+            var oStandardsTable = new sap.m.Table({
+                mode: "MultiSelect",
+                headerToolbar: new sap.m.Toolbar({
+                    content: [
+                        new sap.m.Title({ text: "Packaging Standards (3)" }),
+                        new sap.m.ToolbarSpacer(),
+                        new sap.m.Button({
+                            text: "Add Standard",
+                            type: "Default"
+                        })
+                    ]
+                }),
+                columns: [
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Standard ID" }) }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Description" }) }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Type" }) }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Dimensions" }) }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Weight" }) }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Actions" }), width: "5rem" })
+                ],
+                items: {
+                    path: "/standards",
+                    template: new sap.m.ColumnListItem({
+                        cells: [
+                            new sap.m.Text({ text: "{id}" }),
+                            new sap.m.Text({ text: "{description}" }),
+                            new sap.m.Text({ text: "{type}" }),
+                            new sap.m.Text({ text: "{dimensions}" }),
+                            new sap.m.Text({ text: "{weight}" }),
+                            new sap.m.Button({
+                                icon: "sap-icon://decline",
+                                type: "Transparent"
+                            })
+                        ]
+                    })
+                }
+            });
+
+            var oPackagingStandardContent = new sap.m.VBox({
+                items: [
+                    oPackagingStandardForm,
+                    oStandardsTable
+                ]
+            });
+
+            // Icon Tab Bar
+            var oIconTabBar = new sap.m.IconTabBar({
+                items: [
+                    new sap.m.IconTabFilter({
+                        text: "Business Partner",
+                        key: "businessPartner",
+                        content: [oBusinessPartnerForm]
+                    }),
+                    new sap.m.IconTabFilter({
+                        text: "Packaging Standard",
+                        key: "packagingStandard",
+                        content: [oPackagingStandardContent]
+                    })
+                ]
+            });
+
+            // Dynamic Page
+            var oPage = new sap.f.DynamicPage({
+                headerTitle: new sap.f.DynamicPageTitle({
+                    heading: new sap.m.Title({ text: "Create Packaging Standard Order" }),
+                    actions: [
+                        new sap.m.Button({
+                            text: "Save",
+                            type: "Emphasized",
+                            press: function() {
+                                var oModel = sap.ui.getCore().getModel();
+                                var oData = oModel.getData();
+
+                                // Validate required fields
+                                if (!oData.businessPartner || !oData.plant || !oData.storageLocation ||
+                                    !oData.requiredDate || !oData.material || !oData.packagingStd) {
+                                    sap.m.MessageBox.error("Please fill all required fields");
+                                    return;
+                                }
+
+                                sap.m.MessageBox.success(
+                                    "Order created successfully!\nOrder ID: " + oData.orderId,
+                                    {
+                                        onClose: function() {
+                                            window.location.href = "packaging-orders-ui5.html";
+                                        }
+                                    }
+                                );
+                            }
+                        }),
+                        new sap.m.Button({
+                            text: "Cancel",
+                            type: "Default",
+                            press: function() {
+                                sap.m.MessageBox.confirm(
+                                    "Are you sure you want to cancel? All changes will be lost.",
+                                    {
+                                        onClose: function(oAction) {
+                                            if (oAction === sap.m.MessageBox.Action.OK) {
+                                                window.location.href = "packaging-orders-ui5.html";
+                                            }
+                                        }
+                                    }
+                                );
+                            }
+                        })
+                    ]
+                }),
+                content: [
+                    new sap.m.VBox({
+                        items: [oIconTabBar]
+                    })
+                ]
+            });
+
+            // Create Page Container
+            var oPageContainer = new sap.m.Page({
+                customHeader: oShellBar,
+                content: [oPage],
+                enableScrolling: false
+            });
+
+            oApp.addPage(oPageContainer);
+            oApp.placeAt("content");
+        });
+    </script>
+
+    <style>
+        html, body, #content {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+</body>
+</html>

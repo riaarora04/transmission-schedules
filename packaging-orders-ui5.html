@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packaging Orders - List Report</title>
+
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table,sap.ui.layout"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Create App
+            var oApp = new sap.m.App({
+                id: "app"
+            });
+
+            // Create Shell Bar
+            var oShellBar = new sap.f.ShellBar({
+                title: "Order Empty Returnable Materials - Partner Portal",
+                showNotifications: true,
+                showProductSwitcher: true,
+                showCopilot: true,
+                profile: new sap.m.Avatar({
+                    initials: "JD"
+                })
+            });
+
+            // Mock Data for Packaging Standard Orders
+            var aPackagingOrders = [
+                { orderId: 'PO-001', material: 'MAT-100234', materialDesc: 'Returnable Container A', packagingStd: 'STD-001', plant: 'Plant 1000', storage: 'SL-01', requiredDate: '2026-03-15', deliveryDate: '2026-03-20', status: 'Approved' },
+                { orderId: 'PO-002', material: 'MAT-100567', materialDesc: 'Pallet Type B', packagingStd: 'STD-002', plant: 'Plant 2000', storage: 'SL-02', requiredDate: '2026-03-16', deliveryDate: '2026-03-21', status: 'Requested' },
+                { orderId: 'PO-003', material: 'MAT-100891', materialDesc: 'Container Box C', packagingStd: 'STD-003', plant: 'Plant 1000', storage: 'SL-03', requiredDate: '2026-03-17', deliveryDate: '2026-03-22', status: 'Rejected' },
+                { orderId: 'PO-004', material: 'MAT-101234', materialDesc: 'Transport Crate D', packagingStd: 'STD-001', plant: 'Plant 3000', storage: 'SL-04', requiredDate: '2026-03-18', deliveryDate: '2026-03-23', status: 'Approved' },
+                { orderId: 'PO-005', material: 'MAT-101567', materialDesc: 'Euro Pallet E', packagingStd: 'STD-004', plant: 'Plant 2000', storage: 'SL-05', requiredDate: '2026-03-19', deliveryDate: '2026-03-24', status: 'Error' },
+                { orderId: 'PO-006', material: 'MAT-101891', materialDesc: 'Plastic Container F', packagingStd: 'STD-002', plant: 'Plant 1000', storage: 'SL-01', requiredDate: '2026-03-20', deliveryDate: '2026-03-25', status: 'Requested' },
+                { orderId: 'PO-007', material: 'MAT-102234', materialDesc: 'Metal Crate G', packagingStd: 'STD-003', plant: 'Plant 3000', storage: 'SL-02', requiredDate: '2026-03-21', deliveryDate: '2026-03-26', status: 'Approved' },
+                { orderId: 'PO-008', material: 'MAT-102567', materialDesc: 'Wooden Pallet H', packagingStd: 'STD-001', plant: 'Plant 2000', storage: 'SL-03', requiredDate: '2026-03-22', deliveryDate: '2026-03-27', status: 'Approved' }
+            ];
+
+            // Mock Data for Material Orders
+            var aMaterialOrders = [
+                { orderId: 'MO-001', material: 'MAT-200100', materialDesc: 'Steel Sheet 2mm', quantity: 500, unit: 'PC', plant: 'Plant 1000', storage: 'SL-10', deliveryDate: '2026-03-18', status: 'In Transit' },
+                { orderId: 'MO-002', material: 'MAT-200250', materialDesc: 'Aluminum Profile', quantity: 200, unit: 'M', plant: 'Plant 2000', storage: 'SL-11', deliveryDate: '2026-03-19', status: 'Delivered' },
+                { orderId: 'MO-003', material: 'MAT-200350', materialDesc: 'Plastic Granules', quantity: 1000, unit: 'KG', plant: 'Plant 1000', storage: 'SL-12', deliveryDate: '2026-03-20', status: 'Ordered' },
+                { orderId: 'MO-004', material: 'MAT-200450', materialDesc: 'Rubber Gasket', quantity: 350, unit: 'PC', plant: 'Plant 3000', storage: 'SL-13', deliveryDate: '2026-03-21', status: 'In Transit' },
+                { orderId: 'MO-005', material: 'MAT-200550', materialDesc: 'Copper Wire', quantity: 750, unit: 'M', plant: 'Plant 2000', storage: 'SL-14', deliveryDate: '2026-03-22', status: 'Delivered' }
+            ];
+
+            // Create JSON Model
+            var oModel = new sap.ui.model.json.JSONModel({
+                packagingOrders: aPackagingOrders,
+                materialOrders: aMaterialOrders,
+                filters: {
+                    material: "",
+                    plant: "",
+                    exchangePartner: "",
+                    status: "",
+                    dateFrom: null,
+                    dateTo: null
+                }
+            });
+            sap.ui.getCore().setModel(oModel);
+
+            // Filter Bar - Based on Figma Design (Wrapped in Panel)
+            var oFilterBarPanel = new sap.m.Panel({
+                width: "100%",
+                backgroundDesign: "Solid",
+                class: "filterBarPanel",
+                content: [
+                    new sap.ui.layout.VerticalLayout({
+                        width: "100%",
+                        content: [
+                            // Title Area with Variant Management
+                            new sap.ui.layout.HorizontalLayout({
+                                width: "100%",
+                                class: "sapUiSmallMarginTop sapUiSmallMarginBegin sapUiSmallMarginEnd",
+                                content: [
+                                    new sap.ui.layout.HorizontalLayout({
+                                        content: [
+                                            new sap.m.Title({
+                                                text: "Standard",
+                                                level: "H2"
+                                            }),
+                                            new sap.m.Button({
+                                                icon: "sap-icon://slim-arrow-down",
+                                                type: "Transparent"
+                                            })
+                                        ]
+                                    }),
+                                    new sap.m.ToolbarSpacer(),
+                                    new sap.m.Button({
+                                        icon: "sap-icon://filter",
+                                        type: "Transparent"
+                                    })
+                                ]
+                            }),
+
+                            // Filter Fields Row
+                            new sap.ui.layout.HorizontalLayout({
+                                width: "100%",
+                                class: "sapUiSmallMarginTop sapUiSmallMarginBegin sapUiSmallMarginEnd",
+                                content: [
+                                    // Material
+                                    new sap.ui.layout.VerticalLayout({
+                                        width: "220px",
+                                        class: "sapUiTinyMarginEnd",
+                                        content: [
+                                            new sap.m.Label({
+                                                text: "Material:",
+                                                class: "sapUiTinyMarginBottom"
+                                            }),
+                                            new sap.m.Input({
+                                                id: "inputMaterial",
+                                                width: "100%",
+                                                value: "{/filters/material}",
+                                                showValueHelp: true,
+                                                valueHelpIconSrc: "sap-icon://value-help"
+                                            })
+                                        ]
+                                    }),
+
+                                    // Plant
+                                    new sap.ui.layout.VerticalLayout({
+                                        width: "220px",
+                                        class: "sapUiTinyMarginEnd",
+                                        content: [
+                                            new sap.m.Label({
+                                                text: "Plant:",
+                                                class: "sapUiTinyMarginBottom"
+                                            }),
+                                            new sap.m.Input({
+                                                id: "inputPlant",
+                                                width: "100%",
+                                                value: "{/filters/plant}",
+                                                showValueHelp: true,
+                                                valueHelpIconSrc: "sap-icon://value-help"
+                                            })
+                                        ]
+                                    }),
+
+                                    // Exchange Partner
+                                    new sap.ui.layout.VerticalLayout({
+                                        width: "220px",
+                                        class: "sapUiTinyMarginEnd",
+                                        content: [
+                                            new sap.m.Label({
+                                                text: "Exchange Partner:",
+                                                class: "sapUiTinyMarginBottom"
+                                            }),
+                                            new sap.m.Input({
+                                                id: "inputExchangePartner",
+                                                width: "100%",
+                                                value: "{/filters/exchangePartner}",
+                                                showValueHelp: true,
+                                                valueHelpIconSrc: "sap-icon://value-help"
+                                            })
+                                        ]
+                                    }),
+
+                                    // Expected Delivery Date
+                                    new sap.ui.layout.VerticalLayout({
+                                        width: "220px",
+                                        class: "sapUiTinyMarginEnd",
+                                        content: [
+                                            new sap.m.Label({
+                                                text: "Expected Delivery Date:",
+                                                class: "sapUiTinyMarginBottom"
+                                            }),
+                                            new sap.m.DateRangeSelection({
+                                                id: "dateRange",
+                                                width: "100%",
+                                                displayFormat: "MMM dd, yyyy",
+                                                delimiter: " - ",
+                                                value: "Oct 23, 2024 - Nov 23, 2024"
+                                            })
+                                        ]
+                                    }),
+
+                                    // Order Status
+                                    new sap.ui.layout.VerticalLayout({
+                                        width: "220px",
+                                        class: "sapUiTinyMarginEnd",
+                                        content: [
+                                            new sap.m.Label({
+                                                text: "Order Status:",
+                                                class: "sapUiTinyMarginBottom"
+                                            }),
+                                            new sap.m.ComboBox({
+                                                id: "comboStatus",
+                                                width: "100%",
+                                                selectedKey: "{/filters/status}",
+                                                items: [
+                                                    new sap.ui.core.Item({ key: "", text: "" }),
+                                                    new sap.ui.core.Item({ key: "Approved", text: "Approved" }),
+                                                    new sap.ui.core.Item({ key: "Requested", text: "Requested" }),
+                                                    new sap.ui.core.Item({ key: "Rejected", text: "Rejected" }),
+                                                    new sap.ui.core.Item({ key: "Error", text: "Error" })
+                                                ]
+                                            })
+                                        ]
+                                    }),
+
+                                    // Action Buttons
+                                    new sap.ui.layout.VerticalLayout({
+                                        class: "sapUiTinyMarginBegin",
+                                        content: [
+                                            new sap.m.Label({ text: " ", class: "sapUiTinyMarginBottom" }), // Spacer
+                                            new sap.ui.layout.HorizontalLayout({
+                                                content: [
+                                                    new sap.m.Button({
+                                                        text: "Go",
+                                                        type: "Emphasized",
+                                                        press: function() {
+                                                            sap.m.MessageToast.show("Filters applied");
+                                                        }
+                                                    }),
+                                                    new sap.m.Button({
+                                                        text: "Adapt Filters (1)",
+                                                        type: "Transparent",
+                                                        class: "sapUiTinyMarginBegin"
+                                                    })
+                                                ]
+                                            })
+                                        ]
+                                    })
+                                ]
+                            }),
+
+                            // Collapse/Expand Section
+                            new sap.ui.layout.HorizontalLayout({
+                                width: "100%",
+                                class: "sapUiSmallMarginTop sapUiSmallMarginBottom",
+                                content: [
+                                    new sap.m.ToolbarSpacer(),
+                                    new sap.m.Button({
+                                        icon: "sap-icon://slim-arrow-up",
+                                        type: "Transparent",
+                                        tooltip: "Collapse"
+                                    }),
+                                    new sap.m.Button({
+                                        icon: "sap-icon://pushpin-off",
+                                        type: "Transparent",
+                                        tooltip: "Pin",
+                                        class: "sapUiTinyMarginBegin"
+                                    }),
+                                    new sap.m.ToolbarSpacer()
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            });
+
+            // Packaging Standard Orders Table
+            var oPackagingTable = new sap.m.Table({
+                id: "packagingOrdersTable",
+                mode: "MultiSelect",
+                columns: [
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Order ID" }), width: "10%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Material" }), width: "20%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Packaging Standard" }), width: "12%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Plant" }), width: "12%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Storage Location" }), width: "12%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Required Date" }), width: "12%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Delivery Date" }), width: "12%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Status" }), width: "10%" })
+                ],
+                items: {
+                    path: "/packagingOrders",
+                    template: new sap.m.ColumnListItem({
+                        type: "Navigation",
+                        press: function(oEvent) {
+                            var oContext = oEvent.getSource().getBindingContext();
+                            var sOrderId = oContext.getProperty("orderId");
+                            window.location.href = "packaging-order-detail-ui5.html?id=" + sOrderId;
+                        },
+                        cells: [
+                            new sap.m.Link({
+                                text: "{orderId}",
+                                press: function(oEvent) {
+                                    oEvent.preventDefault();
+                                    var oContext = oEvent.getSource().getBindingContext();
+                                    var sOrderId = oContext.getProperty("orderId");
+                                    window.location.href = "packaging-order-detail-ui5.html?id=" + sOrderId;
+                                }
+                            }),
+                            new sap.m.Text({ text: "{material} - {materialDesc}" }),
+                            new sap.m.Text({ text: "{packagingStd}" }),
+                            new sap.m.Text({ text: "{plant}" }),
+                            new sap.m.Text({ text: "{storage}" }),
+                            new sap.m.Text({
+                                text: {
+                                    path: "requiredDate",
+                                    formatter: function(sDate) {
+                                        if (!sDate) return "";
+                                        return new Date(sDate).toLocaleDateString("de-DE");
+                                    }
+                                }
+                            }),
+                            new sap.m.Text({
+                                text: {
+                                    path: "deliveryDate",
+                                    formatter: function(sDate) {
+                                        if (!sDate) return "";
+                                        return new Date(sDate).toLocaleDateString("de-DE");
+                                    }
+                                }
+                            }),
+                            new sap.m.ObjectStatus({
+                                text: "{status}",
+                                state: {
+                                    path: "status",
+                                    formatter: function(sStatus) {
+                                        switch(sStatus) {
+                                            case "Approved": return "Success";
+                                            case "Rejected": return "Error";
+                                            case "Error": return "Error";
+                                            case "Requested": return "None";
+                                            default: return "None";
+                                        }
+                                    }
+                                }
+                            })
+                        ]
+                    })
+                }
+            });
+
+            // Material Orders Table
+            var oMaterialTable = new sap.m.Table({
+                id: "materialOrdersTable",
+                mode: "MultiSelect",
+                columns: [
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Order ID" }), width: "12%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Material" }), width: "25%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Quantity" }), width: "10%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Unit" }), width: "8%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Plant" }), width: "12%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Storage Location" }), width: "13%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Delivery Date" }), width: "12%" }),
+                    new sap.m.Column({ header: new sap.m.Text({ text: "Status" }), width: "8%" })
+                ],
+                items: {
+                    path: "/materialOrders",
+                    template: new sap.m.ColumnListItem({
+                        type: "Navigation",
+                        press: function(oEvent) {
+                            var oContext = oEvent.getSource().getBindingContext();
+                            var sOrderId = oContext.getProperty("orderId");
+                            sap.m.MessageToast.show("Navigate to Material Order: " + sOrderId);
+                        },
+                        cells: [
+                            new sap.m.Link({
+                                text: "{orderId}",
+                                press: function(oEvent) {
+                                    oEvent.preventDefault();
+                                    var oContext = oEvent.getSource().getBindingContext();
+                                    var sOrderId = oContext.getProperty("orderId");
+                                    sap.m.MessageToast.show("Navigate to Material Order: " + sOrderId);
+                                }
+                            }),
+                            new sap.m.Text({ text: "{material} - {materialDesc}" }),
+                            new sap.m.Text({ text: "{quantity}" }),
+                            new sap.m.Text({ text: "{unit}" }),
+                            new sap.m.Text({ text: "{plant}" }),
+                            new sap.m.Text({ text: "{storage}" }),
+                            new sap.m.Text({
+                                text: {
+                                    path: "deliveryDate",
+                                    formatter: function(sDate) {
+                                        if (!sDate) return "";
+                                        return new Date(sDate).toLocaleDateString("de-DE");
+                                    }
+                                }
+                            }),
+                            new sap.m.ObjectStatus({
+                                text: "{status}",
+                                state: {
+                                    path: "status",
+                                    formatter: function(sStatus) {
+                                        switch(sStatus) {
+                                            case "Delivered": return "Success";
+                                            case "In Transit": return "Warning";
+                                            case "Ordered": return "None";
+                                            default: return "None";
+                                        }
+                                    }
+                                }
+                            })
+                        ]
+                    })
+                }
+            });
+
+            // Icon Tab Bar for switching between order types
+            var oIconTabBar = new sap.m.IconTabBar({
+                class: "sapUiResponsiveContentPadding",
+                select: function(oEvent) {
+                    var sKey = oEvent.getParameter("key");
+                    sap.m.MessageToast.show("Switched to: " + (sKey === "packaging" ? "Packaging Standard Orders" : "Material Orders"));
+                },
+                items: [
+                    new sap.m.IconTabFilter({
+                        text: "Packaging Standard Order",
+                        key: "packaging",
+                        content: [
+                            new sap.m.VBox({
+                                items: [
+                                    new sap.m.Toolbar({
+                                        content: [
+                                            new sap.m.Title({
+                                                text: {
+                                                    path: "/packagingOrders",
+                                                    formatter: function(aOrders) {
+                                                        return "Packaging Standard Orders (" + (aOrders ? aOrders.length : 0) + ")";
+                                                    }
+                                                }
+                                            }),
+                                            new sap.m.ToolbarSpacer(),
+                                            new sap.m.Button({
+                                                text: "Create",
+                                                type: "Emphasized",
+                                                press: function() {
+                                                    window.location.href = "packaging-order-create-ui5.html";
+                                                }
+                                            }),
+                                            new sap.m.Button({
+                                                icon: "sap-icon://excel-attachment",
+                                                tooltip: "Export to Excel"
+                                            }),
+                                            new sap.m.Button({
+                                                icon: "sap-icon://action-settings",
+                                                tooltip: "Settings"
+                                            })
+                                        ]
+                                    }),
+                                    oPackagingTable
+                                ]
+                            })
+                        ]
+                    }),
+                    new sap.m.IconTabFilter({
+                        text: "Material Orders",
+                        key: "material",
+                        content: [
+                            new sap.m.VBox({
+                                items: [
+                                    new sap.m.Toolbar({
+                                        content: [
+                                            new sap.m.Title({
+                                                text: {
+                                                    path: "/materialOrders",
+                                                    formatter: function(aOrders) {
+                                                        return "Material Orders (" + (aOrders ? aOrders.length : 0) + ")";
+                                                    }
+                                                }
+                                            }),
+                                            new sap.m.ToolbarSpacer(),
+                                            new sap.m.Button({
+                                                text: "Create",
+                                                type: "Emphasized",
+                                                press: function() {
+                                                    sap.m.MessageToast.show("Create Material Order");
+                                                }
+                                            }),
+                                            new sap.m.Button({
+                                                icon: "sap-icon://excel-attachment",
+                                                tooltip: "Export to Excel"
+                                            }),
+                                            new sap.m.Button({
+                                                icon: "sap-icon://action-settings",
+                                                tooltip: "Settings"
+                                            })
+                                        ]
+                                    }),
+                                    oMaterialTable
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            });
+
+            // Dynamic Page
+            var oPage = new sap.f.DynamicPage({
+                headerTitle: new sap.f.DynamicPageTitle({
+                    heading: new sap.m.Title({ text: "Orders" })
+                }),
+                content: [
+                    oFilterBarPanel,
+                    oIconTabBar
+                ]
+            });
+
+            // Create Page Container
+            var oPageContainer = new sap.m.Page({
+                customHeader: oShellBar,
+                content: [oPage],
+                enableScrolling: true
+            });
+
+            oApp.addPage(oPageContainer);
+            oApp.placeAt("content");
+        });
+    </script>
+
+    <style>
+        html, body, #content {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Filter Bar Panel Styling */
+        .filterBarPanel {
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: 0px 2px 2px 0px rgba(85, 107, 130, 0.05), inset 0px -1px 0px 0px #d9d9d9 !important;
+        }
+
+        .filterBarPanel > .sapMPanelContent {
+            padding: 0 !important;
+        }
+
+        /* Filter Bar Styling - Match Figma Design */
+        .sapMVBox > .sapMHBox {
+            background: #ffffff;
+            padding: 16px 48px;
+            box-shadow: 0px 2px 2px 0px rgba(85, 107, 130, 0.05), inset 0px -1px 0px 0px #d9d9d9;
+        }
+
+        /* Title Styling */
+        .sapMTitle {
+            font-family: '72-Black', '72', Arial, sans-serif !important;
+            font-size: 24px !important;
+            font-weight: 900 !important;
+            color: #1d2d3e !important;
+        }
+
+        /* Label Styling */
+        .sapMLabel {
+            font-family: '72', Arial, sans-serif !important;
+            font-size: 14px !important;
+            color: #556b82 !important;
+        }
+
+        /* Input Field Styling */
+        .sapMInputBaseInner {
+            font-family: '72', Arial, sans-serif !important;
+            font-size: 14px !important;
+            color: #131e29 !important;
+            background: #ffffff !important;
+            border: 1px solid rgba(85, 107, 130, 0.25) !important;
+            border-radius: 4px !important;
+            height: 26px !important;
+            padding: 0 8px !important;
+        }
+
+        /* Button Styling */
+        .sapMBtnEmphasized > .sapMBtnInner {
+            background: #0070f2 !important;
+            border-color: #0070f2 !important;
+            color: #ffffff !important;
+            font-family: '72-Bold', '72', Arial, sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            border-radius: 8px !important;
+            height: 26px !important;
+            padding: 0 8px !important;
+        }
+
+        .sapMBtnTransparent > .sapMBtnInner {
+            background: transparent !important;
+            border-color: transparent !important;
+            color: #0064d9 !important;
+            font-family: '72-Semibold', '72', Arial, sans-serif !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+        }
+
+        /* ComboBox and DateRangeSelection */
+        .sapMComboBoxBase .sapMInputBaseInner,
+        .sapMDateRangeSelection .sapMInputBaseInner {
+            font-family: '72', Arial, sans-serif !important;
+            font-size: 14px !important;
+            height: 26px !important;
+        }
+
+        /* Icon Styling */
+        .sapUiIcon {
+            color: #1d2d3e !important;
+            font-size: 16px !important;
+        }
+
+        .sapMBtnTransparent .sapUiIcon {
+            color: #0064d9 !important;
+        }
+
+        /* Spacing adjustments */
+        .sapUiTinyMarginEnd {
+            margin-right: 16px !important;
+        }
+
+        .sapUiTinyMarginBegin {
+            margin-left: 8px !important;
+        }
+
+        .sapUiTinyMarginBottom {
+            margin-bottom: 4px !important;
+        }
+
+        .sapUiSmallMarginTop {
+            margin-top: 16px !important;
+        }
+
+        .sapUiSmallMarginBottom {
+            margin-bottom: 12px !important;
+        }
+
+        .sapUiSmallMarginBegin {
+            margin-left: 48px !important;
+        }
+
+        .sapUiSmallMarginEnd {
+            margin-right: 48px !important;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+</body>
+</html>

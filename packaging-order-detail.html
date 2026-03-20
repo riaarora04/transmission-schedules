@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packaging Order Details</title>
+
+    <!-- SAP UI5 Core -->
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <!-- UI5 Web Components -->
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/Avatar.js";
+        import "@ui5/webcomponents/dist/Badge.js";
+    </script>
+
+    <style>
+        /* Design Tokens */
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapPositiveTextColor: #256f3a;
+            --sapNegativeTextColor: #aa0808;
+            --sapNeutralTextColor: #1d2d3e;
+            --sapObjectHeader_Background: white;
+            --sapObjectHeader_Title_TextColor: #1d2d3e;
+            --sapObjectHeader_BorderColor: #d9d9d9;
+            --sapButton_Emphasized_Background: #0070f2;
+            --sapTab_TextColor: #1d2d3e;
+            --sapTab_Selected_TextColor: #0064d9;
+            --sapTab_ForegroundColor: #0064d9;
+            --sapContent_LabelColor: #556b82;
+        }
+
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor);
+            color: var(--sapTextColor);
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Shell Bar */
+        ui5-shellbar {
+            --_ui5_shellbar_height: 2.75rem;
+        }
+
+        /* Object Header */
+        .object-header {
+            background: var(--sapObjectHeader_Background);
+            border-bottom: 1px solid var(--sapObjectHeader_BorderColor);
+            padding: 2rem 3rem;
+        }
+
+        .object-header-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .object-header-nav ui5-button {
+            margin-right: 0.5rem;
+        }
+
+        .breadcrumb {
+            color: var(--sapContent_LabelColor);
+            font-size: 0.875rem;
+        }
+
+        .object-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .object-header-main {
+            flex: 1;
+        }
+
+        .object-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            font-family: '72-Black', Arial, sans-serif;
+            color: var(--sapObjectHeader_Title_TextColor);
+            margin-bottom: 0.5rem;
+        }
+
+        .object-subtitle {
+            color: var(--sapContent_LabelColor);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .object-attributes {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .object-attribute {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .object-attribute-label {
+            color: var(--sapContent_LabelColor);
+            font-size: 0.75rem;
+        }
+
+        .object-attribute-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .object-header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Status Indicators */
+        .status-approved {
+            color: var(--sapPositiveTextColor);
+        }
+
+        .status-requested {
+            color: var(--sapNeutralTextColor);
+        }
+
+        .status-rejected,
+        .status-error {
+            color: var(--sapNegativeTextColor);
+        }
+
+        /* Status Flow */
+        .status-flow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .status-indicator {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .status-indicator.complete {
+            background: var(--sapPositiveTextColor);
+            color: white;
+        }
+
+        .status-indicator.empty {
+            background: #e5e5e5;
+            color: #999;
+        }
+
+        .status-separator {
+            width: 40px;
+            height: 2px;
+            background: #e5e5e5;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow: auto;
+            padding: 0 3rem 3rem;
+        }
+
+        /* Tab Navigation */
+        .tab-container {
+            display: flex;
+            gap: 2rem;
+            border-bottom: 2px solid var(--sapObjectHeader_BorderColor);
+            margin: 1.5rem 0 2rem;
+            background: var(--sapObjectHeader_Background);
+            padding: 0 2rem;
+        }
+
+        .tab-item {
+            padding: 0.75rem 1rem;
+            color: var(--sapTab_TextColor);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .tab-item:hover {
+            color: var(--sapTab_Selected_TextColor);
+        }
+
+        .tab-item.active {
+            color: var(--sapTab_Selected_TextColor);
+            border-bottom-color: var(--sapTab_ForegroundColor);
+        }
+
+        /* Form Sections */
+        .form-container {
+            background: var(--sapObjectHeader_Background);
+            border: 1px solid var(--sapObjectHeader_BorderColor);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--sapTextColor);
+            margin-bottom: 1rem;
+        }
+
+        .form-fields {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-field ui5-label {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        /* Table Section */
+        .table-section {
+            background: var(--sapObjectHeader_Background);
+            border: 1px solid var(--sapObjectHeader_BorderColor);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .table-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        ui5-table {
+            width: 100%;
+        }
+
+        ui5-table-cell {
+            padding: 0.5rem;
+        }
+
+        /* Hidden Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .object-header,
+            .content-area {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            .object-attributes {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            primary-title="Packaging Orders"
+            show-notifications
+            show-product-switch
+            show-co-pilot>
+            <ui5-avatar slot="profile" initials="JD"></ui5-avatar>
+        </ui5-shellbar>
+
+        <!-- Object Header -->
+        <div class="object-header">
+            <div class="object-header-nav">
+                <ui5-button design="Transparent" icon="nav-back" id="btnBack"></ui5-button>
+                <span class="breadcrumb">Packaging Orders / Order Details</span>
+            </div>
+
+            <div class="object-header-content">
+                <div class="object-header-main">
+                    <div class="object-title" id="orderTitle">PO-001</div>
+                    <div class="object-subtitle" id="orderSubtitle">MAT-100234 - Returnable Container A</div>
+
+                    <div class="status-flow">
+                        <div class="status-indicator complete">✓</div>
+                        <div class="status-separator"></div>
+                        <div class="status-indicator complete">✓</div>
+                        <div class="status-separator"></div>
+                        <div class="status-indicator empty">3</div>
+                    </div>
+
+                    <div class="object-attributes">
+                        <div class="object-attribute">
+                            <div class="object-attribute-label">Status</div>
+                            <div class="object-attribute-value status-approved" id="orderStatus">Approved</div>
+                        </div>
+
+                        <div class="object-attribute">
+                            <div class="object-attribute-label">Plant</div>
+                            <div class="object-attribute-value" id="orderPlant">Plant 1000</div>
+                        </div>
+
+                        <div class="object-attribute">
+                            <div class="object-attribute-label">Storage Location</div>
+                            <div class="object-attribute-value" id="orderStorage">SL-01</div>
+                        </div>
+
+                        <div class="object-attribute">
+                            <div class="object-attribute-label">Required Date</div>
+                            <div class="object-attribute-value" id="orderRequiredDate">15.03.2026</div>
+                        </div>
+
+                        <div class="object-attribute">
+                            <div class="object-attribute-label">Delivery Date</div>
+                            <div class="object-attribute-value" id="orderDeliveryDate">20.03.2026</div>
+                        </div>
+
+                        <div class="object-attribute">
+                            <div class="object-attribute-label">Packaging Standard</div>
+                            <div class="object-attribute-value" id="orderPackagingStd">STD-001</div>
+                        </div>
+
+                        <div class="object-attribute">
+                            <div class="object-attribute-label">Business Partner</div>
+                            <div class="object-attribute-value" id="orderBusinessPartner">BP-1000</div>
+                        </div>
+
+                        <div class="object-attribute">
+                            <div class="object-attribute-label">Created By</div>
+                            <div class="object-attribute-value">John Doe</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="object-header-actions">
+                    <ui5-button design="Emphasized" id="btnEdit">Edit</ui5-button>
+                    <ui5-button design="Default" id="btnApprove">Approve</ui5-button>
+                    <ui5-button design="Transparent" icon="overflow"></ui5-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <a class="tab-item active" data-tab="material-order">Material Order Details</a>
+                <a class="tab-item" data-tab="planning">Planning Overview</a>
+                <a class="tab-item" data-tab="history">History</a>
+                <a class="tab-item" data-tab="attachments">Attachments</a>
+            </div>
+
+            <!-- Material Order Details Tab -->
+            <div id="material-order" class="tab-content active">
+                <div class="form-container">
+                    <div class="form-section">
+                        <div class="form-section-title">General Information</div>
+                        <div class="form-fields">
+                            <div class="form-field">
+                                <ui5-label for="detailMaterial">Material</ui5-label>
+                                <ui5-input id="detailMaterial" value="MAT-100234" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailMaterialDesc">Material Description</ui5-label>
+                                <ui5-input id="detailMaterialDesc" value="Returnable Container A" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailPackagingStd">Packaging Standard</ui5-label>
+                                <ui5-input id="detailPackagingStd" value="STD-001" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailQuantity">Quantity</ui5-label>
+                                <ui5-input id="detailQuantity" type="Number" value="100" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailPlant">Plant</ui5-label>
+                                <ui5-input id="detailPlant" value="Plant 1000" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailStorage">Storage Location</ui5-label>
+                                <ui5-input id="detailStorage" value="SL-01" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailRequiredDate">Required Date</ui5-label>
+                                <ui5-date-picker id="detailRequiredDate" value="15.03.2026" disabled format-pattern="dd.MM.yyyy"></ui5-date-picker>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailDeliveryDate">Delivery Date</ui5-label>
+                                <ui5-date-picker id="detailDeliveryDate" value="20.03.2026" disabled format-pattern="dd.MM.yyyy"></ui5-date-picker>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Business Partner Information</div>
+                        <div class="form-fields">
+                            <div class="form-field">
+                                <ui5-label for="detailBP">Business Partner ID</ui5-label>
+                                <ui5-input id="detailBP" value="BP-1000" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailBPName">Business Partner Name</ui5-label>
+                                <ui5-input id="detailBPName" value="SAP SE" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailStreet">Street</ui5-label>
+                                <ui5-input id="detailStreet" value="Dietmar-Hopp-Allee 16" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailCity">City</ui5-label>
+                                <ui5-input id="detailCity" value="Walldorf" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailPostal">Postal Code</ui5-label>
+                                <ui5-input id="detailPostal" value="69190" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="detailCountry">Country</ui5-label>
+                                <ui5-input id="detailCountry" value="Germany" disabled></ui5-input>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planning Overview Tab -->
+            <div id="planning" class="tab-content">
+                <div class="table-section">
+                    <div class="table-section-title">Order Items</div>
+                    <ui5-table sticky-column-header>
+                        <ui5-table-column slot="columns" style="width: 100px;">
+                            <span>Position</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns">
+                            <span>Material</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 120px;">
+                            <span>Quantity</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 100px;">
+                            <span>Unit</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 150px;">
+                            <span>Packaging Type</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 120px;">
+                            <span>Status</span>
+                        </ui5-table-column>
+
+                        <ui5-table-row>
+                            <ui5-table-cell>10</ui5-table-cell>
+                            <ui5-table-cell>MAT-100234 - Returnable Container A</ui5-table-cell>
+                            <ui5-table-cell>100</ui5-table-cell>
+                            <ui5-table-cell>PC</ui5-table-cell>
+                            <ui5-table-cell>STD-001</ui5-table-cell>
+                            <ui5-table-cell class="status-approved">Approved</ui5-table-cell>
+                        </ui5-table-row>
+                    </ui5-table>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="history" class="tab-content">
+                <div class="table-section">
+                    <div class="table-section-title">Order History</div>
+                    <ui5-table sticky-column-header>
+                        <ui5-table-column slot="columns" style="width: 180px;">
+                            <span>Date/Time</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 150px;">
+                            <span>Action</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns">
+                            <span>Description</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 150px;">
+                            <span>User</span>
+                        </ui5-table-column>
+
+                        <ui5-table-row>
+                            <ui5-table-cell>13.03.2026 14:23</ui5-table-cell>
+                            <ui5-table-cell>Approved</ui5-table-cell>
+                            <ui5-table-cell>Order approved by manager</ui5-table-cell>
+                            <ui5-table-cell>Jane Smith</ui5-table-cell>
+                        </ui5-table-row>
+
+                        <ui5-table-row>
+                            <ui5-table-cell>13.03.2026 10:15</ui5-table-cell>
+                            <ui5-table-cell>Created</ui5-table-cell>
+                            <ui5-table-cell>Order created</ui5-table-cell>
+                            <ui5-table-cell>John Doe</ui5-table-cell>
+                        </ui5-table-row>
+                    </ui5-table>
+                </div>
+            </div>
+
+            <!-- Attachments Tab -->
+            <div id="attachments" class="tab-content">
+                <div class="table-section">
+                    <div class="table-section-title">Attachments (0)</div>
+                    <ui5-table sticky-column-header>
+                        <ui5-table-column slot="columns">
+                            <span>File Name</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 150px;">
+                            <span>Type</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 150px;">
+                            <span>Size</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 180px;">
+                            <span>Uploaded</span>
+                        </ui5-table-column>
+                        <ui5-table-column slot="columns" style="width: 100px;">
+                            <span>Actions</span>
+                        </ui5-table-column>
+                    </ui5-table>
+                    <div style="text-align: center; padding: 2rem; color: var(--sapContent_LabelColor);">
+                        No attachments available
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get order ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('id') || 'PO-001';
+
+        // Mock order data
+        const orderData = {
+            'PO-001': {
+                id: 'PO-001',
+                material: 'MAT-100234',
+                materialDesc: 'Returnable Container A',
+                packagingStd: 'STD-001',
+                plant: 'Plant 1000',
+                storage: 'SL-01',
+                requiredDate: '15.03.2026',
+                deliveryDate: '20.03.2026',
+                status: 'Approved',
+                quantity: 100,
+                businessPartner: 'BP-1000',
+                businessPartnerName: 'SAP SE',
+                street: 'Dietmar-Hopp-Allee 16',
+                city: 'Walldorf',
+                postal: '69190',
+                country: 'Germany'
+            }
+        };
+
+        // Load order details
+        document.addEventListener('DOMContentLoaded', function() {
+            const order = orderData[orderId] || orderData['PO-001'];
+
+            // Update header
+            document.getElementById('orderTitle').textContent = order.id;
+            document.getElementById('orderSubtitle').textContent = `${order.material} - ${order.materialDesc}`;
+            document.getElementById('orderStatus').textContent = order.status;
+            document.getElementById('orderStatus').className = 'object-attribute-value status-' + order.status.toLowerCase();
+            document.getElementById('orderPlant').textContent = order.plant;
+            document.getElementById('orderStorage').textContent = order.storage;
+            document.getElementById('orderRequiredDate').textContent = order.requiredDate;
+            document.getElementById('orderDeliveryDate').textContent = order.deliveryDate;
+            document.getElementById('orderPackagingStd').textContent = order.packagingStd;
+            document.getElementById('orderBusinessPartner').textContent = order.businessPartner;
+
+            // Update form fields
+            document.getElementById('detailMaterial').value = order.material;
+            document.getElementById('detailMaterialDesc').value = order.materialDesc;
+            document.getElementById('detailPackagingStd').value = order.packagingStd;
+            document.getElementById('detailQuantity').value = order.quantity;
+            document.getElementById('detailPlant').value = order.plant;
+            document.getElementById('detailStorage').value = order.storage;
+            document.getElementById('detailRequiredDate').value = order.requiredDate;
+            document.getElementById('detailDeliveryDate').value = order.deliveryDate;
+            document.getElementById('detailBP').value = order.businessPartner;
+            document.getElementById('detailBPName').value = order.businessPartnerName;
+            document.getElementById('detailStreet').value = order.street;
+            document.getElementById('detailCity').value = order.city;
+            document.getElementById('detailPostal').value = order.postal;
+            document.getElementById('detailCountry').value = order.country;
+
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab-item');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    this.classList.add('active');
+
+                    const tabId = this.dataset.tab;
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Back button
+            document.getElementById('btnBack').addEventListener('click', function() {
+                window.location.href = 'packaging-orders-list.html';
+            });
+
+            // Edit button
+            document.getElementById('btnEdit').addEventListener('click', function() {
+                alert('Edit functionality would be implemented here');
+            });
+
+            // Approve button
+            document.getElementById('btnApprove').addEventListener('click', function() {
+                if (confirm('Do you want to approve this order?')) {
+                    alert('Order approved successfully!');
+                    document.getElementById('orderStatus').textContent = 'Approved';
+                    document.getElementById('orderStatus').className = 'object-attribute-value status-approved';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

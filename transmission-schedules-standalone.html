@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Transmission Job Schedules</title>
+
+    <script id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.ui.core,sap.f,sap.ui.layout,sap.ui.comp,sap.ui.table"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-frameOptions="trusted">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Inline the app directly
+            sap.ui.require([
+                "sap/ui/core/mvc/XMLView",
+                "sap/ui/model/json/JSONModel"
+            ], function(XMLView, JSONModel) {
+
+                // Create schedule data model
+                var oScheduleData = {
+                    schedules: [
+                        {
+                            scheduleId: "SCH-2026-001",
+                            description: "Daily transmission for customer invoices",
+                            status: "Active",
+                            category: "Financial Documents",
+                            issueType: "Invoice",
+                            soldToParty: "100001",
+                            soldToPartyName: "ABC Corporation Ltd.",
+                            frequency: "Daily",
+                            priority: "High",
+                            validFrom: "2026-01-01T00:00:00",
+                            validTo: "2026-12-31T23:59:59",
+                            nextRun: "2026-03-20T08:00:00",
+                            lastRun: "2026-03-19T08:00:00",
+                            createdBy: "JSMITH",
+                            createdOn: "2026-01-15T10:30:00",
+                            changedBy: "JSMITH",
+                            changedOn: "2026-03-10T14:20:00"
+                        },
+                        {
+                            scheduleId: "SCH-2026-002",
+                            description: "Weekly order status update transmission",
+                            status: "Scheduled",
+                            category: "Order Management",
+                            issueType: "Order Status",
+                            soldToParty: "100002",
+                            soldToPartyName: "XYZ Industries Inc.",
+                            frequency: "Weekly",
+                            priority: "Medium",
+                            validFrom: "2026-02-01T00:00:00",
+                            validTo: "2026-11-30T23:59:59",
+                            nextRun: "2026-03-24T18:00:00",
+                            lastRun: "2026-03-17T18:00:00",
+                            createdBy: "MDAVIS",
+                            createdOn: "2026-01-28T09:15:00",
+                            changedBy: "MDAVIS",
+                            changedOn: "2026-02-15T11:45:00"
+                        },
+                        {
+                            scheduleId: "SCH-2026-003",
+                            description: "Monthly inventory reconciliation report",
+                            status: "Inactive",
+                            category: "Inventory Management",
+                            issueType: "Reconciliation Report",
+                            soldToParty: "100003",
+                            soldToPartyName: "Global Trade Partners",
+                            frequency: "Monthly",
+                            priority: "Low",
+                            validFrom: "2026-01-01T00:00:00",
+                            validTo: "2026-06-30T23:59:59",
+                            nextRun: "2026-04-01T00:00:00",
+                            lastRun: "2026-03-01T00:00:00",
+                            createdBy: "KLEE",
+                            createdOn: "2025-12-20T16:30:00",
+                            changedBy: "KLEE",
+                            changedOn: "2026-03-05T10:10:00"
+                        },
+                        {
+                            scheduleId: "SCH-2026-004",
+                            description: "Real-time shipment notification transmission",
+                            status: "Running",
+                            category: "Logistics",
+                            issueType: "Shipment Notification",
+                            soldToParty: "100004",
+                            soldToPartyName: "FastShip Logistics Co.",
+                            frequency: "Real-time",
+                            priority: "Critical",
+                            validFrom: "2026-03-01T00:00:00",
+                            validTo: "2026-12-31T23:59:59",
+                            nextRun: "2026-03-19T15:30:00",
+                            lastRun: "2026-03-19T15:15:00",
+                            createdBy: "RJONES",
+                            createdOn: "2026-02-25T13:00:00",
+                            changedBy: "RJONES",
+                            changedOn: "2026-03-18T08:30:00"
+                        },
+                        {
+                            scheduleId: "SCH-2026-005",
+                            description: "Bi-weekly customer statement transmission",
+                            status: "Error",
+                            category: "Financial Documents",
+                            issueType: "Statement",
+                            soldToParty: "100005",
+                            soldToPartyName: "Premier Solutions Group",
+                            frequency: "Bi-weekly",
+                            priority: "High",
+                            validFrom: "2026-01-15T00:00:00",
+                            validTo: "2026-12-15T23:59:59",
+                            nextRun: "2026-03-26T10:00:00",
+                            lastRun: "2026-03-19T10:00:00",
+                            createdBy: "ABROWN",
+                            createdOn: "2026-01-10T11:20:00",
+                            changedBy: "ABROWN",
+                            changedOn: "2026-03-12T15:50:00"
+                        },
+                        {
+                            scheduleId: "SCH-2026-006",
+                            description: "Hourly production data sync",
+                            status: "Active",
+                            category: "Manufacturing",
+                            issueType: "Production Data",
+                            soldToParty: "100006",
+                            soldToPartyName: "TechManufacturing Ltd.",
+                            frequency: "Hourly",
+                            priority: "High",
+                            validFrom: "2026-02-15T00:00:00",
+                            validTo: "2026-08-15T23:59:59",
+                            nextRun: "2026-03-19T16:00:00",
+                            lastRun: "2026-03-19T15:00:00",
+                            createdBy: "SWILSON",
+                            createdOn: "2026-02-10T14:45:00",
+                            changedBy: "SWILSON",
+                            changedOn: "2026-03-01T09:30:00"
+                        },
+                        {
+                            scheduleId: "SCH-2026-007",
+                            description: "Quarterly compliance report generation",
+                            status: "Scheduled",
+                            category: "Compliance",
+                            issueType: "Compliance Report",
+                            soldToParty: "100007",
+                            soldToPartyName: "Regulatory Services Inc.",
+                            frequency: "Quarterly",
+                            priority: "Critical",
+                            validFrom: "2026-01-01T00:00:00",
+                            validTo: "2026-12-31T23:59:59",
+                            nextRun: "2026-04-01T00:00:00",
+                            lastRun: "2026-01-01T00:00:00",
+                            createdBy: "PMILLER",
+                            createdOn: "2025-12-15T10:00:00",
+                            changedBy: "PMILLER",
+                            changedOn: "2026-01-05T14:15:00"
+                        },
+                        {
+                            scheduleId: "SCH-2026-008",
+                            description: "Daily customer credit check update",
+                            status: "Active",
+                            category: "Credit Management",
+                            issueType: "Credit Check",
+                            soldToParty: "100008",
+                            soldToPartyName: "Credit Bureau Services",
+                            frequency: "Daily",
+                            priority: "Medium",
+                            validFrom: "2026-01-20T00:00:00",
+                            validTo: "2026-12-20T23:59:59",
+                            nextRun: "2026-03-20T06:00:00",
+                            lastRun: "2026-03-19T06:00:00",
+                            createdBy: "JGARCIA",
+                            createdOn: "2026-01-18T12:30:00",
+                            changedBy: "JGARCIA",
+                            changedOn: "2026-02-28T16:45:00"
+                        }
+                    ],
+                    statusValues: [
+                        { key: "", text: "All" },
+                        { key: "Active", text: "Active" },
+                        { key: "Inactive", text: "Inactive" },
+                        { key: "Scheduled", text: "Scheduled" },
+                        { key: "Running", text: "Running" },
+                        { key: "Error", text: "Error" }
+                    ]
+                };
+
+                var oModel = new JSONModel(oScheduleData);
+                sap.ui.getCore().setModel(oModel, "schedules");
+
+                // Create view inline
+                var sView = `<mvc:View
+                    controllerName="transmissionschedules.controller.ListReport"
+                    xmlns="sap.m"
+                    xmlns:mvc="sap.ui.core.mvc"
+                    xmlns:f="sap.f"
+                    xmlns:core="sap.ui.core"
+                    displayBlock="true">
+
+                    <f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false">
+                        <f:title>
+                            <f:DynamicPageTitle>
+                                <f:heading>
+                                    <Title text="Transmission Job Schedules" level="H1"/>
+                                </f:heading>
+                                <f:actions>
+                                    <Button text="Create" type="Emphasized" press=".onCreate"/>
+                                </f:actions>
+                            </f:DynamicPageTitle>
+                        </f:title>
+
+                        <f:content>
+                            <Table
+                                id="schedulesTable"
+                                mode="SingleSelectMaster"
+                                items="{schedules>/schedules}"
+                                growing="true"
+                                growingThreshold="20">
+
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <Title text="Schedules ({schedules>/schedules/length})" level="H2"/>
+                                        <ToolbarSpacer/>
+                                        <SearchField width="20rem" search=".onSearch"/>
+                                    </OverflowToolbar>
+                                </headerToolbar>
+
+                                <columns>
+                                    <Column width="12%"><Text text="Schedule ID"/></Column>
+                                    <Column width="10%"><Text text="Status"/></Column>
+                                    <Column width="15%"><Text text="Category"/></Column>
+                                    <Column width="15%"><Text text="Issue Type"/></Column>
+                                    <Column width="15%"><Text text="Sold-to Party"/></Column>
+                                    <Column width="12%"><Text text="Valid From"/></Column>
+                                    <Column width="12%"><Text text="Valid To"/></Column>
+                                    <Column width="9%"><Text text="Frequency"/></Column>
+                                </columns>
+
+                                <items>
+                                    <ColumnListItem type="Navigation" press=".onItemPress">
+                                        <cells>
+                                            <ObjectIdentifier
+                                                title="{schedules>scheduleId}"
+                                                text="{schedules>description}"/>
+                                            <ObjectStatus
+                                                text="{schedules>status}"
+                                                state="{path: 'schedules>status', formatter: '.formatStatusState'}"/>
+                                            <Text text="{schedules>category}"/>
+                                            <Text text="{schedules>issueType}"/>
+                                            <Text text="{schedules>soldToParty}"/>
+                                            <Text text="{path: 'schedules>validFrom', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/yyyy'}}"/>
+                                            <Text text="{path: 'schedules>validTo', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd/MM/yyyy'}}"/>
+                                            <Text text="{schedules>frequency}"/>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </f:content>
+                    </f:DynamicPage>
+                </mvc:View>`;
+
+                // Define controller
+                sap.ui.define("transmissionschedules/controller/ListReport", [
+                    "sap/ui/core/mvc/Controller",
+                    "sap/m/MessageBox",
+                    "sap/m/MessageToast",
+                    "sap/ui/model/Filter",
+                    "sap/ui/model/FilterOperator"
+                ], function(Controller, MessageBox, MessageToast, Filter, FilterOperator) {
+                    return Controller.extend("transmissionschedules.controller.ListReport", {
+                        formatStatusState: function(sStatus) {
+                            switch (sStatus) {
+                                case "Active": return "Success";
+                                case "Scheduled": return "Information";
+                                case "Inactive": return "None";
+                                case "Running": return "Warning";
+                                case "Error": return "Error";
+                                default: return "None";
+                            }
+                        },
+                        onCreate: function() {
+                            MessageBox.information("Create functionality will open a dialog to create a new schedule");
+                        },
+                        onSearch: function(oEvent) {
+                            var sQuery = oEvent.getParameter("query");
+                            var oTable = this.byId("schedulesTable");
+                            var oBinding = oTable.getBinding("items");
+
+                            if (sQuery) {
+                                var aFilters = [
+                                    new Filter({
+                                        filters: [
+                                            new Filter("scheduleId", FilterOperator.Contains, sQuery),
+                                            new Filter("description", FilterOperator.Contains, sQuery),
+                                            new Filter("category", FilterOperator.Contains, sQuery)
+                                        ],
+                                        and: false
+                                    })
+                                ];
+                                oBinding.filter(aFilters);
+                            } else {
+                                oBinding.filter([]);
+                            }
+                        },
+                        onItemPress: function(oEvent) {
+                            var oItem = oEvent.getSource();
+                            var oContext = oItem.getBindingContext("schedules");
+                            var oData = oContext.getObject();
+
+                            MessageBox.information(
+                                "Schedule Details:\\n\\n" +
+                                "ID: " + oData.scheduleId + "\\n" +
+                                "Description: " + oData.description + "\\n" +
+                                "Status: " + oData.status + "\\n" +
+                                "Category: " + oData.category + "\\n" +
+                                "Frequency: " + oData.frequency,
+                                { title: "Schedule Information" }
+                            );
+                        }
+                    });
+                });
+
+                // Create and display view
+                XMLView.create({
+                    definition: sView
+                }).then(function(oView) {
+                    oView.placeAt("content");
+                });
+            });
+        });
+    </script>
+</head>
+<body class="sapUiBody" id="content">
+</body>
+</html>

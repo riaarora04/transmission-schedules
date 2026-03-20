@@ -1,0 +1,136 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form">
+    <Dialog
+        id="createDialog"
+        title="Create New Schedule"
+        contentWidth="40rem"
+        contentHeight="auto">
+        <content>
+            <f:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="4"
+                labelSpanL="4"
+                labelSpanM="4"
+                labelSpanS="12"
+                adjustLabelSpan="false"
+                emptySpanXL="0"
+                emptySpanL="0"
+                emptySpanM="0"
+                emptySpanS="0"
+                columnsXL="1"
+                columnsL="1"
+                columnsM="1"
+                singleContainerFullSize="true">
+                <f:content>
+                    <Label text="Schedule ID" required="true"/>
+                    <Input
+                        id="createScheduleID"
+                        placeholder="Enter Schedule ID"
+                        required="true"/>
+
+                    <Label text="Status" required="true"/>
+                    <Select
+                        id="createStatus"
+                        required="true"
+                        items="{/Statuses}">
+                        <core:Item key="{code}" text="{name}"/>
+                    </Select>
+
+                    <Label text="Category" required="true"/>
+                    <Select
+                        id="createCategory"
+                        required="true"
+                        items="{/Categories}">
+                        <core:Item key="{code}" text="{name}"/>
+                    </Select>
+
+                    <Label text="Issue Type" required="true"/>
+                    <Select
+                        id="createIssueType"
+                        required="true"
+                        items="{/IssueTypes}">
+                        <core:Item key="{code}" text="{name}"/>
+                    </Select>
+
+                    <Label text="Sold-to Party" required="true"/>
+                    <Input
+                        id="createSoldToParty"
+                        placeholder="Enter Sold-to Party"
+                        required="true"/>
+
+                    <Label text="Sold-to Party Name"/>
+                    <Input
+                        id="createSoldToPartyName"
+                        placeholder="Enter Party Name"/>
+
+                    <Label text="Start Date" required="true"/>
+                    <DatePicker
+                        id="createStartDate"
+                        required="true"
+                        displayFormat="dd.MM.yyyy"
+                        valueFormat="yyyy-MM-dd"/>
+
+                    <Label text="End Date" required="true"/>
+                    <DatePicker
+                        id="createEndDate"
+                        required="true"
+                        displayFormat="dd.MM.yyyy"
+                        valueFormat="yyyy-MM-dd"/>
+
+                    <Label text="Frequency" required="true"/>
+                    <Select
+                        id="createFrequency"
+                        required="true"
+                        items="{/Frequencies}">
+                        <core:Item key="{code}" text="{name}"/>
+                    </Select>
+
+                    <Label text="Transmission Time"/>
+                    <TimePicker
+                        id="createTime"
+                        displayFormat="HH:mm:ss"
+                        valueFormat="HH:mm:ss"/>
+
+                    <Label text="Priority" required="true"/>
+                    <Select
+                        id="createPriority"
+                        required="true"
+                        items="{/Priorities}">
+                        <core:Item key="{code}" text="{name}"/>
+                    </Select>
+
+                    <Label text="Description"/>
+                    <TextArea
+                        id="createDescription"
+                        rows="3"
+                        placeholder="Enter description"/>
+
+                    <Label text="Contact Person"/>
+                    <Input
+                        id="createContactPerson"
+                        placeholder="Enter contact person"/>
+
+                    <Label text="Contact Email"/>
+                    <Input
+                        id="createContactEmail"
+                        type="Email"
+                        placeholder="Enter email address"/>
+                </f:content>
+            </f:SimpleForm>
+        </content>
+        <beginButton>
+            <Button
+                text="Create"
+                type="Emphasized"
+                press=".onSaveCreate"/>
+        </beginButton>
+        <endButton>
+            <Button
+                text="Cancel"
+                press=".onCancelCreate"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

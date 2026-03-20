@@ -1,0 +1,135 @@
+{
+  "_version": "1.58.0",
+  "sap.app": {
+    "id": "transmissionjobs.manageschedules",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/transmission-job/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0",
+          "localUri": "localService/metadata.xml"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://calendar",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.f": {},
+        "sap.suite.ui.generic.template": {},
+        "sap.ui.comp": {},
+        "sap.ui.generic.app": {},
+        "sap.ui.table": {},
+        "sap.ushell": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "transmissionjobs.manageschedules.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.f.routing.Router",
+        "viewType": "XML",
+        "async": true,
+        "viewPath": "transmissionjobs.manageschedules.view",
+        "controlAggregation": "beginColumnPages",
+        "controlId": "layout",
+        "clearControlAggregation": false
+      },
+      "routes": [
+        {
+          "name": "SchedulesList",
+          "pattern": ":?query:",
+          "target": [
+            "SchedulesList"
+          ]
+        },
+        {
+          "name": "SchedulesObjectPage",
+          "pattern": "Schedules({key}):?query:",
+          "target": [
+            "SchedulesList",
+            "SchedulesObjectPage"
+          ]
+        }
+      ],
+      "targets": {
+        "SchedulesList": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "SchedulesList",
+          "viewName": "SchedulesList"
+        },
+        "SchedulesObjectPage": {
+          "viewType": "XML",
+          "viewName": "SchedulesObjectPage",
+          "viewId": "SchedulesObjectPage",
+          "viewLevel": 2,
+          "controlAggregation": "midColumnPages"
+        }
+      }
+    },
+    "extends": {
+      "extensions": {}
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}

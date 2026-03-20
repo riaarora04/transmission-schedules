@@ -1,0 +1,381 @@
+<mvc:View
+    controllerName="com.sap.selfbilling.documentparsing.controller.Create"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:core="sap.ui.core"
+    xmlns:uxap="sap.uxap"
+    xmlns:upload="sap.m.upload"
+    height="100%">
+
+    <uxap:ObjectPageLayout
+        id="objectPageLayout"
+        showTitleInHeaderContent="true"
+        upperCaseAnchorBar="false">
+
+        <!-- Header Title -->
+        <uxap:headerTitle>
+            <uxap:ObjectPageDynamicHeaderTitle>
+                <uxap:expandedHeading>
+                    <Title text="{i18n>createTitle}" wrapping="true"/>
+                </uxap:expandedHeading>
+
+                <uxap:snappedHeading>
+                    <FlexBox alignItems="Center">
+                        <Title text="{i18n>createTitle}" wrapping="true"/>
+                    </FlexBox>
+                </uxap:snappedHeading>
+
+                <uxap:actions>
+                    <Button
+                        text="{i18n>btnSave}"
+                        type="Emphasized"
+                        press=".onSave"
+                        enabled="{= ${appState>/extractionProgress} === 100}"/>
+                    <Button
+                        text="{i18n>btnPublish}"
+                        type="Default"
+                        press=".onPublish"
+                        enabled="{= ${appState>/reviewProgress} === 100}"/>
+                    <Button
+                        text="{i18n>btnDiscard}"
+                        type="Transparent"
+                        press=".onDiscard"/>
+                </uxap:actions>
+
+                <uxap:navigationActions>
+                    <OverflowToolbarButton
+                        icon="sap-icon://nav-back"
+                        type="Transparent"
+                        press=".onNavBack"
+                        tooltip="Back"/>
+                </uxap:navigationActions>
+            </uxap:ObjectPageDynamicHeaderTitle>
+        </uxap:headerTitle>
+
+        <!-- Header Content -->
+        <uxap:headerContent>
+            <FlexBox wrap="Wrap" fitContainer="true">
+                <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                    <Label text="{i18n>processType}"/>
+                    <Text text="{/currentDocument/processType}"/>
+                </VBox>
+                <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                    <Label text="{i18n>soldToParty}"/>
+                    <Text text="{/currentDocument/soldToParty}"/>
+                </VBox>
+                <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                    <Label text="{i18n>status}"/>
+                    <ObjectStatus
+                        text="{/currentDocument/status}"
+                        state="{= ${/currentDocument/status} === 'Completed' ? 'Success' : ${/currentDocument/status} === 'Extracting' ? 'Warning' : 'None'}"/>
+                </VBox>
+                <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                    <Label text="{i18n>uploadedBy}"/>
+                    <Text text="{/currentDocument/uploadedBy}"/>
+                </VBox>
+                <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom">
+                    <Label text="{i18n>uploadedAt}"/>
+                    <Text text="{/currentDocument/uploadedAt}"/>
+                </VBox>
+            </FlexBox>
+        </uxap:headerContent>
+
+        <!-- Sections -->
+        <uxap:sections>
+            <!-- General Information Section -->
+            <uxap:ObjectPageSection
+                titleUppercase="false"
+                title="{i18n>generalInformation}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <f:SimpleForm
+                                editable="true"
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="4"
+                                labelSpanL="4"
+                                labelSpanM="4"
+                                labelSpanS="12"
+                                emptySpanXL="0"
+                                emptySpanL="0"
+                                emptySpanM="0"
+                                emptySpanS="0"
+                                columnsXL="2"
+                                columnsL="2"
+                                columnsM="1"
+                                singleContainerFullSize="false">
+                                <f:content>
+                                    <Label text="{i18n>processType}"/>
+                                    <Select
+                                        selectedKey="{/currentDocument/processType}"
+                                        width="100%">
+                                        <items>
+                                            <core:Item key="Self Billing" text="Self Billing"/>
+                                            <core:Item key="Invoice" text="Invoice"/>
+                                        </items>
+                                    </Select>
+
+                                    <Label text="{i18n>soldToParty}"/>
+                                    <Input
+                                        value="{/currentDocument/soldToParty}"
+                                        showSuggestion="true"
+                                        width="100%"/>
+
+                                    <Label text="{i18n>customerPlant}"/>
+                                    <Input
+                                        value="{/currentDocument/customerPlant}"
+                                        width="100%"/>
+
+                                    <Label text="{i18n>customerUnloadingPoint}"/>
+                                    <Input
+                                        value="{/currentDocument/customerUnloadingPoint}"
+                                        width="100%"/>
+                                </f:content>
+                            </f:SimpleForm>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Attachment Section -->
+            <uxap:ObjectPageSection
+                titleUppercase="false"
+                title="{i18n>attachment}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <VBox width="100%">
+                                <!-- Upload Toolbar -->
+                                <OverflowToolbar class="sapUiTinyMarginBottom">
+                                    <Title text="{i18n>attachmentTitle}" level="H3"/>
+                                    <ToolbarSpacer/>
+                                    <Button
+                                        text="{i18n>btnUpload}"
+                                        icon="sap-icon://upload"
+                                        type="Emphasized"
+                                        press=".onUpload"
+                                        enabled="{= !${appState>/isUploading}}"/>
+                                    <Button
+                                        text="{i18n>btnExtract}"
+                                        icon="sap-icon://show"
+                                        type="Default"
+                                        press=".onExtract"
+                                        enabled="{= ${/currentDocument/uploadComplete} &amp;&amp; !${appState>/isExtracting}}"/>
+                                    <Button
+                                        text="{i18n>btnStopAnalysis}"
+                                        icon="sap-icon://stop"
+                                        type="Transparent"
+                                        press=".onStopAnalysis"
+                                        visible="{appState>/isExtracting}"/>
+                                </OverflowToolbar>
+
+                                <!-- File Uploader (hidden) -->
+                                <upload:UploadSet
+                                    id="uploadSet"
+                                    items="{/currentDocument/attachments}"
+                                    uploadEnabled="false"
+                                    instantUpload="false"
+                                    showIcons="true"
+                                    visible="false">
+                                </upload:UploadSet>
+
+                                <!-- Attachments Table -->
+                                <Table
+                                    id="attachmentsTable"
+                                    items="{/currentDocument/attachments}"
+                                    growing="false"
+                                    sticky="ColumnHeaders">
+                                    <columns>
+                                        <Column width="30%">
+                                            <Text text="{i18n>fileName}"/>
+                                        </Column>
+                                        <Column width="20%">
+                                            <Text text="{i18n>fileSize}"/>
+                                        </Column>
+                                        <Column width="20%">
+                                            <Text text="{i18n>uploadProgress}"/>
+                                        </Column>
+                                        <Column width="15%">
+                                            <Text text="{i18n>statusColumn}"/>
+                                        </Column>
+                                        <Column width="15%">
+                                            <Text text="{i18n>lastModified}"/>
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem>
+                                            <cells>
+                                                <ObjectIdentifier
+                                                    title="{fileName}"
+                                                    text="{fileType}"/>
+                                                <Text text="{fileSize}"/>
+                                                <ProgressIndicator
+                                                    percentValue="{uploadProgress}"
+                                                    displayValue="{uploadProgress}%"
+                                                    showValue="true"
+                                                    state="{= ${uploadProgress} === 100 ? 'Success' : 'None'}"/>
+                                                <ObjectStatus
+                                                    text="{uploadStatus}"
+                                                    state="{= ${uploadStatus} === 'Uploaded' || ${uploadStatus} === 'Extracted' ? 'Success' : ${uploadStatus} === 'Extracting' ? 'Warning' : 'None'}"/>
+                                                <Text text="{lastModified}"/>
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+
+                                <!-- No Files Yet -->
+                                <IllustratedMessage
+                                    visible="{= !${/currentDocument/attachments} || ${/currentDocument/attachments/length} === 0}"
+                                    illustrationType="sapIllus-NoData"
+                                    title="{i18n>noFilesYet}"
+                                    description="{i18n>noFilesDescription}"/>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Extraction Summary Section -->
+            <uxap:ObjectPageSection
+                titleUppercase="false"
+                title="{i18n>extractionSummary}"
+                visible="{= ${/extractionResult} !== null}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <VBox width="100%">
+                                <!-- AI Badge -->
+                                <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                                    <core:Icon src="sap-icon://ai" size="1rem" color="#0064D9" class="sapUiTinyMarginEnd"/>
+                                    <Text text="{i18n>createdWithAI}"/>
+                                    <Text text="{i18n>verifyResults}" class="sapUiTinyMarginBegin"/>
+                                </HBox>
+
+                                <!-- Summary Fields -->
+                                <f:SimpleForm
+                                    layout="ResponsiveGridLayout"
+                                    labelSpanXL="4"
+                                    labelSpanL="4"
+                                    labelSpanM="4"
+                                    labelSpanS="12"
+                                    emptySpanXL="0"
+                                    emptySpanL="0"
+                                    emptySpanM="0"
+                                    emptySpanS="0"
+                                    columnsXL="2"
+                                    columnsL="2"
+                                    columnsM="1">
+                                    <f:content>
+                                        <Label text="{i18n>extractedOn}"/>
+                                        <Text text="{/extractionResult/extractedAt}"/>
+
+                                        <Label text="Total Documents:"/>
+                                        <Text text="{/extractionResult/totalDocuments}"/>
+
+                                        <Label text="Total Line Items:"/>
+                                        <Text text="{/extractionResult/totalLineItems}"/>
+
+                                        <Label text="Confidence Score:"/>
+                                        <ObjectStatus
+                                            text="{/extractionResult/confidenceScore}%"
+                                            state="{= ${/extractionResult/confidenceScore} >= 90 ? 'Success' : ${/extractionResult/confidenceScore} >= 70 ? 'Warning' : 'Error'}"/>
+                                    </f:content>
+                                </f:SimpleForm>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+
+            <!-- Extracted Billing Documents Section -->
+            <uxap:ObjectPageSection
+                titleUppercase="false"
+                title="{i18n>extractedBillingDocuments}"
+                visible="{= ${/extractionResult} !== null}">
+                <uxap:subSections>
+                    <uxap:ObjectPageSubSection>
+                        <uxap:blocks>
+                            <VBox width="100%">
+                                <!-- Table Toolbar -->
+                                <OverflowToolbar class="sapUiTinyMarginBottom">
+                                    <Title text="{i18n>billingDocuments} ({/extractionResult/documents/length})" level="H3"/>
+                                    <ToolbarSpacer/>
+                                    <Button
+                                        text="{i18n>markAsReviewed}"
+                                        type="Default"
+                                        press=".onMarkAsReviewed"
+                                        enabled="{= ${/selectedExtractionItems/length} > 0}"/>
+                                </OverflowToolbar>
+
+                                <!-- Extraction Results Table -->
+                                <Table
+                                    id="extractionTable"
+                                    items="{/extractionResult/documents}"
+                                    mode="MultiSelect"
+                                    selectionChange=".onExtractionSelectionChange"
+                                    sticky="ColumnHeaders,HeaderToolbar">
+                                    <columns>
+                                        <Column width="12em">
+                                            <Text text="{i18n>externalBillingDocument}"/>
+                                        </Column>
+                                        <Column width="10em">
+                                            <Text text="{i18n>transmission}"/>
+                                        </Column>
+                                        <Column width="8em">
+                                            <Text text="{i18n>lineItems}"/>
+                                        </Column>
+                                        <Column width="12em">
+                                            <Text text="{i18n>recommendedActions}"/>
+                                        </Column>
+                                        <Column width="10em">
+                                            <Text text="{i18n>reviewStatusColumn}"/>
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem>
+                                            <cells>
+                                                <Link
+                                                    text="{externalBillingDocument}"
+                                                    press=".onDocumentLinkPress"/>
+                                                <Text text="{transmission}"/>
+                                                <ObjectNumber
+                                                    number="{lineItems}"
+                                                    unit="items"/>
+                                                <Text text="{recommendedAction}"/>
+                                                <ObjectStatus
+                                                    text="{reviewStatus}"
+                                                    state="{= ${reviewStatus} === 'Reviewed' ? 'Success' : 'Warning'}"/>
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                            </VBox>
+                        </uxap:blocks>
+                    </uxap:ObjectPageSubSection>
+                </uxap:subSections>
+            </uxap:ObjectPageSection>
+        </uxap:sections>
+
+        <!-- Footer -->
+        <uxap:footer>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button
+                    text="{i18n>btnSave}"
+                    type="Emphasized"
+                    press=".onSave"
+                    enabled="{= ${appState>/extractionProgress} === 100}"/>
+                <Button
+                    text="{i18n>btnPublish}"
+                    type="Default"
+                    press=".onPublish"
+                    enabled="{= ${appState>/reviewProgress} === 100}"/>
+                <Button
+                    text="{i18n>btnDiscard}"
+                    type="Transparent"
+                    press=".onDiscard"/>
+            </OverflowToolbar>
+        </uxap:footer>
+    </uxap:ObjectPageLayout>
+</mvc:View>

@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Empty Returnable Materials - Partner Portal</title>
+
+    <!-- SAP UI5 Web Components -->
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/CheckBox.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents-fiori/dist/Bar.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/Link.js";
+        import "@ui5/webcomponents/dist/Avatar.js";
+    </script>
+
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-resourceroots='{
+            "sap.ui.demo": "./"
+        }'
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor, #f5f6f7);
+            color: var(--sapTextColor, #1d2d3e);
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Shell Bar Styling */
+        ui5-shellbar {
+            --_ui5_shellbar_height: 2.75rem;
+        }
+
+        /* Filter Bar Custom Styling */
+        .filter-bar {
+            background: var(--sapObjectHeader_Background, white);
+            padding: 1rem 3rem;
+            box-shadow: var(--sapContent_HeaderShadow);
+        }
+
+        .filter-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filter-variant-title {
+            font-size: var(--sapObjectHeader_Title_FontSize, 1.5rem);
+            font-family: var(--sapObjectHeader_Title_FontFamily, '72-Black');
+            font-weight: 900;
+            color: var(--sapObjectHeader_Title_TextColor, #1d2d3e);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .filter-fields {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+            min-width: 13.75rem;
+        }
+
+        .filter-field ui5-label {
+            font-size: var(--sapFontSize, 0.875rem);
+            color: var(--sapContent_LabelColor, #556b82);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+            align-items: center;
+        }
+
+        .collapse-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding-top: 0.75rem;
+            border-bottom: 1px solid var(--sapObjectHeader_BorderColor, #d9d9d9);
+        }
+
+        .collapse-line {
+            position: absolute;
+            top: 0.7rem;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #d9d9d9 32%, #d9d9d9 68%, transparent 100%);
+        }
+
+        .collapse-buttons {
+            display: flex;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+            background: white;
+            padding: 0 0.5rem;
+        }
+
+        /* Tab Bar Custom Styling */
+        .tab-container {
+            background: var(--sapObjectHeader_Background, white);
+            box-shadow: var(--sapContent_HeaderShadow);
+            padding: 0 3rem;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .tab-item {
+            padding: 0 0.1875rem 0.1875rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: var(--sapTab_TextColor, #1d2d3e);
+            border-bottom: 3px solid transparent;
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .tab-item:hover {
+            color: var(--sapTab_Selected_TextColor, #0064d9);
+        }
+
+        .tab-item.active {
+            color: var(--sapTab_Selected_TextColor, #0064d9);
+            border-bottom-color: var(--sapTab_ForegroundColor, #0064d9);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 1rem 3rem;
+            flex: 1;
+            overflow: auto;
+        }
+
+        /* Table Container */
+        .table-wrapper {
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: var(--sapContent_Shadow0);
+        }
+
+        .table-toolbar {
+            background: var(--sapGroup_TitleBackground, white);
+            border-bottom: 1px solid var(--sapGroup_TitleBorderColor, #a8b3bd);
+            height: 2.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .table-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--sapTitleColor, #1d2d3e);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* SAP Table Styling */
+        ui5-table {
+            width: 100%;
+        }
+
+        ui5-table::part(table) {
+            border-collapse: collapse;
+        }
+
+        /* Custom status styling */
+        .status-requested {
+            color: var(--sapNeutralTextColor, #1d2d3e);
+        }
+
+        .status-error {
+            color: var(--sapNegativeTextColor, #aa0808);
+            text-decoration: underline;
+        }
+
+        .status-rejected {
+            color: var(--sapNegativeTextColor, #aa0808);
+        }
+
+        .status-approved {
+            color: var(--sapPositiveTextColor, #256f3a);
+        }
+
+        /* Status Flow Visualization */
+        .status-flow {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+        }
+
+        .status-indicator {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-indicator.complete {
+            background: var(--sapButton_Success_Background, #2da44e);
+            color: white;
+        }
+
+        .status-indicator.error {
+            background: var(--sapButton_Negative_Background, #d73a49);
+            color: white;
+        }
+
+        .status-indicator.empty {
+            background: var(--sapField_BorderColor, #e5e5e5);
+            color: transparent;
+        }
+
+        .status-separator {
+            width: 0.625rem;
+            height: 1px;
+            background: var(--sapContent_ForegroundBorderColor, #758ca4);
+        }
+
+        .row-highlight {
+            border-left: 6px solid var(--sapHighlightColor, #0064d9);
+        }
+
+        .text-bold {
+            font-weight: bold;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .filter-bar,
+            .tab-container,
+            .content-area {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            primary-title="Order Empty Returnable Materials"
+            show-search-field
+            search-field-placeholder="Search">
+            <ui5-avatar slot="profile" icon="employee"></ui5-avatar>
+            <ui5-button slot="startButton" icon="nav-back" design="Transparent"></ui5-button>
+            <ui5-button slot="menuItems" icon="bell" design="Transparent"></ui5-button>
+            <ui5-button slot="menuItems" icon="settings" design="Transparent"></ui5-button>
+        </ui5-shellbar>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-bar-header">
+                <div class="filter-variant-title">
+                    Standard
+                    <ui5-button icon="slim-arrow-down" design="Transparent"></ui5-button>
+                </div>
+                <ui5-button icon="overflow" design="Transparent"></ui5-button>
+            </div>
+
+            <div class="filter-fields">
+                <div class="filter-field">
+                    <ui5-label for="material">Material:</ui5-label>
+                    <ui5-input id="material" show-suggestions></ui5-input>
+                </div>
+                <div class="filter-field">
+                    <ui5-label for="plant">Plant:</ui5-label>
+                    <ui5-input id="plant" show-suggestions></ui5-input>
+                </div>
+                <div class="filter-field">
+                    <ui5-label for="partner">Exchange Partner:</ui5-label>
+                    <ui5-input id="partner" show-suggestions></ui5-input>
+                </div>
+                <div class="filter-field">
+                    <ui5-label for="delivery-date">Expected Delivery Date:</ui5-label>
+                    <ui5-date-picker id="delivery-date" value="Oct 23, 2024 - Nov 23, 2024"></ui5-date-picker>
+                </div>
+                <div class="filter-field">
+                    <ui5-label for="order-status">Order Status:</ui5-label>
+                    <ui5-select id="order-status">
+                        <ui5-option></ui5-option>
+                        <ui5-option>Requested</ui5-option>
+                        <ui5-option>Approved</ui5-option>
+                        <ui5-option>Rejected</ui5-option>
+                    </ui5-select>
+                </div>
+                <div class="filter-actions">
+                    <ui5-button design="Emphasized">Go</ui5-button>
+                    <ui5-button design="Transparent">Adapt Filters (1)</ui5-button>
+                </div>
+            </div>
+
+            <div class="collapse-indicator">
+                <div class="collapse-line"></div>
+                <div class="collapse-buttons">
+                    <ui5-button icon="collapse" design="Default" tooltip="Collapse"></ui5-button>
+                    <ui5-button icon="pushpin-off" design="Default" tooltip="Pin"></ui5-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-container">
+            <a href="#" class="tab-item">Material Orders</a>
+            <a href="#" class="tab-item active">Packaging Standard Orders</a>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="table-wrapper">
+                <!-- Table Toolbar -->
+                <div class="table-toolbar">
+                    <div class="table-title">Packaging Standard Orders (7)</div>
+                    <div class="table-actions">
+                        <ui5-button design="Default">Create</ui5-button>
+                        <ui5-button design="Transparent">Create Multiple Orders</ui5-button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <ui5-table id="orders-table" sticky-column-header>
+                    <!-- Table Columns -->
+                    <ui5-table-column slot="columns" style="width: 8px;"></ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 50px;">
+                        <ui5-checkbox></ui5-checkbox>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold">Order Number</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold">Packaging Standard</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold">Packaging Standard Description</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold">Business Partner</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold">Expected Delivery Date</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold">Sales Order Number</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold text-right">Requested Quantity</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold text-right">Approved Quantity</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold">Order Status</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span class="text-bold">Status Flow</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 50px;"></ui5-table-column>
+
+                    <!-- Table Rows -->
+                    <ui5-table-row class="row-highlight">
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                        <ui5-table-cell><span class="text-bold">3094045</span></ui5-table-cell>
+                        <ui5-table-cell>HT 4904</ui5-table-cell>
+                        <ui5-table-cell>BLC bundle with red KLTs</ui5-table-cell>
+                        <ui5-table-cell>Rolf Motors</ui5-table-cell>
+                        <ui5-table-cell>25 Apr, 2025</ui5-table-cell>
+                        <ui5-table-cell class="text-right">SO030333</ui5-table-cell>
+                        <ui5-table-cell class="text-right">08</ui5-table-cell>
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><span class="status-requested">Requested</span></ui5-table-cell>
+                        <ui5-table-cell>
+                            <div class="status-flow">
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                            </div>
+                        </ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-button icon="slim-arrow-right" design="Transparent"></ui5-button>
+                        </ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row class="row-highlight">
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                        <ui5-table-cell><span class="text-bold">3094046</span></ui5-table-cell>
+                        <ui5-table-cell>HT 1001</ui5-table-cell>
+                        <ui5-table-cell>21-95 packages for NLS</ui5-table-cell>
+                        <ui5-table-cell>Pallet World</ui5-table-cell>
+                        <ui5-table-cell>13 May, 2025</ui5-table-cell>
+                        <ui5-table-cell class="text-right">SO020212</ui5-table-cell>
+                        <ui5-table-cell class="text-right">10</ui5-table-cell>
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><span class="status-requested">Requested</span></ui5-table-cell>
+                        <ui5-table-cell>
+                            <div class="status-flow">
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                            </div>
+                        </ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-button icon="slim-arrow-right" design="Transparent"></ui5-button>
+                        </ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row class="row-highlight">
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                        <ui5-table-cell><span class="text-bold">3094047</span></ui5-table-cell>
+                        <ui5-table-cell>HT 1002</ui5-table-cell>
+                        <ui5-table-cell>Bundle with blue KLTs</ui5-table-cell>
+                        <ui5-table-cell>ABC Company</ui5-table-cell>
+                        <ui5-table-cell>14 Mar, 2025</ui5-table-cell>
+                        <ui5-table-cell class="text-right">SO020212</ui5-table-cell>
+                        <ui5-table-cell class="text-right">11</ui5-table-cell>
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><span class="status-requested">Requested</span></ui5-table-cell>
+                        <ui5-table-cell>
+                            <div class="status-flow">
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                            </div>
+                        </ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-button icon="slim-arrow-right" design="Transparent"></ui5-button>
+                        </ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row class="row-highlight">
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                        <ui5-table-cell><span class="text-bold">3094048</span></ui5-table-cell>
+                        <ui5-table-cell>PD-105</ui5-table-cell>
+                        <ui5-table-cell>DTCS 0303 KLT, Pallets.</ui5-table-cell>
+                        <ui5-table-cell>Westerns Pvt Ltd</ui5-table-cell>
+                        <ui5-table-cell>14 May, 2025</ui5-table-cell>
+                        <ui5-table-cell class="text-right">SO020214</ui5-table-cell>
+                        <ui5-table-cell class="text-right">8</ui5-table-cell>
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><span class="status-error">Error</span></ui5-table-cell>
+                        <ui5-table-cell>
+                            <div class="status-flow">
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator error">✗</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                            </div>
+                        </ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-button icon="slim-arrow-right" design="Transparent"></ui5-button>
+                        </ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row>
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                        <ui5-table-cell><span class="text-bold">3094049</span></ui5-table-cell>
+                        <ui5-table-cell>PD-106</ui5-table-cell>
+                        <ui5-table-cell>BLC bundle with red KLTs</ui5-table-cell>
+                        <ui5-table-cell>Westerns Pvt Ltd</ui5-table-cell>
+                        <ui5-table-cell>13 May, 2025</ui5-table-cell>
+                        <ui5-table-cell class="text-right">SO020456</ui5-table-cell>
+                        <ui5-table-cell class="text-right">10</ui5-table-cell>
+                        <ui5-table-cell class="text-right">0</ui5-table-cell>
+                        <ui5-table-cell><span class="status-rejected">Rejected</span></ui5-table-cell>
+                        <ui5-table-cell>
+                            <div class="status-flow">
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator error">✗</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                            </div>
+                        </ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-button icon="slim-arrow-right" design="Transparent"></ui5-button>
+                        </ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row>
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                        <ui5-table-cell><span class="text-bold">3094050</span></ui5-table-cell>
+                        <ui5-table-cell>PD-102</ui5-table-cell>
+                        <ui5-table-cell>NCC bundle with Pallets</ui5-table-cell>
+                        <ui5-table-cell>Rolf Motors</ui5-table-cell>
+                        <ui5-table-cell>25 Apr, 2025</ui5-table-cell>
+                        <ui5-table-cell class="text-right">SO123457</ui5-table-cell>
+                        <ui5-table-cell class="text-right">12</ui5-table-cell>
+                        <ui5-table-cell class="text-right">0</ui5-table-cell>
+                        <ui5-table-cell><span class="status-approved">Approved with Changes</span></ui5-table-cell>
+                        <ui5-table-cell>
+                            <div class="status-flow">
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                            </div>
+                        </ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-button icon="slim-arrow-right" design="Transparent"></ui5-button>
+                        </ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row>
+                        <ui5-table-cell></ui5-table-cell>
+                        <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                        <ui5-table-cell><span class="text-bold">3094051</span></ui5-table-cell>
+                        <ui5-table-cell>PD-101</ui5-table-cell>
+                        <ui5-table-cell>BCC bundles for 345 MCK</ui5-table-cell>
+                        <ui5-table-cell>Pallet World</ui5-table-cell>
+                        <ui5-table-cell>13 May, 2025</ui5-table-cell>
+                        <ui5-table-cell class="text-right">SO543569</ui5-table-cell>
+                        <ui5-table-cell class="text-right">1</ui5-table-cell>
+                        <ui5-table-cell class="text-right">1</ui5-table-cell>
+                        <ui5-table-cell><span class="status-approved">Approved</span></ui5-table-cell>
+                        <ui5-table-cell>
+                            <div class="status-flow">
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator complete">✓</div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                                <div class="status-separator"></div>
+                                <div class="status-indicator empty"></div>
+                            </div>
+                        </ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-button icon="slim-arrow-right" design="Transparent"></ui5-button>
+                        </ui5-table-cell>
+                    </ui5-table-row>
+                </ui5-table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

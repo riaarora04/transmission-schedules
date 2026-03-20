@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Empty Returnable Materials - Partner Portal</title>
+
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table,sap.uxap"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-oninit="onInit"
+        data-sap-ui-resourceroots='{
+            "orderapp": "./"
+        }'>
+    </script>
+
+    <script>
+        function onInit() {
+            sap.ui.require([
+                "sap/m/App",
+                "sap/m/Page"
+            ], function(App, Page) {
+                console.log("UI5 loaded successfully");
+
+                var oApp = new App({
+                    id: "app",
+                    pages: [
+                        new Page({
+                            id: "mainPage",
+                            enableScrolling: false,
+                            showHeader: false
+                        })
+                    ]
+                });
+
+                oApp.placeAt("content");
+
+                // Initialize app controller
+                sap.ui.require([
+                    "orderapp/AppController"
+                ], function(AppController) {
+                    console.log("AppController loaded");
+                    new AppController();
+                }, function(error) {
+                    console.error("Error loading AppController:", error);
+                    alert("Error loading application. Check console for details.");
+                });
+            });
+        }
+    </script>
+</head>
+<body class="sapUiBody">
+    <div id="content"></div>
+</body>
+</html>

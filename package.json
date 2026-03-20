@@ -1,0 +1,40 @@
+{
+  "name": "order-returnable-materials",
+  "version": "1.0.0",
+  "description": "SAP CAP application for ordering empty returnable materials",
+  "main": "server.js",
+  "scripts": {
+    "start": "cds run",
+    "watch": "cds watch",
+    "watch-transmission-schedules": "cds watch --open transmissionschedules/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "dependencies": {
+    "@sap/cds": "^7",
+    "express": "^4",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "@sap/cds-dk": "^7",
+    "cds-plugin-ui5": "^0.13.0"
+  },
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "sqlite",
+        "credentials": {
+          "database": "db.sqlite"
+        }
+      }
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/transmission-schedules"
+  ]
+}

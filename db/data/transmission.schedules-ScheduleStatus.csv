@@ -1,0 +1,7 @@
+code,name,descr
+DRAFT,Draft,Schedule is in draft state
+ACTIVE,Active,Schedule is active and running
+PAUSED,Paused,Schedule is temporarily paused
+COMPLETED,Completed,Schedule has completed its run
+FAILED,Failed,Schedule execution failed
+CANCELLED,Cancelled,Schedule has been cancelled

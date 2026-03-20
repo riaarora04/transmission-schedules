@@ -1,0 +1,22 @@
+{
+  "name": "manageschedules",
+  "version": "1.0.0",
+  "description": "Manage Transmission Job Schedules",
+  "scripts": {
+    "start": "ui5 serve -o index.html"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^3.0.0"
+  },
+  "ui5": {
+    "dependencies": [
+      "@openui5/sap.m",
+      "@openui5/sap.ui.core",
+      "@openui5/sap.f",
+      "@openui5/sap.ui.comp",
+      "@openui5/sap.ui.generic.app",
+      "@openui5/sap.ui.table",
+      "@openui5/themelib_sap_horizon"
+    ]
+  }
+}

@@ -1,0 +1,104 @@
+{
+    "_version": "1.59.0",
+    "sap.app": {
+        "id": "transmissionschedules",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "applicationVersion": {
+            "version": "1.0.0"
+        },
+        "dataSources": {
+            "scheduleData": {
+                "uri": "model/schedules.json",
+                "type": "JSON"
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "rootView": {
+            "viewName": "transmissionschedules.view.ListReport",
+            "type": "XML",
+            "id": "listReport",
+            "async": true
+        },
+        "dependencies": {
+            "minUI5Version": "1.120.0",
+            "libs": {
+                "sap.ui.core": {},
+                "sap.m": {},
+                "sap.f": {},
+                "sap.ui.layout": {},
+                "sap.ui.comp": {},
+                "sap.ui.table": {}
+            }
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "transmissionschedules.i18n.i18n"
+                }
+            },
+            "schedules": {
+                "type": "sap.ui.model.json.JSONModel",
+                "dataSource": "scheduleData",
+                "settings": {
+                    "defaultBindingMode": "TwoWay"
+                }
+            }
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "viewPath": "transmissionschedules.view",
+                "controlId": "flexibleColumnLayout",
+                "controlAggregation": "beginColumnPages",
+                "async": true
+            },
+            "routes": [
+                {
+                    "pattern": "",
+                    "name": "listReport",
+                    "target": "listReport"
+                },
+                {
+                    "pattern": "schedule/{scheduleId}",
+                    "name": "objectPage",
+                    "target": [
+                        "listReport",
+                        "objectPage"
+                    ]
+                }
+            ],
+            "targets": {
+                "listReport": {
+                    "viewName": "ListReport",
+                    "viewId": "listReport",
+                    "viewLevel": 1,
+                    "controlAggregation": "beginColumnPages"
+                },
+                "objectPage": {
+                    "viewName": "ObjectPage",
+                    "viewId": "objectPage",
+                    "viewLevel": 2,
+                    "controlAggregation": "midColumnPages"
+                }
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        }
+    }
+}

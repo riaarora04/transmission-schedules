@@ -1,0 +1,247 @@
+<mvc:View
+    controllerName="com.sap.selfbilling.documentparsing.controller.ListReport"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:core="sap.ui.core"
+    xmlns:fb="sap.ui.comp.filterbar"
+    height="100%">
+
+    <Page
+        showHeader="true"
+        showNavButton="false"
+        class="sapUiContentPadding">
+
+        <!-- Shell Bar -->
+        <customHeader>
+            <f:ShellBar
+                title="{i18n>listReportTitle}"
+                showMenuButton="true"
+                showNavButton="true"
+                showCopilot="false"
+                showSearch="true"
+                showNotifications="true"
+                showProductSwitcher="false"
+                notificationsNumber="0"
+                navButtonPressed=".onNavBack">
+                <f:profile>
+                    <Avatar
+                        initials="SD"
+                        backgroundColor="Accent6"/>
+                </f:profile>
+            </f:ShellBar>
+        </customHeader>
+
+        <!-- Filter Bar -->
+        <subHeader>
+            <VBox class="sapUiNoMargin">
+                <Panel
+                    headerText=""
+                    expandable="false"
+                    expanded="true"
+                    class="sapUiNoContentPadding">
+                    <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
+                        <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiTinyMarginBottom">
+                            <Title text="Filters" level="H5"/>
+                            <Button
+                                text="{i18n>filterBarAdaptFilters}"
+                                icon="sap-icon://action-settings"
+                                type="Transparent"/>
+                        </HBox>
+
+                        <!-- Filter Fields -->
+                        <VBox>
+                            <HBox class="sapUiTinyMarginBottom">
+                                <VBox class="sapUiTinyMarginEnd" width="200px">
+                                    <Label text="Process Type:" labelFor="processTypeFilter"/>
+                                    <Select id="processTypeFilter" width="100%">
+                                        <items>
+                                            <core:Item key="" text="All"/>
+                                            <core:Item key="selfBilling" text="Self Billing"/>
+                                            <core:Item key="invoice" text="Invoice"/>
+                                        </items>
+                                    </Select>
+                                </VBox>
+
+                                <VBox class="sapUiTinyMarginEnd" width="200px">
+                                    <Label text="Sold-to Party:" labelFor="soldToPartyFilter"/>
+                                    <Input
+                                        id="soldToPartyFilter"
+                                        width="100%"
+                                        showSuggestion="true"/>
+                                </VBox>
+
+                                <VBox class="sapUiTinyMarginEnd" width="200px">
+                                    <Label text="Status:" labelFor="statusFilter"/>
+                                    <Select id="statusFilter" width="100%">
+                                        <items>
+                                            <core:Item key="" text="All"/>
+                                            <core:Item key="draft" text="{i18n>statusDraft}"/>
+                                            <core:Item key="uploaded" text="{i18n>statusUploaded}"/>
+                                            <core:Item key="extracting" text="{i18n>statusExtracting}"/>
+                                            <core:Item key="completed" text="{i18n>statusCompleted}"/>
+                                        </items>
+                                    </Select>
+                                </VBox>
+
+                                <VBox class="sapUiTinyMarginEnd" width="200px">
+                                    <Label text="Uploaded Date:" labelFor="uploadedDateFilter"/>
+                                    <DatePicker
+                                        id="uploadedDateFilter"
+                                        width="100%"/>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Filter Actions -->
+                        <HBox class="sapUiTinyMarginTop">
+                            <Button
+                                text="{i18n>filterBarGo}"
+                                type="Emphasized"
+                                press=".onFilterGo"
+                                class="sapUiTinyMarginEnd"/>
+                            <Button
+                                text="Clear"
+                                type="Transparent"
+                                press=".onFilterClear"/>
+                        </HBox>
+                    </VBox>
+                </Panel>
+            </VBox>
+        </subHeader>
+
+        <!-- Icon Tab Bar -->
+        <content>
+            <IconTabBar
+                id="listReportTabBar"
+                select=".onTabSelect"
+                class="sapUiResponsiveContentPadding"
+                selectedKey="documents">
+                <items>
+                    <IconTabFilter
+                        text="{i18n>tabDocuments}"
+                        key="documents"
+                        count="{/documents/length}">
+                        <VBox>
+                            <!-- Table Toolbar -->
+                            <OverflowToolbar class="sapUiTinyMarginTop">
+                                <Title text="{i18n>tabDocuments} ({/documents/length})" level="H2"/>
+                                <ToolbarSpacer/>
+                                <Button
+                                    text="{i18n>btnCreate}"
+                                    icon="sap-icon://add"
+                                    type="Emphasized"
+                                    press=".onCreateNew"/>
+                                <Button
+                                    text="{i18n>btnDelete}"
+                                    icon="sap-icon://delete"
+                                    type="Transparent"
+                                    enabled="{= ${/selectedDocuments/length} > 0}"
+                                    press=".onDelete"/>
+                                <Button
+                                    icon="sap-icon://action-settings"
+                                    type="Transparent"/>
+                            </OverflowToolbar>
+
+                            <!-- Documents Table -->
+                            <Table
+                                id="documentsTable"
+                                items="{/documents}"
+                                mode="MultiSelect"
+                                selectionChange=".onSelectionChange"
+                                itemPress=".onDocumentPress"
+                                class="sapUiSmallMarginTop"
+                                sticky="ColumnHeaders,HeaderToolbar">
+                                <columns>
+                                    <Column width="12em">
+                                        <Text text="Document ID"/>
+                                    </Column>
+                                    <Column width="10em">
+                                        <Text text="{i18n>processType}"/>
+                                    </Column>
+                                    <Column width="12em">
+                                        <Text text="{i18n>soldToParty}"/>
+                                    </Column>
+                                    <Column width="10em">
+                                        <Text text="{i18n>fileName}"/>
+                                    </Column>
+                                    <Column width="10em">
+                                        <Text text="{i18n>uploadedBy}"/>
+                                    </Column>
+                                    <Column width="12em">
+                                        <Text text="{i18n>uploadedAt}"/>
+                                    </Column>
+                                    <Column width="10em">
+                                        <Text text="{i18n>status}"/>
+                                    </Column>
+                                    <Column width="10em">
+                                        <Text text="{i18n>reviewStatus}"/>
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem type="Navigation">
+                                        <cells>
+                                            <ObjectIdentifier
+                                                title="{documentId}"
+                                                text="Document"/>
+                                            <Text text="{processType}"/>
+                                            <Text text="{soldToParty}"/>
+                                            <Text text="{fileName}"/>
+                                            <Text text="{uploadedBy}"/>
+                                            <Text text="{uploadedAt}"/>
+                                            <ObjectStatus
+                                                text="{status}"
+                                                state="{= ${status} === 'Completed' ? 'Success' : ${status} === 'Extracting' ? 'Warning' : 'None' }"/>
+                                            <ObjectStatus
+                                                text="{reviewStatus}"
+                                                state="{= ${reviewStatus} === 'Reviewed' ? 'Success' : ${reviewStatus} === 'Needs Review' ? 'Warning' : 'None' }"/>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+
+                            <!-- No Data -->
+                            <IllustratedMessage
+                                visible="{= ${/documents/length} === 0}"
+                                illustrationType="sapIllus-NoData"
+                                title="{i18n>noDataYet}"
+                                description="{i18n>noDataDescription}"/>
+                        </VBox>
+                    </IconTabFilter>
+
+                    <IconTabFilter
+                        text="{i18n>tabTransmissions}"
+                        key="transmissions"
+                        count="{/transmissions/length}">
+                        <VBox class="sapUiSmallMarginTop">
+                            <Text text="Transmissions view - Coming soon"/>
+                            <IllustratedMessage
+                                visible="{= ${/transmissions/length} === 0}"
+                                illustrationType="sapIllus-NoData"
+                                title="{i18n>noDataYet}"
+                                description="{i18n>noDataDescription}"/>
+                        </VBox>
+                    </IconTabFilter>
+
+                    <IconTabFilter
+                        text="{i18n>tabMessages}"
+                        key="messages"
+                        count="0">
+                        <VBox class="sapUiSmallMarginTop">
+                            <Text text="Messages view - Coming soon"/>
+                        </VBox>
+                    </IconTabFilter>
+
+                    <IconTabFilter
+                        text="{i18n>tabGrouping}"
+                        key="grouping"
+                        count="0">
+                        <VBox class="sapUiSmallMarginTop">
+                            <Text text="Grouping view - Coming soon"/>
+                        </VBox>
+                    </IconTabFilter>
+                </items>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>

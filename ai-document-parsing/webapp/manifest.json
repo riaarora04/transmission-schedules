@@ -1,0 +1,111 @@
+{
+  "_version": "1.49.0",
+  "sap.app": {
+    "id": "com.sap.selfbilling.documentparsing",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mockData": {
+        "type": "JSON",
+        "uri": "model/mockData.json"
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": false
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "rootView": {
+      "viewName": "com.sap.selfbilling.documentparsing.view.App",
+      "type": "XML",
+      "id": "app"
+    },
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.f": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {},
+        "sap.uxap": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": false
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.sap.selfbilling.documentparsing.i18n.i18n"
+        }
+      },
+      "": {
+        "type": "sap.ui.model.json.JSONModel",
+        "dataSource": "mockData"
+      }
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "viewPath": "com.sap.selfbilling.documentparsing.view",
+        "controlId": "app",
+        "controlAggregation": "pages",
+        "transition": "slide",
+        "async": true
+      },
+      "routes": [
+        {
+          "pattern": "",
+          "name": "launchpad",
+          "target": "launchpad"
+        },
+        {
+          "pattern": "listReport",
+          "name": "listReport",
+          "target": "listReport"
+        },
+        {
+          "pattern": "create",
+          "name": "create",
+          "target": "create"
+        },
+        {
+          "pattern": "create/{documentId}",
+          "name": "createWithId",
+          "target": "create"
+        }
+      ],
+      "targets": {
+        "launchpad": {
+          "viewName": "Launchpad",
+          "viewId": "launchpad",
+          "viewLevel": 1
+        },
+        "listReport": {
+          "viewName": "ListReport",
+          "viewId": "listReport",
+          "viewLevel": 2
+        },
+        "create": {
+          "viewName": "Create",
+          "viewId": "create",
+          "viewLevel": 3
+        }
+      }
+    }
+  }
+}

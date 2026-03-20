@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packaging Orders - List Report</title>
+
+    <!-- SAP UI5 Core -->
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <!-- UI5 Web Components -->
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents-fiori/dist/Bar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/Link.js";
+        import "@ui5/webcomponents/dist/CheckBox.js";
+    </script>
+
+    <style>
+        /* Design Tokens */
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapPositiveTextColor: #256f3a;
+            --sapNegativeTextColor: #aa0808;
+            --sapNeutralTextColor: #1d2d3e;
+            --sapObjectHeader_Background: white;
+            --sapObjectHeader_Title_TextColor: #1d2d3e;
+            --sapObjectHeader_BorderColor: #d9d9d9;
+            --sapButton_Success_Background: #2da44e;
+            --sapButton_Negative_Background: #d73a49;
+            --sapButton_Emphasized_Background: #0070f2;
+            --sapTab_TextColor: #1d2d3e;
+            --sapTab_Selected_TextColor: #0064d9;
+            --sapTab_ForegroundColor: #0064d9;
+            --sapContent_ForegroundBorderColor: #758ca4;
+            --sapContent_LabelColor: #556b82;
+            --sapField_BorderColor: #e5e5e5;
+        }
+
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor);
+            color: var(--sapTextColor);
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Shell Bar */
+        ui5-shellbar {
+            --_ui5_shellbar_height: 2.75rem;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: var(--sapObjectHeader_Background);
+            border-bottom: 1px solid var(--sapObjectHeader_BorderColor);
+            padding: 1rem 3rem;
+        }
+
+        .filter-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filter-variant-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--sapTextColor);
+        }
+
+        .filter-variant-info {
+            color: var(--sapContent_LabelColor);
+            font-size: 0.875rem;
+        }
+
+        .filter-fields {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .filter-field ui5-label {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow: auto;
+            padding: 0 3rem 3rem;
+        }
+
+        /* Toolbar */
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            background: var(--sapObjectHeader_Background);
+        }
+
+        .table-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--sapTextColor);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Table Wrapper */
+        .table-wrapper {
+            background: var(--sapObjectHeader_Background);
+            border: 1px solid var(--sapObjectHeader_BorderColor);
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        ui5-table {
+            width: 100%;
+        }
+
+        ui5-table-cell {
+            padding: 0.5rem;
+        }
+
+        /* Status Indicators */
+        .status-requested {
+            color: var(--sapNeutralTextColor);
+        }
+
+        .status-approved {
+            color: var(--sapPositiveTextColor);
+        }
+
+        .status-rejected,
+        .status-error {
+            color: var(--sapNegativeTextColor);
+        }
+
+        /* Row Highlight */
+        .row-highlight {
+            border-left: 6px solid var(--sapHighlightColor);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .filter-bar,
+            .content-area {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            .filter-fields {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Link styling */
+        ui5-link {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            primary-title="Packaging Orders"
+            show-notifications
+            show-product-switch
+            show-co-pilot>
+            <ui5-avatar slot="profile" initials="JD"></ui5-avatar>
+        </ui5-shellbar>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-bar-header">
+                <div>
+                    <div class="filter-variant-title">Standard (System View)</div>
+                    <div class="filter-variant-info">Filters (6)</div>
+                </div>
+                <ui5-button design="Transparent" icon="slim-arrow-down">Show Filters</ui5-button>
+            </div>
+
+            <div class="filter-fields">
+                <div class="filter-field">
+                    <ui5-label for="material">Material</ui5-label>
+                    <ui5-input id="material" placeholder="Enter material"></ui5-input>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="plant">Plant</ui5-label>
+                    <ui5-input id="plant" placeholder="Enter plant"></ui5-input>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="storage">Storage Location</ui5-label>
+                    <ui5-input id="storage" placeholder="Enter location"></ui5-input>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="status">Status</ui5-label>
+                    <ui5-select id="status">
+                        <ui5-option selected>All</ui5-option>
+                        <ui5-option>Requested</ui5-option>
+                        <ui5-option>Approved</ui5-option>
+                        <ui5-option>Rejected</ui5-option>
+                        <ui5-option>Error</ui5-option>
+                    </ui5-select>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="dateFrom">Required Date From</ui5-label>
+                    <ui5-date-picker id="dateFrom" format-pattern="dd.MM.yyyy"></ui5-date-picker>
+                </div>
+
+                <div class="filter-field">
+                    <ui5-label for="dateTo">Required Date To</ui5-label>
+                    <ui5-date-picker id="dateTo" format-pattern="dd.MM.yyyy"></ui5-date-picker>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <ui5-button design="Emphasized" id="btnGo">Go</ui5-button>
+                <ui5-button design="Transparent">Adapt Filters</ui5-button>
+                <ui5-button design="Transparent" icon="decline">Clear</ui5-button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="table-toolbar">
+                <div class="table-title">Packaging Orders (12)</div>
+                <div class="table-actions">
+                    <ui5-button design="Emphasized" id="btnCreate">Create</ui5-button>
+                    <ui5-button design="Default">Export</ui5-button>
+                    <ui5-button design="Default" icon="refresh">Refresh</ui5-button>
+                    <ui5-button design="Transparent" icon="overflow"></ui5-button>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <ui5-table id="ordersTable" sticky-column-header>
+                    <ui5-table-column slot="columns" style="width: 50px;">
+                        <ui5-checkbox></ui5-checkbox>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 150px;">
+                        <span>Order ID</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 200px;">
+                        <span>Material</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 150px;">
+                        <span>Packaging Standard</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 120px;">
+                        <span>Plant</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 150px;">
+                        <span>Storage Location</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 130px;">
+                        <span>Required Date</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 130px;">
+                        <span>Delivery Date</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns" style="width: 120px;">
+                        <span>Status</span>
+                    </ui5-table-column>
+                </ui5-table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data
+        const mockOrders = [
+            { id: 'PO-001', material: 'MAT-100234', materialDesc: 'Returnable Container A', packagingStd: 'STD-001', plant: 'Plant 1000', storage: 'SL-01', requiredDate: '15.03.2026', deliveryDate: '20.03.2026', status: 'Approved' },
+            { id: 'PO-002', material: 'MAT-100567', materialDesc: 'Pallet Type B', packagingStd: 'STD-002', plant: 'Plant 2000', storage: 'SL-02', requiredDate: '16.03.2026', deliveryDate: '21.03.2026', status: 'Requested' },
+            { id: 'PO-003', material: 'MAT-100891', materialDesc: 'Container Box C', packagingStd: 'STD-003', plant: 'Plant 1000', storage: 'SL-03', requiredDate: '17.03.2026', deliveryDate: '22.03.2026', status: 'Rejected' },
+            { id: 'PO-004', material: 'MAT-101234', materialDesc: 'Transport Crate D', packagingStd: 'STD-001', plant: 'Plant 3000', storage: 'SL-04', requiredDate: '18.03.2026', deliveryDate: '23.03.2026', status: 'Approved' },
+            { id: 'PO-005', material: 'MAT-101567', materialDesc: 'Euro Pallet E', packagingStd: 'STD-004', plant: 'Plant 2000', storage: 'SL-05', requiredDate: '19.03.2026', deliveryDate: '24.03.2026', status: 'Error' },
+            { id: 'PO-006', material: 'MAT-101891', materialDesc: 'Plastic Container F', packagingStd: 'STD-002', plant: 'Plant 1000', storage: 'SL-01', requiredDate: '20.03.2026', deliveryDate: '25.03.2026', status: 'Requested' },
+            { id: 'PO-007', material: 'MAT-102234', materialDesc: 'Metal Crate G', packagingStd: 'STD-003', plant: 'Plant 3000', storage: 'SL-02', requiredDate: '21.03.2026', deliveryDate: '26.03.2026', status: 'Approved' },
+            { id: 'PO-008', material: 'MAT-102567', materialDesc: 'Wooden Pallet H', packagingStd: 'STD-001', plant: 'Plant 2000', storage: 'SL-03', requiredDate: '22.03.2026', deliveryDate: '27.03.2026', status: 'Approved' },
+            { id: 'PO-009', material: 'MAT-102891', materialDesc: 'Folding Container I', packagingStd: 'STD-004', plant: 'Plant 1000', storage: 'SL-04', requiredDate: '23.03.2026', deliveryDate: '28.03.2026', status: 'Requested' },
+            { id: 'PO-010', material: 'MAT-103234', materialDesc: 'Transport Box J', packagingStd: 'STD-002', plant: 'Plant 3000', storage: 'SL-05', requiredDate: '24.03.2026', deliveryDate: '29.03.2026', status: 'Rejected' },
+            { id: 'PO-011', material: 'MAT-103567', materialDesc: 'Storage Bin K', packagingStd: 'STD-003', plant: 'Plant 2000', storage: 'SL-01', requiredDate: '25.03.2026', deliveryDate: '30.03.2026', status: 'Approved' },
+            { id: 'PO-012', material: 'MAT-103891', materialDesc: 'Industrial Container L', packagingStd: 'STD-001', plant: 'Plant 1000', storage: 'SL-02', requiredDate: '26.03.2026', deliveryDate: '31.03.2026', status: 'Requested' }
+        ];
+
+        // Render table data
+        function renderTable(orders) {
+            const table = document.getElementById('ordersTable');
+
+            // Clear existing rows (keep columns)
+            const existingRows = table.querySelectorAll('ui5-table-row');
+            existingRows.forEach(row => row.remove());
+
+            // Add rows
+            orders.forEach(order => {
+                const row = document.createElement('ui5-table-row');
+                row.style.cursor = 'pointer';
+                row.dataset.orderId = order.id;
+
+                row.innerHTML = `
+                    <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                    <ui5-table-cell><ui5-link data-order-id="${order.id}">${order.id}</ui5-link></ui5-table-cell>
+                    <ui5-table-cell>${order.material} - ${order.materialDesc}</ui5-table-cell>
+                    <ui5-table-cell>${order.packagingStd}</ui5-table-cell>
+                    <ui5-table-cell>${order.plant}</ui5-table-cell>
+                    <ui5-table-cell>${order.storage}</ui5-table-cell>
+                    <ui5-table-cell>${order.requiredDate}</ui5-table-cell>
+                    <ui5-table-cell>${order.deliveryDate}</ui5-table-cell>
+                    <ui5-table-cell class="status-${order.status.toLowerCase()}">${order.status}</ui5-table-cell>
+                `;
+
+                table.appendChild(row);
+            });
+
+            // Update count
+            document.querySelector('.table-title').textContent = `Packaging Orders (${orders.length})`;
+        }
+
+        // Filter functionality
+        function filterOrders() {
+            const material = document.getElementById('material').value.toLowerCase();
+            const plant = document.getElementById('plant').value.toLowerCase();
+            const storage = document.getElementById('storage').value.toLowerCase();
+            const status = document.getElementById('status').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            let filtered = mockOrders;
+
+            if (material) {
+                filtered = filtered.filter(o =>
+                    o.material.toLowerCase().includes(material) ||
+                    o.materialDesc.toLowerCase().includes(material)
+                );
+            }
+
+            if (plant) {
+                filtered = filtered.filter(o =>
+                    o.plant.toLowerCase().includes(plant)
+                );
+            }
+
+            if (storage) {
+                filtered = filtered.filter(o =>
+                    o.storage.toLowerCase().includes(storage)
+                );
+            }
+
+            if (status && status !== 'All') {
+                filtered = filtered.filter(o => o.status === status);
+            }
+
+            renderTable(filtered);
+        }
+
+        // Navigation handlers
+        function navigateToDetail(orderId) {
+            window.location.href = `packaging-order-detail.html?id=${orderId}`;
+        }
+
+        function navigateToCreate() {
+            window.location.href = 'packaging-order-create.html';
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial render
+            renderTable(mockOrders);
+
+            // Go button
+            document.getElementById('btnGo').addEventListener('click', filterOrders);
+
+            // Create button
+            document.getElementById('btnCreate').addEventListener('click', navigateToCreate);
+
+            // Order ID links
+            document.getElementById('ordersTable').addEventListener('click', function(e) {
+                if (e.target.tagName === 'UI5-LINK') {
+                    const orderId = e.target.dataset.orderId;
+                    navigateToDetail(orderId);
+                }
+            });
+
+            // Enter key in filter fields
+            const filterInputs = document.querySelectorAll('.filter-field ui5-input, .filter-field ui5-select, .filter-field ui5-date-picker');
+            filterInputs.forEach(input => {
+                input.addEventListener('keyup', function(e) {
+                    if (e.key === 'Enter') {
+                        filterOrders();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

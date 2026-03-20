@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Packaging Standard Order</title>
+
+    <!-- SAP UI5 Core -->
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <!-- UI5 Web Components -->
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/TextArea.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/CheckBox.js";
+        import "@ui5/webcomponents/dist/Avatar.js";
+    </script>
+
+    <style>
+        /* Design Tokens */
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapObjectHeader_Background: white;
+            --sapObjectHeader_Title_TextColor: #1d2d3e;
+            --sapObjectHeader_BorderColor: #d9d9d9;
+            --sapButton_Emphasized_Background: #0070f2;
+            --sapTab_TextColor: #1d2d3e;
+            --sapTab_Selected_TextColor: #0064d9;
+            --sapTab_ForegroundColor: #0064d9;
+            --sapContent_LabelColor: #556b82;
+            --sapField_BorderColor: #e5e5e5;
+        }
+
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor);
+            color: var(--sapTextColor);
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Shell Bar */
+        ui5-shellbar {
+            --_ui5_shellbar_height: 2.75rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: var(--sapObjectHeader_Background);
+            border-bottom: 1px solid var(--sapObjectHeader_BorderColor);
+            padding: 1.5rem 3rem;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            font-family: '72-Black', Arial, sans-serif;
+            color: var(--sapObjectHeader_Title_TextColor);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            overflow: auto;
+            padding: 2rem 3rem 3rem;
+        }
+
+        /* Tab Navigation */
+        .tab-container {
+            display: flex;
+            gap: 2rem;
+            border-bottom: 2px solid var(--sapObjectHeader_BorderColor);
+            margin-bottom: 2rem;
+        }
+
+        .tab-item {
+            padding: 0.75rem 1rem;
+            color: var(--sapTab_TextColor);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .tab-item:hover {
+            color: var(--sapTab_Selected_TextColor);
+        }
+
+        .tab-item.active {
+            color: var(--sapTab_Selected_TextColor);
+            border-bottom-color: var(--sapTab_ForegroundColor);
+        }
+
+        /* Form Container */
+        .form-container {
+            background: var(--sapObjectHeader_Background);
+            border: 1px solid var(--sapObjectHeader_BorderColor);
+            border-radius: 0.5rem;
+            padding: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--sapTextColor);
+            margin-bottom: 1rem;
+        }
+
+        .form-fields {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-field ui5-label {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .required::after {
+            content: ' *';
+            color: var(--sapNegativeTextColor, #aa0808);
+        }
+
+        /* Table Section */
+        .table-section {
+            margin-top: 2rem;
+        }
+
+        .table-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .table-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--sapTextColor);
+        }
+
+        .table-wrapper {
+            background: var(--sapObjectHeader_Background);
+            border: 1px solid var(--sapObjectHeader_BorderColor);
+            border-radius: 0.5rem;
+        }
+
+        ui5-table {
+            width: 100%;
+        }
+
+        ui5-table-cell {
+            padding: 0.5rem;
+        }
+
+        /* Hidden Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .page-header,
+            .content-area {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            .form-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            primary-title="Packaging Orders"
+            show-notifications
+            show-product-switch
+            show-co-pilot>
+            <ui5-avatar slot="profile" initials="JD"></ui5-avatar>
+        </ui5-shellbar>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">Create Packaging Standard Order</div>
+            <div class="page-actions">
+                <ui5-button design="Emphasized" id="btnSave">Save</ui5-button>
+                <ui5-button design="Default" id="btnCancel">Cancel</ui5-button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <a class="tab-item active" data-tab="business-partner">Business Partner</a>
+                <a class="tab-item" data-tab="packaging-standard">Packaging Standard</a>
+            </div>
+
+            <!-- Business Partner Tab -->
+            <div id="business-partner" class="tab-content active">
+                <div class="form-container">
+                    <div class="form-section">
+                        <div class="form-section-title">General Information</div>
+                        <div class="form-fields">
+                            <div class="form-field">
+                                <ui5-label for="orderId" class="required">Order ID</ui5-label>
+                                <ui5-input id="orderId" placeholder="Auto-generated" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="orderDate" class="required">Order Date</ui5-label>
+                                <ui5-date-picker id="orderDate" format-pattern="dd.MM.yyyy"></ui5-date-picker>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="businessPartner" class="required">Business Partner</ui5-label>
+                                <ui5-select id="businessPartner">
+                                    <ui5-option>Select Partner</ui5-option>
+                                    <ui5-option>BP-1000 - SAP SE</ui5-option>
+                                    <ui5-option>BP-2000 - Acme Corp</ui5-option>
+                                    <ui5-option>BP-3000 - Global Industries</ui5-option>
+                                </ui5-select>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="plant" class="required">Plant</ui5-label>
+                                <ui5-select id="plant">
+                                    <ui5-option>Select Plant</ui5-option>
+                                    <ui5-option>Plant 1000</ui5-option>
+                                    <ui5-option>Plant 2000</ui5-option>
+                                    <ui5-option>Plant 3000</ui5-option>
+                                </ui5-select>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="storageLocation" class="required">Storage Location</ui5-label>
+                                <ui5-input id="storageLocation" placeholder="Enter storage location"></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="requiredDate" class="required">Required Date</ui5-label>
+                                <ui5-date-picker id="requiredDate" format-pattern="dd.MM.yyyy"></ui5-date-picker>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Address Information</div>
+                        <div class="form-fields">
+                            <div class="form-field full-width">
+                                <ui5-label for="street">Street</ui5-label>
+                                <ui5-input id="street" placeholder="Enter street address"></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="city">City</ui5-label>
+                                <ui5-input id="city" placeholder="Enter city"></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="postalCode">Postal Code</ui5-label>
+                                <ui5-input id="postalCode" placeholder="Enter postal code"></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="country">Country</ui5-label>
+                                <ui5-select id="country">
+                                    <ui5-option>Select Country</ui5-option>
+                                    <ui5-option>Germany</ui5-option>
+                                    <ui5-option>United States</ui5-option>
+                                    <ui5-option>United Kingdom</ui5-option>
+                                    <ui5-option>France</ui5-option>
+                                </ui5-select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">Additional Information</div>
+                        <div class="form-fields">
+                            <div class="form-field full-width">
+                                <ui5-label for="notes">Notes</ui5-label>
+                                <ui5-textarea id="notes" rows="4" placeholder="Enter additional notes"></ui5-textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Packaging Standard Tab -->
+            <div id="packaging-standard" class="tab-content">
+                <div class="form-container">
+                    <div class="form-section">
+                        <div class="form-section-title">Material Information</div>
+                        <div class="form-fields">
+                            <div class="form-field">
+                                <ui5-label for="material" class="required">Material</ui5-label>
+                                <ui5-input id="material" placeholder="Enter material number" show-suggestions></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="materialDesc">Material Description</ui5-label>
+                                <ui5-input id="materialDesc" placeholder="Auto-filled" disabled></ui5-input>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="packagingStd" class="required">Packaging Standard</ui5-label>
+                                <ui5-select id="packagingStd">
+                                    <ui5-option>Select Standard</ui5-option>
+                                    <ui5-option>STD-001 - Euro Container</ui5-option>
+                                    <ui5-option>STD-002 - Standard Pallet</ui5-option>
+                                    <ui5-option>STD-003 - Industrial Box</ui5-option>
+                                    <ui5-option>STD-004 - Transport Crate</ui5-option>
+                                </ui5-select>
+                            </div>
+
+                            <div class="form-field">
+                                <ui5-label for="quantity" class="required">Quantity</ui5-label>
+                                <ui5-input id="quantity" type="Number" value="1"></ui5-input>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-section">
+                        <div class="table-section-header">
+                            <div class="table-section-title">Packaging Standards (3)</div>
+                            <ui5-button design="Default" id="btnAddStandard">Add Standard</ui5-button>
+                        </div>
+
+                        <div class="table-wrapper">
+                            <ui5-table id="standardsTable" sticky-column-header>
+                                <ui5-table-column slot="columns" style="width: 50px;">
+                                    <ui5-checkbox></ui5-checkbox>
+                                </ui5-table-column>
+                                <ui5-table-column slot="columns" style="width: 150px;">
+                                    <span>Standard ID</span>
+                                </ui5-table-column>
+                                <ui5-table-column slot="columns">
+                                    <span>Description</span>
+                                </ui5-table-column>
+                                <ui5-table-column slot="columns" style="width: 150px;">
+                                    <span>Type</span>
+                                </ui5-table-column>
+                                <ui5-table-column slot="columns" style="width: 150px;">
+                                    <span>Dimensions</span>
+                                </ui5-table-column>
+                                <ui5-table-column slot="columns" style="width: 120px;">
+                                    <span>Weight</span>
+                                </ui5-table-column>
+                                <ui5-table-column slot="columns" style="width: 100px;">
+                                    <span>Actions</span>
+                                </ui5-table-column>
+
+                                <ui5-table-row>
+                                    <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                                    <ui5-table-cell>STD-001</ui5-table-cell>
+                                    <ui5-table-cell>Euro Container</ui5-table-cell>
+                                    <ui5-table-cell>Returnable</ui5-table-cell>
+                                    <ui5-table-cell>600x400x420 mm</ui5-table-cell>
+                                    <ui5-table-cell>5.2 kg</ui5-table-cell>
+                                    <ui5-table-cell>
+                                        <ui5-button design="Transparent" icon="decline"></ui5-button>
+                                    </ui5-table-cell>
+                                </ui5-table-row>
+
+                                <ui5-table-row>
+                                    <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                                    <ui5-table-cell>STD-002</ui5-table-cell>
+                                    <ui5-table-cell>Standard Pallet</ui5-table-cell>
+                                    <ui5-table-cell>Pallet</ui5-table-cell>
+                                    <ui5-table-cell>1200x800x144 mm</ui5-table-cell>
+                                    <ui5-table-cell>25.0 kg</ui5-table-cell>
+                                    <ui5-table-cell>
+                                        <ui5-button design="Transparent" icon="decline"></ui5-button>
+                                    </ui5-table-cell>
+                                </ui5-table-row>
+
+                                <ui5-table-row>
+                                    <ui5-table-cell><ui5-checkbox></ui5-checkbox></ui5-table-cell>
+                                    <ui5-table-cell>STD-003</ui5-table-cell>
+                                    <ui5-table-cell>Industrial Box</ui5-table-cell>
+                                    <ui5-table-cell>Container</ui5-table-cell>
+                                    <ui5-table-cell>800x600x500 mm</ui5-table-cell>
+                                    <ui5-table-cell>8.5 kg</ui5-table-cell>
+                                    <ui5-table-cell>
+                                        <ui5-button design="Transparent" icon="decline"></ui5-button>
+                                    </ui5-table-cell>
+                                </ui5-table-row>
+                            </ui5-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-item');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Show corresponding content
+                    const tabId = this.dataset.tab;
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Auto-generate Order ID
+            const orderId = 'PO-' + Math.floor(Math.random() * 900000 + 100000);
+            document.getElementById('orderId').value = orderId;
+
+            // Set today's date
+            const today = new Date().toLocaleDateString('de-DE');
+            document.getElementById('orderDate').value = today;
+
+            // Save button
+            document.getElementById('btnSave').addEventListener('click', function() {
+                // Validate required fields
+                const requiredFields = [
+                    'businessPartner',
+                    'plant',
+                    'storageLocation',
+                    'requiredDate',
+                    'material',
+                    'packagingStd',
+                    'quantity'
+                ];
+
+                let isValid = true;
+                requiredFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (!field.value || field.value === 'Select Partner' || field.value === 'Select Plant' || field.value === 'Select Standard') {
+                        isValid = false;
+                    }
+                });
+
+                if (isValid) {
+                    alert('Order created successfully!\nOrder ID: ' + orderId);
+                    window.location.href = 'packaging-orders-list.html';
+                } else {
+                    alert('Please fill all required fields');
+                }
+            });
+
+            // Cancel button
+            document.getElementById('btnCancel').addEventListener('click', function() {
+                if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
+                    window.location.href = 'packaging-orders-list.html';
+                }
+            });
+
+            // Material search simulation
+            document.getElementById('material').addEventListener('input', function() {
+                if (this.value.length >= 3) {
+                    // Simulate material description lookup
+                    const materialDescriptions = {
+                        'MAT-100234': 'Returnable Container A',
+                        'MAT-100567': 'Pallet Type B',
+                        'MAT-100891': 'Container Box C'
+                    };
+
+                    const desc = materialDescriptions[this.value] || 'Unknown Material';
+                    document.getElementById('materialDesc').value = desc;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

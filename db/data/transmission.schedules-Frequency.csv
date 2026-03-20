@@ -1,0 +1,6 @@
+code,name,descr
+HOURLY,Hourly,Execute every hour
+DAILY,Daily,Execute daily
+WEEKLY,Weekly,Execute weekly
+MONTHLY,Monthly,Execute monthly
+ONDEMAND,On Demand,Execute on demand only

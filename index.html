@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assisted Document Parsing - Fiori Launchpad</title>
+
+    <!-- Figma Capture Script -->
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+
+    <!-- SAP UI5 Core -->
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <!-- SAP UI5 Web Components -->
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/Avatar.js";
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor, #f5f6f7);
+            color: var(--sapTextColor, #1d2d3e);
+        }
+
+        /* Shell Bar */
+        ui5-shellbar {
+            --_ui5_shellbar_height: 2.75rem;
+        }
+
+        /* Tab Navigation */
+        .tab-container {
+            background: white;
+            border-bottom: 1px solid var(--sapList_BorderColor, #d9d9d9);
+            display: flex;
+            gap: 2rem;
+            padding: 0 3rem;
+            box-shadow: 0 2px 2px rgba(85, 107, 130, 0.05);
+        }
+
+        .tab-item {
+            padding: 0.25rem 0.25rem 0.75rem;
+            font-family: '72', sans-serif;
+            font-weight: bold;
+            font-size: 0.875rem;
+            color: var(--sapTextColor, #1d2d3e);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-item.active {
+            color: var(--sapInformativeColor, #0070f2);
+            border-bottom-color: var(--sapInformativeColor, #0070f2);
+        }
+
+        .tab-item:hover {
+            color: var(--sapInformativeColor, #0070f2);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 3rem;
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1.25rem;
+            color: var(--sapGroup_TitleTextColor, #1d2d3e);
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        /* Tiles */
+        .tiles-container {
+            margin-bottom: 3rem;
+        }
+
+        .tiles-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tile {
+            background: white;
+            border-radius: 1rem;
+            padding: 1rem;
+            width: 11rem;
+            height: 11rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            box-shadow: 0 0 2px 0 rgba(34, 54, 73, 0.2), 0 2px 4px 0 rgba(34, 54, 73, 0.2);
+            transition: box-shadow 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .tile:hover {
+            box-shadow: 0 0 4px 0 rgba(34, 54, 73, 0.3), 0 4px 8px 0 rgba(34, 54, 73, 0.3);
+        }
+
+        .tile-header {
+            font-family: '72-Bold', sans-serif;
+            font-size: 0.875rem;
+            color: var(--sapTile_TitleTextColor, #1d2d3e);
+            line-height: 1.4;
+            min-height: 3.625rem;
+        }
+
+        .tile-subtitle {
+            font-family: '72', sans-serif;
+            font-size: 0.875rem;
+            color: var(--sapTile_TextColor, #556b82);
+        }
+
+        .tile-icon {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            font-size: 1.75rem;
+            color: var(--sapTile_IconColor, #5a7da0);
+        }
+
+        .tile-icon.ai {
+            color: var(--sapInformativeColor, #0070f2);
+        }
+
+        @media (max-width: 1200px) {
+            .content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Shell Bar -->
+    <ui5-shellbar
+        primary-title="S/4HANA Cloud"
+        secondary-title="Home"
+        show-co-pilot
+        show-search-field
+        show-notifications
+        show-product-switch>
+        <ui5-avatar slot="profile" initials="SD" color-scheme="Accent6"></ui5-avatar>
+    </ui5-shellbar>
+
+    <!-- Tab Navigation -->
+    <div class="tab-container">
+        <a href="#" class="tab-item active">Self-Billing Processing</a>
+        <a href="#" class="tab-item">Self-Billing Analytics</a>
+        <a href="#" class="tab-item">Self-Billing Configuration</a>
+        <a href="#" class="tab-item">Self-Billing Archiving</a>
+        <a href="#" class="tab-item">Self-Billing Logs</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <!-- First Section -->
+        <div class="tiles-container">
+            <div class="tiles-row">
+                <a href="#" class="tile">
+                    <div class="tile-header">Manage Self-Billing</div>
+                    <div class="tile-subtitle">Automatic Posting</div>
+                    <div class="tile-icon"></div>
+                </a>
+
+                <a href="list-report.html" class="tile">
+                    <div class="tile-header">Manage Self-Billing</div>
+                    <div class="tile-subtitle">Invoice Creation</div>
+                    <div class="tile-icon"></div>
+                </a>
+
+                <a href="create-new.html" class="tile">
+                    <div class="tile-header">AI Assisted Document Parsing</div>
+                    <div class="tile-icon ai"></div>
+                </a>
+
+                <a href="transmission-schedules-standalone.html" class="tile">
+                    <div class="tile-header">Manage Transmission Job Schedules</div>
+                    <div class="tile-subtitle">Schedule Management</div>
+                    <div class="tile-icon"></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="tiles-container">
+            <div class="section-title">Self-Billing Analytics</div>
+            <div class="tiles-row">
+                <a href="#" class="tile">
+                    <div class="tile-header">Manage Price Deviation</div>
+                    <div class="tile-icon"></div>
+                </a>
+
+                <a href="#" class="tile">
+                    <div class="tile-header">Manage Quantity Deviation</div>
+                    <div class="tile-icon"></div>
+                </a>
+
+                <a href="#" class="tile">
+                    <div class="tile-header">Manage Tax Deviation</div>
+                    <div class="tile-icon"></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Configuration Section -->
+        <div class="tiles-container">
+            <div class="section-title">Self-Billing Configuration</div>
+            <div class="tiles-row">
+                <a href="#" class="tile">
+                    <div class="tile-header">Manage Tolerance Group</div>
+                    <div class="tile-icon"></div>
+                </a>
+
+                <a href="#" class="tile">
+                    <div class="tile-header">Define Sold-to Party Parameters</div>
+                    <div class="tile-icon"></div>
+                </a>
+
+                <a href="#" class="tile">
+                    <div class="tile-header">Define Sender Parameters</div>
+                    <div class="tile-icon"></div>
+                </a>
+
+                <a href="#" class="tile">
+                    <div class="tile-header">Define General Parameters</div>
+                    <div class="tile-icon"></div>
+                </a>
+
+                <a href="#" class="tile">
+                    <div class="tile-header">Customize Self Billing Process</div>
+                    <div class="tile-icon"></div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

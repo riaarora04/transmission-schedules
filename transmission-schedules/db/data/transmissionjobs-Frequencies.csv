@@ -1,0 +1,6 @@
+code,name,descr
+DAILY,Daily,Runs once per day
+WEEKLY,Weekly,Runs once per week
+MONTHLY,Monthly,Runs once per month
+HOURLY,Hourly,Runs every hour
+CUSTOM,Custom,Custom schedule

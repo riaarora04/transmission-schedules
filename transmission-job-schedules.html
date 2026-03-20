@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Transmission Job Schedules</title>
+
+    <!-- SAP UI5 Core -->
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table,sap.ui.comp"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-resourceroots='{"sap.ui.demo": "./"}'>
+    </script>
+
+    <!-- SAP UI5 Web Components -->
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/CheckBox.js";
+        import "@ui5/webcomponents/dist/Switch.js";
+        import "@ui5/webcomponents/dist/MultiInput.js";
+    </script>
+
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Base typography */
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor, #f5f6f7);
+            color: var(--sapTextColor, #1d2d3e);
+            overflow: hidden;
+        }
+
+        /* Design Tokens */
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapPositiveTextColor: #256f3a;
+            --sapNegativeTextColor: #aa0808;
+            --sapCriticalTextColor: #b44f00;
+            --sapNeutralTextColor: #1d2d3e;
+            --sapInformativeColor: #0070f2;
+
+            --sapObjectHeader_Background: white;
+            --sapObjectHeader_BorderColor: #d9d9d9;
+
+            --sapButton_Emphasized_Background: #0070f2;
+            --sapButton_Emphasized_BorderColor: #0070f2;
+
+            --sapGroup_TitleTextColor: #1d2d3e;
+            --sapGroup_ContentBackground: white;
+
+            --sapContent_LabelColor: #556b82;
+            --sapField_Background: white;
+            --sapField_ReadOnly_Background: #eaecee;
+            --sapField_BorderColor: #e5e5e5;
+
+            --sapShell_InteractiveTextColor: #1d2d3e;
+
+            /* List/Table Tokens */
+            --sapList_HeaderBackground: #fafafa;
+            --sapList_HeaderTextColor: #32363a;
+            --sapList_BorderColor: #e5e5e5;
+            --sapList_Background: white;
+            --sapList_TextColor: #32363a;
+            --sapList_Hover_Background: #fafafa;
+            --sapList_Active_Background: #e5e5e5;
+        }
+
+        /* App Container */
+        #app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Shell Bar */
+        ui5-shellbar {
+            --_ui5_shellbar_height: 2.75rem;
+        }
+
+        /* Main Content */
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Filter Bar */
+        .filter-bar-container {
+            background: white;
+        }
+
+        #filterBar {
+            background: white;
+        }
+
+        /* Table Container */
+        .table-wrapper {
+            margin: 1rem 3rem;
+        }
+
+        /* SAP UI5 Table Overrides */
+        #scheduleTable .sapMList {
+            border: none;
+        }
+
+        /* Object Page Header */
+        .object-page-header {
+            background: var(--sapObjectHeader_Background);
+            padding: 0 3rem;
+            border-bottom: 1px solid var(--sapObjectHeader_BorderColor);
+        }
+
+        .object-header-title {
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .object-title {
+            font-family: '72-Black', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--sapGroup_TitleTextColor);
+            margin-bottom: 0.5rem;
+        }
+
+        .object-subtitle {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .header-facets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem 2rem;
+            padding: 1rem 0;
+        }
+
+        .facet {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .facet-label {
+            font-size: 1rem;
+            color: var(--sapGroup_TitleTextColor);
+        }
+
+        .facet-value {
+            font-size: 1.5rem;
+            color: var(--sapNeutralTextColor);
+        }
+
+        .facet-value.positive {
+            color: var(--sapPositiveTextColor);
+        }
+
+        .facet-value.negative {
+            color: var(--sapNegativeTextColor);
+        }
+
+        .facet-value.critical {
+            color: var(--sapCriticalTextColor);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-family: '72-Bold', sans-serif;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-badge.active {
+            background: #e8f3ff;
+            border: 1px solid #b5d7ff;
+            color: #0064d9;
+        }
+
+        /* Icon Tab Bar */
+        .tab-container {
+            display: flex;
+            gap: 2rem;
+            padding: 0 3rem;
+            background: white;
+            border-bottom: 1px solid var(--sapObjectHeader_BorderColor);
+            box-shadow: inset 0 -1px 0 0 #d9d9d9;
+        }
+
+        .tab-item {
+            padding: 0.75rem 0.25rem;
+            text-decoration: none;
+            font-family: '72-Bold', sans-serif;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: var(--sapTextColor);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-item.active {
+            color: var(--sapInformativeColor);
+            border-bottom-color: var(--sapInformativeColor);
+        }
+
+        .tab-item:hover {
+            color: var(--sapHighlightColor);
+        }
+
+        /* Object Page Body */
+        .object-page-body {
+            padding: 1rem 3rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--sapGroup_TitleTextColor);
+            margin-bottom: 1rem;
+        }
+
+        .form-container {
+            background: var(--sapGroup_ContentBackground);
+            padding: 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .form-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(288px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group-header {
+            font-family: '72-Bold', sans-serif;
+            font-size: 0.875rem;
+            font-weight: bold;
+            color: var(--sapGroup_TitleTextColor);
+            padding: 0.5rem 0;
+        }
+
+        .form-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-item-label {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .form-item-value {
+            font-size: 0.875rem;
+            color: var(--sapTextColor);
+        }
+
+        .form-item-value.link {
+            color: var(--sapHighlightColor);
+        }
+
+        .form-item ui5-input,
+        .form-item ui5-select,
+        .form-item ui5-date-picker,
+        .form-item ui5-multi-input {
+            width: 100%;
+        }
+
+        .form-item-inline {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-item-row {
+            display: grid;
+            grid-template-columns: 58% 42%;
+            gap: 0.5rem;
+        }
+
+        /* Footer */
+        .footer-toolbar {
+            background: var(--sapGroup_ContentBackground);
+            padding: 0.5rem 2rem;
+            border-top: 1px solid var(--sapField_BorderColor);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        /* Status Colors */
+        .status-completed {
+            color: var(--sapPositiveTextColor);
+        }
+
+        .status-error {
+            color: var(--sapNegativeTextColor);
+        }
+
+        .status-pending {
+            color: var(--sapCriticalTextColor);
+        }
+
+        /* Utility Classes */
+        .text-bold {
+            font-weight: bold;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .table-wrapper,
+            .tab-container,
+            .object-page-header,
+            .object-page-body {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            id="shellbar"
+            primary-title="SAP"
+            secondary-title="Manage Transmission Job Schedules"
+            show-notifications
+            show-product-switch
+            show-co-pilot>
+            <ui5-icon slot="logo" name="sap-logo-shape"></ui5-icon>
+            <ui5-avatar slot="profile" initials="UI"></ui5-avatar>
+        </ui5-shellbar>
+
+        <!-- Main Content -->
+        <div class="content-wrapper">
+            <div class="scroll-container" id="mainContent">
+                <!-- List Report Page (Default View) -->
+                <div id="listReportPage">
+                    <!-- Filter Bar -->
+                    <div id="filterBar" class="filter-bar-container"></div>
+
+                    <!-- Table -->
+                    <div class="table-wrapper">
+                        <div id="scheduleTable"></div>
+                    </div>
+                </div>
+
+                <!-- Object Page - Display Mode -->
+                <div id="objectPageDisplay" class="hidden">
+                    <!-- Object Page Header -->
+                    <div class="object-page-header">
+                        <div class="object-header-title">
+                            <div class="title-section">
+                                <div class="object-title" id="displayTitle">2320586794</div>
+                                <div class="object-subtitle" id="displaySubtitle">Re run simulation for so and so</div>
+                            </div>
+                            <div class="header-actions">
+                                <ui5-button design="Emphasized" id="editBtn">Edit</ui5-button>
+                                <ui5-button design="Default" id="runNowDetailBtn">Run Now</ui5-button>
+                                <ui5-button design="Transparent" id="deleteDetailBtn">Delete</ui5-button>
+                                <ui5-button design="Transparent" id="displayChangesBtn">Display Changes</ui5-button>
+                                <ui5-button design="Transparent" id="viewLogsDetailBtn">View Application Logs</ui5-button>
+                                <ui5-button icon="refresh" design="Transparent"></ui5-button>
+                                <ui5-button icon="action" design="Transparent"></ui5-button>
+                            </div>
+                        </div>
+                        <div class="header-facets">
+                            <div class="facet">
+                                <div class="facet-label">Category</div>
+                                <div class="facet-value" id="displayCategory">Invoice Creation (SBINV)</div>
+                            </div>
+                            <div class="facet">
+                                <div class="facet-label">Last Run Status</div>
+                                <div class="facet-value positive" id="displayLastRunStatus">Completed</div>
+                            </div>
+                            <div class="facet">
+                                <div class="facet-label">Activity Status</div>
+                                <div>
+                                    <span class="status-badge active" id="displayActivityStatus">Active</span>
+                                </div>
+                            </div>
+                            <div class="facet">
+                                <div class="facet-label">Last Run Schedule</div>
+                                <div class="facet-value critical" id="displayLastRun">Dec 22, 2025, 08:04:44 AM</div>
+                            </div>
+                            <div class="facet">
+                                <div class="facet-label">Next Run Schedule</div>
+                                <div class="facet-value critical" id="displayNextRun">Jan 24, 2026, 08:04:44 AM</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Bar -->
+                    <div class="tab-container">
+                        <a href="#" class="tab-item active">General Information</a>
+                    </div>
+
+                    <!-- Object Page Body -->
+                    <div class="object-page-body">
+                        <div class="section">
+                            <div class="section-title">General Information</div>
+                            <div class="form-container">
+                                <div class="form-groups">
+                                    <div class="form-group">
+                                        <div class="form-group-header">Schedule Details</div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Schedule ID:</div>
+                                            <div class="form-item-value">2320586794</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Description:</div>
+                                            <div class="form-item-value">Re run simulation for so and so</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Category:</div>
+                                            <div class="form-item-value">Invoice Creation (SBINV)</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Destination:</div>
+                                            <div class="form-item-value">Source Information</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-group-header">&nbsp;</div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Issue Type:</div>
+                                            <div class="form-item-value">Delivery not found, Price <span class="link">2 more</span></div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Sender:</div>
+                                            <div class="form-item-value">24 Hours</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Sold-to Party:</div>
+                                            <div class="form-item-value">DLC co, Motor Car Part <span class="link">1 more</span></div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Sales Organisation:</div>
+                                            <div class="form-item-value">Dynamic Sales Solutions <span class="link">2 more</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-group-header">Timeline and Activity</div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Start Date/Time (UTC):</div>
+                                            <div class="form-item-value">Dec 16, 2025, 12:00:00 AM</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Repeat Interval:</div>
+                                            <div class="form-item-value">24 Hours</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Activity Status:</div>
+                                            <div class="form-item-value">Active</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Last Run Schedule:</div>
+                                            <div class="form-item-value">Dec 21, 2025, 10:23:00 AM</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-group-header">&nbsp;</div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Next Run Schedule:</div>
+                                            <div class="form-item-value">6 Axis</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Created On:</div>
+                                            <div class="form-item-value">Dec 1, 2025, 10:23:00 AM</div>
+                                        </div>
+                                        <div class="form-item">
+                                            <div class="form-item-label">Last Changed On:</div>
+                                            <div class="form-item-value">Dec 21, 2025, 10:23:00 AM</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Object Page - Creation Mode -->
+                <div id="objectPageCreate" class="hidden">
+                    <!-- Object Page Header -->
+                    <div class="object-page-header">
+                        <div class="object-header-title">
+                            <div class="title-section">
+                                <div class="object-title">New Transmission Job Schedule</div>
+                                <div class="object-subtitle">-</div>
+                            </div>
+                            <div class="header-actions">
+                                <ui5-button icon="action" design="Transparent"></ui5-button>
+                            </div>
+                        </div>
+                        <div class="header-facets">
+                            <div class="facet">
+                                <div class="facet-label">Category</div>
+                                <div class="facet-value">-</div>
+                            </div>
+                            <div class="facet">
+                                <div class="facet-label">Last Run Status</div>
+                                <div class="facet-value">-</div>
+                            </div>
+                            <div class="facet">
+                                <div class="facet-label">Activity Status</div>
+                                <div class="facet-value">-</div>
+                            </div>
+                            <div class="facet">
+                                <div class="facet-label">Last Run Schedule</div>
+                                <div class="facet-value">-</div>
+                            </div>
+                            <div class="facet">
+                                <div class="facet-label">Next Run Schedule</div>
+                                <div class="facet-value">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Bar -->
+                    <div class="tab-container">
+                        <a href="#" class="tab-item active">General Information</a>
+                    </div>
+
+                    <!-- Object Page Body -->
+                    <div class="object-page-body">
+                        <div class="section">
+                            <div class="section-title">General Information</div>
+                            <div class="form-container">
+                                <div class="form-groups">
+                                    <div class="form-group">
+                                        <div class="form-group-header">Schedule Details</div>
+                                        <div class="form-item">
+                                            <ui5-label for="createScheduleId">Schedule ID:</ui5-label>
+                                            <ui5-input id="createScheduleId" value="2320586794" readonly></ui5-input>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createDescription">Description:</ui5-label>
+                                            <ui5-input id="createDescription" placeholder="Enter description"></ui5-input>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createCategory">Category:</ui5-label>
+                                            <ui5-select id="createCategory">
+                                                <ui5-option>Invoice Creation (SBINV)</ui5-option>
+                                                <ui5-option>Order Processing</ui5-option>
+                                                <ui5-option>Data Sync</ui5-option>
+                                            </ui5-select>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createDestination">Destination:</ui5-label>
+                                            <ui5-input id="createDestination" show-suggestions placeholder="Enter destination"></ui5-input>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-group-header">&nbsp;</div>
+                                        <div class="form-item">
+                                            <ui5-label for="createIssueType">Issue Type:</ui5-label>
+                                            <ui5-multi-input id="createIssueType" placeholder="Enter issue types"></ui5-multi-input>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createSender">Sender:</ui5-label>
+                                            <ui5-input id="createSender" show-suggestions placeholder="Enter sender"></ui5-input>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createSoldToParty">Sold-to Party:</ui5-label>
+                                            <ui5-input id="createSoldToParty" show-suggestions placeholder="Enter sold-to party"></ui5-input>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createSalesOrg">Sales Organisation:</ui5-label>
+                                            <ui5-input id="createSalesOrg" show-suggestions placeholder="Enter sales organisation"></ui5-input>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-group-header">Timeline and Activity</div>
+                                        <div class="form-item">
+                                            <ui5-label for="createStartDate">Start Date/Time (UTC):</ui5-label>
+                                            <ui5-date-picker id="createStartDate" placeholder="Select date"></ui5-date-picker>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createRepeatInterval">Repeat Interval:</ui5-label>
+                                            <div class="form-item-row">
+                                                <ui5-input id="createRepeatValue" type="Number" placeholder="Enter value"></ui5-input>
+                                                <ui5-select id="createRepeatUnit">
+                                                    <ui5-option>Minutes</ui5-option>
+                                                    <ui5-option selected>Hours</ui5-option>
+                                                    <ui5-option>Days</ui5-option>
+                                                    <ui5-option>Weeks</ui5-option>
+                                                </ui5-select>
+                                            </div>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label>Activity Status:</ui5-label>
+                                            <div class="form-item-inline">
+                                                <ui5-switch id="createActivityStatus"></ui5-switch>
+                                                <span id="activityStatusLabel">Inactive</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createLastRun">Last Run Schedule:</ui5-label>
+                                            <ui5-input id="createLastRun" readonly placeholder="-"></ui5-input>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="form-group-header">&nbsp;</div>
+                                        <div class="form-item">
+                                            <ui5-label for="createNextRun">Next Run Schedule:</ui5-label>
+                                            <ui5-input id="createNextRun" readonly placeholder="-"></ui5-input>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createCreatedOn">Created On:</ui5-label>
+                                            <ui5-input id="createCreatedOn" readonly value="Dec 1, 2025, 10:23:00 AM"></ui5-input>
+                                        </div>
+                                        <div class="form-item">
+                                            <ui5-label for="createChangedOn">Changed On:</ui5-label>
+                                            <ui5-input id="createChangedOn" readonly placeholder="-"></ui5-input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="footer-toolbar">
+                        <ui5-button design="Transparent" id="discardBtn">Discard</ui5-button>
+                        <ui5-button design="Emphasized" id="saveBtn">Create</ui5-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Sample data for the table
+            const scheduleData = [
+                {
+                    id: "2320586794",
+                    category: "Invoice Creation (SBINV)",
+                    destination: "Source Information",
+                    lastRunStatus: "Completed",
+                    issueType: "Delivery not found, Price",
+                    sender: "24 Hours",
+                    soldToParty: "DLC co, Motor Car Part",
+                    salesOrg: "Dynamic Sales Solutions",
+                    activityStatus: "Active"
+                },
+                {
+                    id: "2320586795",
+                    category: "Order Processing",
+                    destination: "Target System A",
+                    lastRunStatus: "Failed",
+                    issueType: "Timeout",
+                    sender: "System A",
+                    soldToParty: "Global Supplies Inc",
+                    salesOrg: "North Region Sales",
+                    activityStatus: "Active"
+                },
+                {
+                    id: "2320586796",
+                    category: "Data Sync",
+                    destination: "Cloud Storage",
+                    lastRunStatus: "Running",
+                    issueType: "-",
+                    sender: "Data Center 1",
+                    soldToParty: "Tech Solutions Ltd",
+                    salesOrg: "Central Operations",
+                    activityStatus: "Active"
+                },
+                {
+                    id: "2320586797",
+                    category: "Invoice Creation (SBINV)",
+                    destination: "ERP Backend",
+                    lastRunStatus: "Completed",
+                    issueType: "Minor warnings",
+                    sender: "Batch Process",
+                    soldToParty: "Manufacturing Co",
+                    salesOrg: "South Region Sales",
+                    activityStatus: "Inactive"
+                },
+                {
+                    id: "2320586798",
+                    category: "Order Processing",
+                    destination: "Legacy System",
+                    lastRunStatus: "Failed",
+                    issueType: "Connection error",
+                    sender: "Integration Hub",
+                    soldToParty: "Retail Partners",
+                    salesOrg: "East Region Sales",
+                    activityStatus: "Active"
+                }
+            ];
+
+            // Create JSON Model
+            const oModel = new sap.ui.model.json.JSONModel({
+                schedules: scheduleData
+            });
+
+            // Create Filter Bar
+            const oFilterBar = new sap.ui.comp.filterbar.FilterBar("filterBarSchedules", {
+                advancedMode: true,
+                filterBarExpanded: true,
+                showGoOnFB: true,
+                showRestoreOnFB: false,
+                showClearOnFB: true,
+                search: function(oEvent) {
+                    sap.m.MessageToast.show("Search triggered");
+                },
+                filterGroupItems: [
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "scheduleId",
+                        label: "Schedule ID",
+                        visibleInFilterBar: true,
+                        control: new sap.m.Input({
+                            placeholder: "Enter Schedule ID"
+                        })
+                    }),
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "category",
+                        label: "Category",
+                        visibleInFilterBar: true,
+                        control: new sap.m.ComboBox({
+                            placeholder: "Select Category",
+                            items: [
+                                new sap.ui.core.Item({text: "Invoice Creation (SBINV)"}),
+                                new sap.ui.core.Item({text: "Order Processing"}),
+                                new sap.ui.core.Item({text: "Data Sync"})
+                            ]
+                        })
+                    }),
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "destination",
+                        label: "Destination",
+                        visibleInFilterBar: true,
+                        control: new sap.m.Input({
+                            placeholder: "Enter Destination"
+                        })
+                    }),
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "lastRunStatus",
+                        label: "Last Run Status",
+                        visibleInFilterBar: true,
+                        control: new sap.m.ComboBox({
+                            placeholder: "Select Status",
+                            items: [
+                                new sap.ui.core.Item({text: "Completed"}),
+                                new sap.ui.core.Item({text: "Failed"}),
+                                new sap.ui.core.Item({text: "Running"})
+                            ]
+                        })
+                    }),
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "issueType",
+                        label: "Issue Type",
+                        visibleInFilterBar: true,
+                        control: new sap.m.Input({
+                            placeholder: "Enter Issue Type"
+                        })
+                    }),
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "sender",
+                        label: "Sender",
+                        visibleInFilterBar: true,
+                        control: new sap.m.Input({
+                            placeholder: "Enter Sender"
+                        })
+                    }),
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "soldToParty",
+                        label: "Sold-to Party",
+                        visibleInFilterBar: true,
+                        control: new sap.m.Input({
+                            placeholder: "Enter Sold-to Party"
+                        })
+                    }),
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "salesOrg",
+                        label: "Sales Organisation",
+                        visibleInFilterBar: true,
+                        control: new sap.m.Input({
+                            placeholder: "Enter Sales Organisation"
+                        })
+                    }),
+                    new sap.ui.comp.filterbar.FilterGroupItem({
+                        groupName: "__$INTERNAL$",
+                        name: "activityStatus",
+                        label: "Activity Status",
+                        visibleInFilterBar: true,
+                        control: new sap.m.ComboBox({
+                            placeholder: "Select Activity Status",
+                            items: [
+                                new sap.ui.core.Item({text: "Active"}),
+                                new sap.ui.core.Item({text: "Inactive"})
+                            ]
+                        })
+                    })
+                ]
+            });
+
+            // Place filter bar in DOM
+            oFilterBar.placeAt("filterBar");
+
+            // Create Table with proper SAP UI5 styling
+            const oTable = new sap.m.Table("tableSchedules", {
+                headerText: "Transmission Job Schedules (" + scheduleData.length + ")",
+                mode: sap.m.ListMode.MultiSelect,
+                columns: [
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Schedule ID"}),
+                        width: "10em"
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Category"}),
+                        width: "12em",
+                        demandPopin: true,
+                        minScreenWidth: "Tablet"
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Destination"}),
+                        width: "10em",
+                        demandPopin: true,
+                        minScreenWidth: "Desktop"
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Last Run Status"}),
+                        width: "10em"
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Issue Type"}),
+                        width: "12em",
+                        demandPopin: true,
+                        minScreenWidth: "Desktop"
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Sender"}),
+                        width: "8em",
+                        demandPopin: true,
+                        minScreenWidth: "Desktop"
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Sold-to Party"}),
+                        width: "12em",
+                        demandPopin: true,
+                        minScreenWidth: "Desktop"
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Sales Organisation"}),
+                        width: "12em",
+                        demandPopin: true,
+                        minScreenWidth: "Desktop"
+                    }),
+                    new sap.m.Column({
+                        header: new sap.m.Label({text: "Activity Status"}),
+                        width: "8em"
+                    })
+                ]
+            });
+
+            // Add toolbar with actions
+            oTable.setHeaderToolbar(new sap.m.OverflowToolbar({
+                content: [
+                    new sap.m.Title({
+                        text: "Transmission Job Schedules (" + scheduleData.length + ")",
+                        level: "H2"
+                    }),
+                    new sap.m.ToolbarSpacer(),
+                    new sap.m.Button("createBtn", {
+                        text: "Create",
+                        type: "Emphasized",
+                        press: function() {
+                            showObjectPage('create');
+                        }
+                    }),
+                    new sap.m.Button("runNowBtn", {
+                        text: "Run Now",
+                        press: function() {
+                            sap.m.MessageToast.show("Run Now clicked");
+                        }
+                    }),
+                    new sap.m.Button("deleteBtn", {
+                        text: "Delete",
+                        press: function() {
+                            sap.m.MessageToast.show("Delete clicked");
+                        }
+                    }),
+                    new sap.m.Button("viewLogsBtn", {
+                        text: "View Application Logs",
+                        type: "Transparent",
+                        press: function() {
+                            sap.m.MessageToast.show("View Logs clicked");
+                        }
+                    })
+                ]
+            }));
+
+            // Bind items to the table
+            oTable.bindItems({
+                path: "/schedules",
+                template: new sap.m.ColumnListItem({
+                    type: "Navigation",
+                    press: function(oEvent) {
+                        const oContext = oEvent.getSource().getBindingContext();
+                        const oData = oContext.getObject();
+                        showObjectPage('display', oData);
+                    },
+                    cells: [
+                        new sap.m.Text({text: "{id}"}),
+                        new sap.m.Text({text: "{category}"}),
+                        new sap.m.Text({text: "{destination}"}),
+                        new sap.m.ObjectStatus({
+                            text: "{lastRunStatus}",
+                            state: {
+                                path: 'lastRunStatus',
+                                formatter: function(status) {
+                                    if (status === "Completed") return "Success";
+                                    if (status === "Failed") return "Error";
+                                    if (status === "Running") return "Warning";
+                                    return "None";
+                                }
+                            }
+                        }),
+                        new sap.m.Text({text: "{issueType}"}),
+                        new sap.m.Text({text: "{sender}"}),
+                        new sap.m.Text({text: "{soldToParty}"}),
+                        new sap.m.Text({text: "{salesOrg}"}),
+                        new sap.m.Text({text: "{activityStatus}"})
+                    ]
+                })
+            });
+
+            // Set model to the table
+            oTable.setModel(oModel);
+
+            // Place table in DOM
+            oTable.placeAt("scheduleTable");
+
+            // Navigation functions
+            window.showListReport = function() {
+                document.getElementById('listReportPage').classList.remove('hidden');
+                document.getElementById('objectPageDisplay').classList.add('hidden');
+                document.getElementById('objectPageCreate').classList.add('hidden');
+                document.querySelector('ui5-shellbar').setAttribute('secondary-title', 'Manage Transmission Job Schedules');
+            }
+
+            window.showObjectPage = function(mode, schedule) {
+                document.getElementById('listReportPage').classList.add('hidden');
+
+                if (mode === 'display') {
+                    document.getElementById('objectPageDisplay').classList.remove('hidden');
+                    document.getElementById('objectPageCreate').classList.add('hidden');
+
+                    // Populate display data
+                    if (schedule) {
+                        document.getElementById('displayTitle').textContent = schedule.id;
+                        document.getElementById('displaySubtitle').textContent = 'Re run simulation for so and so';
+                        document.getElementById('displayCategory').textContent = schedule.category;
+                        document.getElementById('displayLastRunStatus').textContent = schedule.lastRunStatus;
+                        document.getElementById('displayActivityStatus').textContent = schedule.activityStatus;
+                    }
+
+                    document.querySelector('ui5-shellbar').setAttribute('secondary-title', schedule ? schedule.id : 'Transmission Job Schedule');
+                } else if (mode === 'create') {
+                    document.getElementById('objectPageDisplay').classList.add('hidden');
+                    document.getElementById('objectPageCreate').classList.remove('hidden');
+                    document.querySelector('ui5-shellbar').setAttribute('secondary-title', 'New Transmission Job Schedule');
+                }
+            }
+
+            // Object Page Actions - Display
+            document.getElementById('editBtn').addEventListener('click', function() {
+                showObjectPage('create');
+            });
+
+            // Object Page Actions - Create
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                sap.m.MessageToast.show('Schedule created successfully!');
+                showListReport();
+            });
+
+            document.getElementById('discardBtn').addEventListener('click', function() {
+                sap.m.MessageBox.confirm('Discard changes?', {
+                    onClose: function(oAction) {
+                        if (oAction === sap.m.MessageBox.Action.OK) {
+                            showListReport();
+                        }
+                    }
+                });
+            });
+
+            // Activity Status Switch
+            const activitySwitch = document.getElementById('createActivityStatus');
+            const activityLabel = document.getElementById('activityStatusLabel');
+            if (activitySwitch) {
+                activitySwitch.addEventListener('change', function() {
+                    activityLabel.textContent = this.checked ? 'Active' : 'Inactive';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

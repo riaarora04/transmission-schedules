@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Empty Returnable Materials - Partner Portal</title>
+    <link rel="stylesheet" href="https://sdk.openui5.org/resources/sap/ui/core/themes/sap_horizon/library.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: '72', Arial, sans-serif;
+            background: #f5f6f7;
+            color: #1d2d3e;
+            overflow-x: hidden;
+        }
+
+        /* Shell Bar */
+        .shell-bar {
+            background: white;
+            border-bottom: 1px solid white;
+            padding: 4px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 44px;
+        }
+
+        .shell-bar-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #1d2d3e;
+        }
+
+        .sap-logo {
+            width: 60px;
+            height: 30px;
+            background: #0070f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .page-title {
+            font-weight: bold;
+            font-size: 14px;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .search-field {
+            width: 560px;
+            height: 36px;
+            background: #eff1f2;
+            border-radius: 18px;
+            border: 1px solid rgba(85, 107, 130, 0.25);
+            padding: 0 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-field input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .shell-bar-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #1d2d3e;
+            border-radius: 8px;
+        }
+
+        .icon-btn:hover {
+            background: #eff1f2;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            background: white;
+            padding: 16px 48px;
+            box-shadow: 0 2px 2px rgba(85, 107, 130, 0.05);
+        }
+
+        .filter-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .variant-title {
+            font-size: 24px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            margin-bottom: 16px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 220px;
+        }
+
+        .input-field label {
+            font-size: 14px;
+            color: #556b82;
+        }
+
+        .input-field input,
+        .input-field select {
+            height: 26px;
+            background: white;
+            border: 1px solid rgba(85, 107, 130, 0.25);
+            border-radius: 4px;
+            padding: 0 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .input-field input:focus,
+        .input-field select:focus {
+            border-color: #0070f2;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+            align-items: center;
+        }
+
+        .btn-go {
+            background: #0070f2;
+            color: white;
+            border: 1px solid #0070f2;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-go:hover {
+            background: #0060d0;
+        }
+
+        .btn-adapt {
+            background: transparent;
+            color: #0064d9;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-adapt:hover {
+            background: #eff1f2;
+        }
+
+        .collapse-indicator {
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding-top: 12px;
+            border-bottom: 1px solid #d9d9d9;
+        }
+
+        .collapse-line {
+            position: absolute;
+            top: 11.5px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #d9d9d9 32%, #d9d9d9 68%, transparent 100%);
+        }
+
+        .collapse-btns {
+            display: flex;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+            background: white;
+            padding: 0 8px;
+        }
+
+        .collapse-btn {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 1px solid #bcc3ca;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            background: white;
+            box-shadow: 0 2px 2px rgba(34, 53, 72, 0.05), inset 0 -1px 0 #d9d9d9;
+            padding: 0 48px;
+            display: flex;
+            gap: 32px;
+        }
+
+        .tab {
+            padding: 0 3px 3px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            color: #1d2d3e;
+            border-bottom: 3px solid transparent;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .tab:hover {
+            color: #0064d9;
+        }
+
+        .tab.active {
+            color: #0064d9;
+            border-bottom-color: #0064d9;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 16px 48px;
+        }
+
+        /* Table Toolbar */
+        .table-toolbar {
+            background: white;
+            border-bottom: 1px solid #a8b3bd;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .table-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-create {
+            background: transparent;
+            color: #0064d9;
+            border: 1px solid #0070f2;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-create:hover {
+            background: #f0f8ff;
+        }
+
+        .btn-create-multi {
+            background: transparent;
+            color: #0064d9;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-create-multi:hover {
+            background: #eff1f2;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 0 0 12px 12px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: white;
+            border: 1px solid #e5e5e5;
+            padding: 8px;
+            text-align: left;
+            font-weight: bold;
+            color: #1d2d3e;
+            white-space: nowrap;
+        }
+
+        td {
+            background: white;
+            border: 1px solid #eaecee;
+            padding: 8px;
+            color: #1d2d3e;
+        }
+
+        tr:hover td {
+            background: #f8f9fa;
+        }
+
+        .row-highlight {
+            border-left: 6px solid #0064d9;
+            padding-left: 2px !important;
+        }
+
+        .status-requested {
+            color: #1d2d3e;
+        }
+
+        .status-error {
+            color: #aa0808;
+            text-decoration: underline;
+        }
+
+        .status-rejected {
+            color: #aa0808;
+        }
+
+        .status-approved {
+            color: #256f3a;
+        }
+
+        .status-flow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+
+        .status-circle.complete {
+            background: #2da44e;
+        }
+
+        .status-circle.error {
+            background: #d73a49;
+        }
+
+        .status-circle.empty {
+            background: #e5e5e5;
+        }
+
+        .status-line {
+            width: 10px;
+            height: 1px;
+            background: #758ca4;
+        }
+
+        .btn-navigate {
+            background: transparent;
+            border: none;
+            color: #758ca4;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .btn-view {
+            background: #0070f2;
+            color: #0064d9;
+            border: 1px solid #0070f2;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #556b81;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Shell Bar -->
+    <div class="shell-bar">
+        <div class="shell-bar-nav">
+            <button class="back-btn">◀</button>
+            <div class="sap-logo">SAP</div>
+            <div class="page-title">
+                Order Empty Returnable Materials
+                <span>▼</span>
+            </div>
+        </div>
+        <div class="search-field">
+            <input type="text" placeholder="Search">
+            <button class="icon-btn">🔍</button>
+        </div>
+        <div class="shell-bar-buttons">
+            <button class="icon-btn">🔔</button>
+            <button class="icon-btn">⚙️</button>
+            <div class="avatar"></div>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <div class="filter-title">
+            <div class="variant-title">
+                Standard
+                <button class="icon-btn">▼</button>
+            </div>
+            <button class="icon-btn">⋮</button>
+        </div>
+        <div class="filter-row">
+            <div class="input-field">
+                <label>Material:</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-field">
+                <label>Plant:</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-field">
+                <label>Exchange Partner:</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-field">
+                <label>Expected Delivery Date:</label>
+                <input type="text" value="Oct 23, 2024 - Nov 23, 2024">
+            </div>
+            <div class="input-field">
+                <label>Order Status:</label>
+                <select>
+                    <option></option>
+                </select>
+            </div>
+            <div class="filter-buttons">
+                <button class="btn-go">Go</button>
+                <button class="btn-adapt">Adapt Filters (1)</button>
+            </div>
+        </div>
+        <div class="collapse-indicator">
+            <div class="collapse-line"></div>
+            <div class="collapse-btns">
+                <button class="collapse-btn">▲</button>
+                <button class="collapse-btn">📌</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <a href="#" class="tab">Material Orders</a>
+        <a href="#" class="tab active">Packaging Standard Orders</a>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Table Toolbar -->
+        <div class="table-toolbar">
+            <div class="table-title">Packaging Standard Orders (7)</div>
+            <div class="table-buttons">
+                <button class="btn-create">Create</button>
+                <button class="btn-create-multi">Create Multiple Orders</button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 8px;"></th>
+                        <th style="width: 32px;"><input type="checkbox" class="checkbox"></th>
+                        <th>Order Number</th>
+                        <th>Packaging Standard</th>
+                        <th>Packaging Standard Description</th>
+                        <th>Business Partner</th>
+                        <th>Expected Delivery Date</th>
+                        <th>Sales Order Number</th>
+                        <th class="text-right">Requested Quantity</th>
+                        <th class="text-right">Approved Quantity</th>
+                        <th>Order Status</th>
+                        <th>Status Flow</th>
+                        <th style="width: 32px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="row-highlight"></td>
+                        <td><input type="checkbox" class="checkbox"></td>
+                        <td class="text-bold">3094045</td>
+                        <td>HT 4904</td>
+                        <td>BLC bundle with red KLTs</td>
+                        <td>Rolf Motors</td>
+                        <td>25 Apr, 2025</td>
+                        <td class="text-right">SO030333</td>
+                        <td class="text-right">08</td>
+                        <td class="text-right"></td>
+                        <td class="status-requested">Requested</td>
+                        <td>
+                            <div class="status-flow">
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                            </div>
+                        </td>
+                        <td><button class="btn-navigate">→</button></td>
+                    </tr>
+                    <tr>
+                        <td class="row-highlight"></td>
+                        <td><input type="checkbox" class="checkbox"></td>
+                        <td class="text-bold">3094046</td>
+                        <td>HT 1001</td>
+                        <td>21-95 packages for NLS</td>
+                        <td>Pallet World</td>
+                        <td>13 May, 2025</td>
+                        <td class="text-right">SO020212</td>
+                        <td class="text-right">10</td>
+                        <td class="text-right"></td>
+                        <td class="status-requested">Requested</td>
+                        <td>
+                            <div class="status-flow">
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                            </div>
+                        </td>
+                        <td><button class="btn-navigate">→</button></td>
+                    </tr>
+                    <tr>
+                        <td class="row-highlight"></td>
+                        <td><input type="checkbox" class="checkbox"></td>
+                        <td class="text-bold">3094047</td>
+                        <td>HT 1002</td>
+                        <td>Bundle with blue KLTs</td>
+                        <td>ABC Company</td>
+                        <td>14 Mar, 2025</td>
+                        <td class="text-right">SO020212</td>
+                        <td class="text-right">11</td>
+                        <td class="text-right"></td>
+                        <td class="status-requested">Requested</td>
+                        <td>
+                            <div class="status-flow">
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                            </div>
+                        </td>
+                        <td><button class="btn-navigate">→</button></td>
+                    </tr>
+                    <tr>
+                        <td class="row-highlight"></td>
+                        <td><input type="checkbox" class="checkbox"></td>
+                        <td class="text-bold">3094048</td>
+                        <td>PD-105</td>
+                        <td>DTCS 0303 KLT, Pallets.</td>
+                        <td>Westerns Pvt Ltd</td>
+                        <td>14 May, 2025</td>
+                        <td class="text-right">SO020214</td>
+                        <td class="text-right">8</td>
+                        <td class="text-right"></td>
+                        <td class="status-error">Error</td>
+                        <td>
+                            <div class="status-flow">
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle error">✗</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                            </div>
+                        </td>
+                        <td><button class="btn-navigate">→</button></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="checkbox" class="checkbox"></td>
+                        <td class="text-bold">3094049</td>
+                        <td>PD-106</td>
+                        <td>BLC bundle with red KLTs</td>
+                        <td>Westerns Pvt Ltd</td>
+                        <td>13 May, 2025</td>
+                        <td class="text-right">SO020456</td>
+                        <td class="text-right">10</td>
+                        <td class="text-right">0</td>
+                        <td class="status-rejected">Rejected</td>
+                        <td>
+                            <div class="status-flow">
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle error">✗</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                            </div>
+                        </td>
+                        <td><button class="btn-navigate">→</button></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="checkbox" class="checkbox"></td>
+                        <td class="text-bold">3094050</td>
+                        <td>PD-102</td>
+                        <td>NCC bundle with Pallets</td>
+                        <td>Rolf Motors</td>
+                        <td>25 Apr, 2025</td>
+                        <td class="text-right">SO123457</td>
+                        <td class="text-right">12</td>
+                        <td class="text-right">0</td>
+                        <td class="status-approved">Approved with Changes</td>
+                        <td>
+                            <div class="status-flow">
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                            </div>
+                        </td>
+                        <td><button class="btn-navigate">→</button></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input type="checkbox" class="checkbox"></td>
+                        <td class="text-bold">3094051</td>
+                        <td>PD-101</td>
+                        <td>BCC bundles for 345 MCK</td>
+                        <td>Pallet World</td>
+                        <td>13 May, 2025</td>
+                        <td class="text-right">SO543569</td>
+                        <td class="text-right">1</td>
+                        <td class="text-right">1</td>
+                        <td class="status-approved">Approved</td>
+                        <td>
+                            <div class="status-flow">
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle complete">✓</div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                                <div class="status-line"></div>
+                                <div class="status-circle empty"></div>
+                            </div>
+                        </td>
+                        <td><button class="btn-navigate">→</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

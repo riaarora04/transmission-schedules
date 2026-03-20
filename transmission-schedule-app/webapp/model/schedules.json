@@ -1,0 +1,315 @@
+{
+    "schedules": [
+        {
+            "scheduleId": "SCH-2026-001",
+            "description": "Daily transmission for customer invoices",
+            "status": "Active",
+            "category": "Financial Documents",
+            "issueType": "Invoice",
+            "soldToParty": "100001",
+            "soldToPartyName": "ABC Corporation Ltd.",
+            "frequency": "Daily",
+            "priority": "High",
+            "validFrom": "2026-01-01T00:00:00",
+            "validTo": "2026-12-31T23:59:59",
+            "nextRun": "2026-03-20T08:00:00",
+            "lastRun": "2026-03-19T08:00:00",
+            "createdBy": "JSMITH",
+            "createdOn": "2026-01-15T10:30:00",
+            "changedBy": "JSMITH",
+            "changedOn": "2026-03-10T14:20:00",
+            "parameters": {
+                "transmissionType": "EDI",
+                "outputFormat": "XML",
+                "deliveryMethod": "Email",
+                "emailRecipients": "finance@abccorp.com",
+                "ftpServer": "",
+                "notifyOnSuccess": true,
+                "notifyOnFailure": true
+            },
+            "executionHistory": [
+                {
+                    "executionDate": "2026-03-19T08:00:00",
+                    "executionStatus": "Success",
+                    "duration": "2m 34s",
+                    "recordsProcessed": "145",
+                    "errorMessage": ""
+                },
+                {
+                    "executionDate": "2026-03-18T08:00:00",
+                    "executionStatus": "Success",
+                    "duration": "2m 12s",
+                    "recordsProcessed": "132",
+                    "errorMessage": ""
+                },
+                {
+                    "executionDate": "2026-03-17T08:00:00",
+                    "executionStatus": "Failed",
+                    "duration": "0m 45s",
+                    "recordsProcessed": "0",
+                    "errorMessage": "Connection timeout to email server"
+                }
+            ]
+        },
+        {
+            "scheduleId": "SCH-2026-002",
+            "description": "Weekly order status update transmission",
+            "status": "Scheduled",
+            "category": "Order Management",
+            "issueType": "Order Status",
+            "soldToParty": "100002",
+            "soldToPartyName": "XYZ Industries Inc.",
+            "frequency": "Weekly",
+            "priority": "Medium",
+            "validFrom": "2026-02-01T00:00:00",
+            "validTo": "2026-11-30T23:59:59",
+            "nextRun": "2026-03-24T18:00:00",
+            "lastRun": "2026-03-17T18:00:00",
+            "createdBy": "MDAVIS",
+            "createdOn": "2026-01-28T09:15:00",
+            "changedBy": "MDAVIS",
+            "changedOn": "2026-02-15T11:45:00",
+            "parameters": {
+                "transmissionType": "API",
+                "outputFormat": "JSON",
+                "deliveryMethod": "FTP",
+                "emailRecipients": "",
+                "ftpServer": "ftp.xyzindustries.com",
+                "notifyOnSuccess": false,
+                "notifyOnFailure": true
+            },
+            "executionHistory": [
+                {
+                    "executionDate": "2026-03-17T18:00:00",
+                    "executionStatus": "Success",
+                    "duration": "5m 18s",
+                    "recordsProcessed": "523",
+                    "errorMessage": ""
+                }
+            ]
+        },
+        {
+            "scheduleId": "SCH-2026-003",
+            "description": "Monthly inventory reconciliation report",
+            "status": "Inactive",
+            "category": "Inventory Management",
+            "issueType": "Reconciliation Report",
+            "soldToParty": "100003",
+            "soldToPartyName": "Global Trade Partners",
+            "frequency": "Monthly",
+            "priority": "Low",
+            "validFrom": "2026-01-01T00:00:00",
+            "validTo": "2026-06-30T23:59:59",
+            "nextRun": "2026-04-01T00:00:00",
+            "lastRun": "2026-03-01T00:00:00",
+            "createdBy": "KLEE",
+            "createdOn": "2025-12-20T16:30:00",
+            "changedBy": "KLEE",
+            "changedOn": "2026-03-05T10:10:00",
+            "parameters": {
+                "transmissionType": "Batch",
+                "outputFormat": "CSV",
+                "deliveryMethod": "Email",
+                "emailRecipients": "inventory@globaltradepart.com",
+                "ftpServer": "",
+                "notifyOnSuccess": true,
+                "notifyOnFailure": true
+            },
+            "executionHistory": [
+                {
+                    "executionDate": "2026-03-01T00:00:00",
+                    "executionStatus": "Success",
+                    "duration": "15m 42s",
+                    "recordsProcessed": "2847",
+                    "errorMessage": ""
+                }
+            ]
+        },
+        {
+            "scheduleId": "SCH-2026-004",
+            "description": "Real-time shipment notification transmission",
+            "status": "Running",
+            "category": "Logistics",
+            "issueType": "Shipment Notification",
+            "soldToParty": "100004",
+            "soldToPartyName": "FastShip Logistics Co.",
+            "frequency": "Real-time",
+            "priority": "Critical",
+            "validFrom": "2026-03-01T00:00:00",
+            "validTo": "2026-12-31T23:59:59",
+            "nextRun": "2026-03-19T15:30:00",
+            "lastRun": "2026-03-19T15:15:00",
+            "createdBy": "RJONES",
+            "createdOn": "2026-02-25T13:00:00",
+            "changedBy": "RJONES",
+            "changedOn": "2026-03-18T08:30:00",
+            "parameters": {
+                "transmissionType": "WebService",
+                "outputFormat": "XML",
+                "deliveryMethod": "API",
+                "emailRecipients": "",
+                "ftpServer": "",
+                "notifyOnSuccess": false,
+                "notifyOnFailure": true
+            },
+            "executionHistory": [
+                {
+                    "executionDate": "2026-03-19T15:15:00",
+                    "executionStatus": "Running",
+                    "duration": "-",
+                    "recordsProcessed": "-",
+                    "errorMessage": ""
+                }
+            ]
+        },
+        {
+            "scheduleId": "SCH-2026-005",
+            "description": "Bi-weekly customer statement transmission",
+            "status": "Error",
+            "category": "Financial Documents",
+            "issueType": "Statement",
+            "soldToParty": "100005",
+            "soldToPartyName": "Premier Solutions Group",
+            "frequency": "Bi-weekly",
+            "priority": "High",
+            "validFrom": "2026-01-15T00:00:00",
+            "validTo": "2026-12-15T23:59:59",
+            "nextRun": "2026-03-26T10:00:00",
+            "lastRun": "2026-03-19T10:00:00",
+            "createdBy": "ABROWN",
+            "createdOn": "2026-01-10T11:20:00",
+            "changedBy": "ABROWN",
+            "changedOn": "2026-03-12T15:50:00",
+            "parameters": {
+                "transmissionType": "EDI",
+                "outputFormat": "PDF",
+                "deliveryMethod": "Email",
+                "emailRecipients": "accounting@premiersolutions.com",
+                "ftpServer": "",
+                "notifyOnSuccess": true,
+                "notifyOnFailure": true
+            },
+            "executionHistory": [
+                {
+                    "executionDate": "2026-03-19T10:00:00",
+                    "executionStatus": "Failed",
+                    "duration": "1m 05s",
+                    "recordsProcessed": "0",
+                    "errorMessage": "PDF generation failed: Template not found"
+                }
+            ]
+        },
+        {
+            "scheduleId": "SCH-2026-006",
+            "description": "Hourly production data sync",
+            "status": "Active",
+            "category": "Manufacturing",
+            "issueType": "Production Data",
+            "soldToParty": "100006",
+            "soldToPartyName": "TechManufacturing Ltd.",
+            "frequency": "Hourly",
+            "priority": "High",
+            "validFrom": "2026-02-15T00:00:00",
+            "validTo": "2026-08-15T23:59:59",
+            "nextRun": "2026-03-19T16:00:00",
+            "lastRun": "2026-03-19T15:00:00",
+            "createdBy": "SWILSON",
+            "createdOn": "2026-02-10T14:45:00",
+            "changedBy": "SWILSON",
+            "changedOn": "2026-03-01T09:30:00",
+            "parameters": {
+                "transmissionType": "API",
+                "outputFormat": "JSON",
+                "deliveryMethod": "API",
+                "emailRecipients": "",
+                "ftpServer": "",
+                "notifyOnSuccess": false,
+                "notifyOnFailure": true
+            },
+            "executionHistory": [
+                {
+                    "executionDate": "2026-03-19T15:00:00",
+                    "executionStatus": "Success",
+                    "duration": "1m 12s",
+                    "recordsProcessed": "1,234",
+                    "errorMessage": ""
+                }
+            ]
+        },
+        {
+            "scheduleId": "SCH-2026-007",
+            "description": "Quarterly compliance report generation",
+            "status": "Scheduled",
+            "category": "Compliance",
+            "issueType": "Compliance Report",
+            "soldToParty": "100007",
+            "soldToPartyName": "Regulatory Services Inc.",
+            "frequency": "Quarterly",
+            "priority": "Critical",
+            "validFrom": "2026-01-01T00:00:00",
+            "validTo": "2026-12-31T23:59:59",
+            "nextRun": "2026-04-01T00:00:00",
+            "lastRun": "2026-01-01T00:00:00",
+            "createdBy": "PMILLER",
+            "createdOn": "2025-12-15T10:00:00",
+            "changedBy": "PMILLER",
+            "changedOn": "2026-01-05T14:15:00",
+            "parameters": {
+                "transmissionType": "Batch",
+                "outputFormat": "PDF",
+                "deliveryMethod": "Email",
+                "emailRecipients": "compliance@regservices.com",
+                "ftpServer": "",
+                "notifyOnSuccess": true,
+                "notifyOnFailure": true
+            },
+            "executionHistory": [
+                {
+                    "executionDate": "2026-01-01T00:00:00",
+                    "executionStatus": "Success",
+                    "duration": "45m 23s",
+                    "recordsProcessed": "15,678",
+                    "errorMessage": ""
+                }
+            ]
+        },
+        {
+            "scheduleId": "SCH-2026-008",
+            "description": "Daily customer credit check update",
+            "status": "Active",
+            "category": "Credit Management",
+            "issueType": "Credit Check",
+            "soldToParty": "100008",
+            "soldToPartyName": "Credit Bureau Services",
+            "frequency": "Daily",
+            "priority": "Medium",
+            "validFrom": "2026-01-20T00:00:00",
+            "validTo": "2026-12-20T23:59:59",
+            "nextRun": "2026-03-20T06:00:00",
+            "lastRun": "2026-03-19T06:00:00",
+            "createdBy": "JGARCIA",
+            "createdOn": "2026-01-18T12:30:00",
+            "changedBy": "JGARCIA",
+            "changedOn": "2026-02-28T16:45:00",
+            "parameters": {
+                "transmissionType": "WebService",
+                "outputFormat": "XML",
+                "deliveryMethod": "API",
+                "emailRecipients": "",
+                "ftpServer": "",
+                "notifyOnSuccess": false,
+                "notifyOnFailure": true
+            },
+            "executionHistory": [
+                {
+                    "executionDate": "2026-03-19T06:00:00",
+                    "executionStatus": "Success",
+                    "duration": "8m 34s",
+                    "recordsProcessed": "2,456",
+                    "errorMessage": ""
+                }
+            ]
+        }
+    ],
+    "statusValues": []
+}

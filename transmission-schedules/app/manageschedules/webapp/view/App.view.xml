@@ -1,0 +1,12 @@
+<mvc:View
+    controllerName="transmissionjobs.manageschedules.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    displayBlock="true"
+    height="100%">
+    <f:FlexibleColumnLayout
+        id="layout"
+        stateChange=".onStateChanged"
+        layout="{appView>/layout}"
+        backgroundDesign="Transparent"/>
+</mvc:View>

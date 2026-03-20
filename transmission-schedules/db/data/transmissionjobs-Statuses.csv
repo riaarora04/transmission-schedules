@@ -1,0 +1,6 @@
+code,name,descr,criticality
+ACTIVE,Active,Schedule is active and running,3
+INACTIVE,Inactive,Schedule is inactive,0
+PAUSED,Paused,Schedule is temporarily paused,2
+ERROR,Error,Schedule encountered an error,1
+COMPLETED,Completed,Schedule has completed,3

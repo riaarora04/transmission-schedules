@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New : Packaging Standard Order</title>
+
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script type="module">
+        import "@ui5/webcomponents/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/Assets.js";
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Select.js";
+        import "@ui5/webcomponents/dist/Option.js";
+        import "@ui5/webcomponents/dist/DatePicker.js";
+        import "@ui5/webcomponents/dist/Table.js";
+        import "@ui5/webcomponents/dist/TableColumn.js";
+        import "@ui5/webcomponents/dist/TableRow.js";
+        import "@ui5/webcomponents/dist/TableCell.js";
+        import "@ui5/webcomponents/dist/Icon.js";
+        import "@ui5/webcomponents/dist/Link.js";
+        import "@ui5/webcomponents/dist/MessageStrip.js";
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor, #f5f6f7);
+            color: var(--sapTextColor, #1d2d3e);
+        }
+
+        :root {
+            --sapBackgroundColor: #f5f6f7;
+            --sapTextColor: #1d2d3e;
+            --sapHighlightColor: #0064d9;
+            --sapObjectHeader_Background: white;
+            --sapGroup_TitleBackground: white;
+            --sapContent_LabelColor: #556b82;
+            --sapField_RequiredColor: #aa0808;
+        }
+
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .object-header {
+            background: white;
+            padding: 1.5rem 3rem 1rem;
+            border-bottom: 1px solid #d9d9d9;
+        }
+
+        .object-title {
+            font-family: '72-Black', sans-serif;
+            font-size: 1.5rem;
+            color: var(--sapTextColor);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            background: transparent;
+            color: var(--sapHighlightColor);
+            font-size: 0.875rem;
+            font-family: '72-Semibold', sans-serif;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 2rem;
+            background: white;
+            padding: 0 3rem;
+            border-bottom: 1px solid #d9d9d9;
+            box-shadow: 0px 2px 2px rgba(85, 107, 130, 0.05);
+        }
+
+        .tab-item {
+            padding: 0.75rem 0.25rem;
+            font-family: '72-Bold', sans-serif;
+            font-size: 0.875rem;
+            color: var(--sapTextColor);
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .tab-item.active {
+            color: var(--sapHighlightColor);
+            border-bottom-color: var(--sapHighlightColor);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 3rem;
+        }
+
+        .section-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1rem;
+            color: var(--sapTextColor);
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-field ui5-label {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor);
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--sapField_RequiredColor);
+            font-weight: bold;
+        }
+
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--sapGroup_TitleBackground);
+            border-bottom: 1px solid #a8b3bd;
+        }
+
+        .table-title {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1rem;
+        }
+
+        .floating-footer {
+            position: fixed;
+            bottom: 1rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0px 0px 0px 1px rgba(34,54,73,0.48), 0px 2px 8px 0px rgba(34,54,73,0.3);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            z-index: 100;
+        }
+
+        .row-highlight {
+            border-left: 6px solid #e76500;
+        }
+
+        @media (max-width: 1200px) {
+            .object-header,
+            .tab-container,
+            .content-area {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Shell Bar -->
+        <ui5-shellbar
+            primary-title="Product"
+            show-notifications
+            show-product-switch
+            show-co-pilot>
+            <img slot="logo" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Cpath fill='%230070F2' d='M0 0h60v30H0z'/%3E%3Cpath fill='white' d='M10 8h8v2h-8zm0 4h12v2H10zm0 4h10v2H10z'/%3E%3C/svg%3E"/>
+        </ui5-shellbar>
+
+        <!-- Object Header -->
+        <div class="object-header">
+            <div class="object-title">
+                New : Packaging Standard Order
+                <ui5-button design="Transparent" icon="slim-arrow-down">
+                    <span class="status-badge">Draft</span>
+                </ui5-button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-container">
+            <a href="#" class="tab-item active">Business Partner</a>
+            <a href="#" class="tab-item">Packaging Standard</a>
+        </div>
+
+        <!-- Content -->
+        <div class="content-area">
+            <!-- Message Strip -->
+            <ui5-message-strip design="Information" style="margin-bottom: 1rem;">
+                Orders will be processed after clicking 'Raise Request'
+            </ui5-message-strip>
+
+            <!-- Business Partner Section -->
+            <div class="section-title">Business Partner</div>
+            <div class="form-section">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <ui5-label class="required" for="business-partner">Business Partner:</ui5-label>
+                        <ui5-select id="business-partner">
+                            <ui5-option selected>Rolf Motors</ui5-option>
+                            <ui5-option>FastTech GmbH</ui5-option>
+                            <ui5-option>Auto Solutions</ui5-option>
+                        </ui5-select>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="material">Material:</ui5-label>
+                        <ui5-select id="material">
+                            <ui5-option></ui5-option>
+                            <ui5-option>MAT-001</ui5-option>
+                            <ui5-option>MAT-002</ui5-option>
+                        </ui5-select>
+                    </div>
+                    <div class="form-field">
+                        <ui5-label for="location-partner">Location Partner:</ui5-label>
+                        <ui5-input id="location-partner" value="Plant Georgia">
+                            <ui5-icon slot="icon" name="value-help"></ui5-icon>
+                        </ui5-input>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Packaging Standards Section -->
+            <div class="section-title">Packaging Standard</div>
+            <div class="table-wrapper">
+                <div class="table-toolbar">
+                    <div class="table-title">Packaging Standards (7)</div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <ui5-input placeholder="Search" style="width: 220px;">
+                            <ui5-icon slot="icon" name="search"></ui5-icon>
+                        </ui5-input>
+                        <ui5-button design="Transparent" icon="sort">Sort</ui5-button>
+                        <ui5-button design="Transparent" icon="filter">Filter</ui5-button>
+                    </div>
+                </div>
+
+                <ui5-table sticky-column-header>
+                    <ui5-table-column slot="columns">
+                        <span style="font-weight: bold;">Packaging Standard</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span style="font-weight: bold;">Packaging Standard Description</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span style="font-weight: bold;">Ship-from Party</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span style="font-weight: bold;">Requested Quantity</span>
+                    </ui5-table-column>
+                    <ui5-table-column slot="columns">
+                        <span style="font-weight: bold;">Expected Delivery Date</span>
+                    </ui5-table-column>
+
+                    <!-- Row with highlight -->
+                    <ui5-table-row class="row-highlight">
+                        <ui5-table-cell>
+                            <ui5-link>HT 4904</ui5-link>
+                        </ui5-table-cell>
+                        <ui5-table-cell>Pallet XL Blue</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-input value="5" style="width: 100%;"></ui5-input>
+                        </ui5-table-cell>
+                        <ui5-table-cell>
+                            <ui5-date-picker value="Dec 22, 2024"></ui5-date-picker>
+                        </ui5-table-cell>
+                    </ui5-table-row>
+
+                    <!-- Additional rows -->
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link>HT 1001</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Pallet L Blue</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell><ui5-input value="" style="width: 100%;"></ui5-input></ui5-table-cell>
+                        <ui5-table-cell><ui5-date-picker value="Jan 02, 2025"></ui5-date-picker></ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link>HT 1002</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Pallet M Blue</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell><ui5-input value="" style="width: 100%;"></ui5-input></ui5-table-cell>
+                        <ui5-table-cell><ui5-date-picker value="May 01, 2025"></ui5-date-picker></ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link>PD-101</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Pallet S Blue</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell><ui5-input value="10" style="width: 100%;"></ui5-input></ui5-table-cell>
+                        <ui5-table-cell><ui5-date-picker value="Jun 03, 2025"></ui5-date-picker></ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link>PD-102</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Pallet XXL Blue</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell><ui5-input value="" style="width: 100%;"></ui5-input></ui5-table-cell>
+                        <ui5-table-cell><ui5-date-picker value="Dec 22, 2025"></ui5-date-picker></ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link>PD-105</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Pallet XL Green</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell><ui5-input value="" style="width: 100%;"></ui5-input></ui5-table-cell>
+                        <ui5-table-cell><ui5-date-picker value="Mar 12, 2026"></ui5-date-picker></ui5-table-cell>
+                    </ui5-table-row>
+
+                    <ui5-table-row>
+                        <ui5-table-cell><ui5-link>PD-106</ui5-link></ui5-table-cell>
+                        <ui5-table-cell>Pallet XL Yellow</ui5-table-cell>
+                        <ui5-table-cell>Plant Georgia</ui5-table-cell>
+                        <ui5-table-cell><ui5-input value="" style="width: 100%;"></ui5-input></ui5-table-cell>
+                        <ui5-table-cell><ui5-date-picker value="Dec 22, 2024"></ui5-date-picker></ui5-table-cell>
+                    </ui5-table-row>
+                </ui5-table>
+            </div>
+        </div>
+
+        <!-- Floating Footer -->
+        <div class="floating-footer">
+            <ui5-button design="Emphasized" onclick="saveOrder()">Save</ui5-button>
+            <ui5-button design="Transparent" onclick="discardOrder()">Discard</ui5-button>
+        </div>
+    </div>
+
+    <script>
+        function saveOrder() {
+            alert('Order saved successfully!');
+            window.location.href = 'list-report.html';
+        }
+
+        function discardOrder() {
+            if (confirm('Are you sure you want to discard this order?')) {
+                window.location.href = 'list-report.html';
+            }
+        }
+    </script>
+</body>
+</html>

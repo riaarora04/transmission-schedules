@@ -1,0 +1,262 @@
+<mvc:View
+    controllerName="transmissionschedules.controller.ListReport"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns:layout="sap.ui.layout"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:core="sap.ui.core"
+    displayBlock="true">
+
+    <f:FlexibleColumnLayout
+        id="flexibleColumnLayout"
+        layout="{layout>/layout}"
+        backgroundDesign="Solid">
+
+        <f:beginColumnPages>
+            <f:DynamicPage
+                id="dynamicPageId"
+                toggleHeaderOnTitleClick="false">
+
+                <!-- Dynamic Page Title -->
+                <f:title>
+                    <f:DynamicPageTitle>
+                        <f:heading>
+                            <Title text="{i18n>listReportTitle}" level="H1"/>
+                        </f:heading>
+                        <f:actions>
+                            <Button
+                                text="{i18n>createButton}"
+                                type="Emphasized"
+                                press=".onCreateSchedule"/>
+                        </f:actions>
+                    </f:DynamicPageTitle>
+                </f:title>
+
+                <!-- Dynamic Page Header -->
+                <f:header>
+                    <f:DynamicPageHeader pinnable="true">
+                        <layout:VerticalLayout>
+                            <fb:FilterBar
+                                id="filterBar"
+                                useToolbar="false"
+                                search=".onSearch"
+                                reset=".onReset"
+                                showGoOnFB="true"
+                                filterBarExpanded="true">
+
+                                <fb:filterGroupItems>
+                                    <fb:FilterGroupItem
+                                        name="scheduleId"
+                                        label="{i18n>scheduleId}"
+                                        groupName="__$INTERNAL$"
+                                        visibleInFilterBar="true">
+                                        <fb:control>
+                                            <Input
+                                                id="scheduleIdFilter"
+                                                placeholder="{i18n>enterScheduleId}"/>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+
+                                    <fb:FilterGroupItem
+                                        name="status"
+                                        label="{i18n>status}"
+                                        groupName="__$INTERNAL$"
+                                        visibleInFilterBar="true">
+                                        <fb:control>
+                                            <Select
+                                                id="statusFilter"
+                                                items="{path: 'schedules>/statusValues'}">
+                                                <core:Item key="{schedules>key}" text="{schedules>text}"/>
+                                            </Select>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+
+                                    <fb:FilterGroupItem
+                                        name="category"
+                                        label="{i18n>category}"
+                                        groupName="__$INTERNAL$"
+                                        visibleInFilterBar="true">
+                                        <fb:control>
+                                            <Input
+                                                id="categoryFilter"
+                                                placeholder="{i18n>enterCategory}"/>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+
+                                    <fb:FilterGroupItem
+                                        name="issueType"
+                                        label="{i18n>issueType}"
+                                        groupName="__$INTERNAL$"
+                                        visibleInFilterBar="true">
+                                        <fb:control>
+                                            <Input
+                                                id="issueTypeFilter"
+                                                placeholder="{i18n>enterIssueType}"/>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+
+                                    <fb:FilterGroupItem
+                                        name="soldToParty"
+                                        label="{i18n>soldToParty}"
+                                        groupName="__$INTERNAL$"
+                                        visibleInFilterBar="true">
+                                        <fb:control>
+                                            <Input
+                                                id="soldToPartyFilter"
+                                                placeholder="{i18n>enterSoldToParty}"/>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+
+                                    <fb:FilterGroupItem
+                                        name="validFrom"
+                                        label="{i18n>validFrom}"
+                                        groupName="__$INTERNAL$"
+                                        visibleInFilterBar="true">
+                                        <fb:control>
+                                            <DatePicker
+                                                id="validFromFilter"
+                                                placeholder="{i18n>selectDate}"/>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+
+                                    <fb:FilterGroupItem
+                                        name="validTo"
+                                        label="{i18n>validTo}"
+                                        groupName="__$INTERNAL$"
+                                        visibleInFilterBar="true">
+                                        <fb:control>
+                                            <DatePicker
+                                                id="validToFilter"
+                                                placeholder="{i18n>selectDate}"/>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+                                </fb:filterGroupItems>
+                            </fb:FilterBar>
+                        </layout:VerticalLayout>
+                    </f:DynamicPageHeader>
+                </f:header>
+
+                <!-- Dynamic Page Content -->
+                <f:content>
+                    <Table
+                        id="schedulesTable"
+                        mode="SingleSelectMaster"
+                        items="{
+                            path: 'schedules>/schedules',
+                            sorter: {
+                                path: 'scheduleId',
+                                descending: false
+                            }
+                        }"
+                        selectionChange=".onSelectionChange"
+                        growing="true"
+                        growingThreshold="20"
+                        sticky="ColumnHeaders,HeaderToolbar">
+
+                        <headerToolbar>
+                            <OverflowToolbar>
+                                <Title
+                                    text="{i18n>schedules}"
+                                    level="H2"/>
+                                <ToolbarSpacer/>
+                                <OverflowToolbarButton
+                                    icon="sap-icon://sort"
+                                    text="{i18n>sort}"
+                                    press=".onSort"/>
+                                <OverflowToolbarButton
+                                    icon="sap-icon://excel-attachment"
+                                    text="{i18n>export}"
+                                    press=".onExport"/>
+                            </OverflowToolbar>
+                        </headerToolbar>
+
+                        <columns>
+                            <Column
+                                width="12%"
+                                demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>scheduleId}"/>
+                            </Column>
+                            <Column
+                                width="10%"
+                                demandPopin="true"
+                                minScreenWidth="Desktop">
+                                <Text text="{i18n>status}"/>
+                            </Column>
+                            <Column
+                                width="15%"
+                                demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>category}"/>
+                            </Column>
+                            <Column
+                                width="15%"
+                                demandPopin="true"
+                                minScreenWidth="Desktop">
+                                <Text text="{i18n>issueType}"/>
+                            </Column>
+                            <Column
+                                width="15%"
+                                demandPopin="true"
+                                minScreenWidth="Tablet">
+                                <Text text="{i18n>soldToParty}"/>
+                            </Column>
+                            <Column
+                                width="12%"
+                                demandPopin="true"
+                                minScreenWidth="Desktop">
+                                <Text text="{i18n>validFrom}"/>
+                            </Column>
+                            <Column
+                                width="12%"
+                                demandPopin="true"
+                                minScreenWidth="Desktop">
+                                <Text text="{i18n>validTo}"/>
+                            </Column>
+                            <Column
+                                width="9%"
+                                hAlign="Center">
+                                <Text text="{i18n>frequency}"/>
+                            </Column>
+                        </columns>
+
+                        <items>
+                            <ColumnListItem type="Navigation">
+                                <cells>
+                                    <ObjectIdentifier
+                                        title="{schedules>scheduleId}"
+                                        text="{schedules>description}"/>
+                                    <ObjectStatus
+                                        text="{schedules>status}"
+                                        state="{
+                                            path: 'schedules>status',
+                                            formatter: '.formatStatusState'
+                                        }"/>
+                                    <Text text="{schedules>category}"/>
+                                    <Text text="{schedules>issueType}"/>
+                                    <Text text="{schedules>soldToParty}"/>
+                                    <Text text="{
+                                        path: 'schedules>validFrom',
+                                        type: 'sap.ui.model.type.Date',
+                                        formatOptions: {
+                                            pattern: 'dd/MM/yyyy'
+                                        }
+                                    }"/>
+                                    <Text text="{
+                                        path: 'schedules>validTo',
+                                        type: 'sap.ui.model.type.Date',
+                                        formatOptions: {
+                                            pattern: 'dd/MM/yyyy'
+                                        }
+                                    }"/>
+                                    <Text text="{schedules>frequency}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </f:content>
+            </f:DynamicPage>
+        </f:beginColumnPages>
+    </f:FlexibleColumnLayout>
+</mvc:View>

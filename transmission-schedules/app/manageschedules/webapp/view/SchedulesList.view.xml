@@ -1,0 +1,174 @@
+<mvc:View
+    controllerName="transmissionjobs.manageschedules.controller.SchedulesList"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:core="sap.ui.core"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+    height="100%">
+    <f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false">
+        <f:title>
+            <f:DynamicPageTitle>
+                <f:heading>
+                    <Title text="Manage Transmission Job Schedules"/>
+                </f:heading>
+                <f:actions>
+                    <Button
+                        text="Create"
+                        type="Emphasized"
+                        press=".onCreateSchedule"/>
+                </f:actions>
+            </f:DynamicPageTitle>
+        </f:title>
+        <f:header>
+            <f:DynamicPageHeader pinnable="true">
+                <smartFilterBar:SmartFilterBar
+                    id="smartFilterBar"
+                    entitySet="Schedules"
+                    persistencyKey="SchedulesFilterBar"
+                    considerSelectionVariants="true"
+                    enableBasicSearch="true"
+                    basicSearchFieldName="scheduleID"
+                    search=".onFilterBarSearch"
+                    filterChange=".onFilterBarChange">
+                    <smartFilterBar:controlConfiguration>
+                        <smartFilterBar:ControlConfiguration
+                            key="scheduleID"
+                            visibleInAdvancedArea="true"
+                            preventInitialDataFetchInValueHelpDialog="false"
+                            index="0"/>
+                        <smartFilterBar:ControlConfiguration
+                            key="status_code"
+                            visibleInAdvancedArea="true"
+                            preventInitialDataFetchInValueHelpDialog="false"
+                            index="1"/>
+                        <smartFilterBar:ControlConfiguration
+                            key="category_code"
+                            visibleInAdvancedArea="true"
+                            preventInitialDataFetchInValueHelpDialog="false"
+                            index="2"/>
+                        <smartFilterBar:ControlConfiguration
+                            key="issueType_code"
+                            visibleInAdvancedArea="true"
+                            preventInitialDataFetchInValueHelpDialog="false"
+                            index="3"/>
+                        <smartFilterBar:ControlConfiguration
+                            key="soldToParty"
+                            visibleInAdvancedArea="true"
+                            preventInitialDataFetchInValueHelpDialog="false"
+                            index="4"/>
+                        <smartFilterBar:ControlConfiguration
+                            key="startDate"
+                            visibleInAdvancedArea="true"
+                            preventInitialDataFetchInValueHelpDialog="false"
+                            index="5"/>
+                        <smartFilterBar:ControlConfiguration
+                            key="endDate"
+                            visibleInAdvancedArea="true"
+                            preventInitialDataFetchInValueHelpDialog="false"
+                            index="6"/>
+                    </smartFilterBar:controlConfiguration>
+                </smartFilterBar:SmartFilterBar>
+            </f:DynamicPageHeader>
+        </f:header>
+        <f:content>
+            <VBox class="sapUiSmallMargin">
+                <smartTable:SmartTable
+                    id="schedulesTable"
+                    entitySet="Schedules"
+                    smartFilterId="smartFilterBar"
+                    tableType="ResponsiveTable"
+                    enableAutoBinding="true"
+                    useVariantManagement="true"
+                    useTablePersonalisation="true"
+                    header="Schedules"
+                    showRowCount="true"
+                    persistencyKey="SchedulesTablePersistency"
+                    enableAutoColumnWidth="true"
+                    demandPopin="true"
+                    class="sapUiResponsiveContentPadding"
+                    beforeRebindTable=".onBeforeRebindTable"
+                    initialise=".onSmartTableInit">
+                    <smartTable:customToolbar>
+                        <OverflowToolbar design="Transparent">
+                            <ToolbarSpacer/>
+                            <OverflowToolbarButton
+                                icon="sap-icon://excel-attachment"
+                                text="Export"
+                                tooltip="Export to Excel"
+                                press=".onExport"/>
+                            <OverflowToolbarButton
+                                icon="sap-icon://action-settings"
+                                text="Settings"
+                                tooltip="Table Settings"
+                                press=".onTableSettings"/>
+                        </OverflowToolbar>
+                    </smartTable:customToolbar>
+                    <Table
+                        id="responsiveTable"
+                        mode="SingleSelectMaster"
+                        items="{path: '/Schedules', parameters: {$$updateGroupId: 'schedulesGroup'}}"
+                        selectionChange=".onSelectionChange"
+                        growing="true"
+                        growingThreshold="20"
+                        sticky="ColumnHeaders,HeaderToolbar">
+                        <columns>
+                            <Column width="10rem">
+                                <Text text="Schedule ID"/>
+                            </Column>
+                            <Column width="10rem" demandPopin="true" minScreenWidth="Tablet">
+                                <Text text="Status"/>
+                            </Column>
+                            <Column width="12rem" demandPopin="true" minScreenWidth="Desktop">
+                                <Text text="Category"/>
+                            </Column>
+                            <Column width="12rem" demandPopin="true" minScreenWidth="Desktop">
+                                <Text text="Issue Type"/>
+                            </Column>
+                            <Column width="10rem" demandPopin="true" minScreenWidth="Desktop">
+                                <Text text="Sold-to Party"/>
+                            </Column>
+                            <Column width="15rem" demandPopin="true" minScreenWidth="Desktop">
+                                <Text text="Sold-to Party Name"/>
+                            </Column>
+                            <Column width="10rem" demandPopin="true" minScreenWidth="Desktop">
+                                <Text text="Start Date"/>
+                            </Column>
+                            <Column width="10rem" demandPopin="true" minScreenWidth="Desktop">
+                                <Text text="End Date"/>
+                            </Column>
+                            <Column width="10rem" demandPopin="true" minScreenWidth="Desktop">
+                                <Text text="Frequency"/>
+                            </Column>
+                            <Column width="8rem" demandPopin="true" minScreenWidth="Desktop">
+                                <Text text="Priority"/>
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Navigation" press=".onItemPress">
+                                <cells>
+                                    <ObjectIdentifier title="{scheduleID}"/>
+                                    <ObjectStatus
+                                        text="{status/name}"
+                                        state="{path: 'status/criticality', formatter: '.formatter.formatCriticality'}"/>
+                                    <Text text="{category/name}"/>
+                                    <Text text="{issueType/name}"/>
+                                    <Text text="{soldToParty}"/>
+                                    <Text text="{soldToPartyName}"/>
+                                    <Text text="{path: 'startDate', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd.MM.yyyy'}}"/>
+                                    <Text text="{path: 'endDate', type: 'sap.ui.model.type.Date', formatOptions: {pattern: 'dd.MM.yyyy'}}"/>
+                                    <Text text="{frequency/name}"/>
+                                    <ObjectStatus
+                                        text="{priority/name}"
+                                        state="{path: 'priority/criticality', formatter: '.formatter.formatCriticality'}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </smartTable:SmartTable>
+            </VBox>
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>
