@@ -1,0 +1,7 @@
+code;name;descr;description
+SELF_BILLING;Self Billing Invoice Creation;Self billing invoice;Self billing invoice creation process
+INVOICE;Invoice;Customer invoice document;Standard billing invoice
+CREDIT_NOTE;Credit Note;Credit note document;Credit memo or adjustment
+DEBIT_NOTE;Debit Note;Debit note document;Debit memo or charge
+PURCHASE_ORDER;Purchase Order;Purchase order document;Customer purchase order
+DELIVERY_NOTE;Delivery Note;Delivery note document;Goods delivery documentation

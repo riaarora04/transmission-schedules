@@ -4,17 +4,11 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:f="sap.f"
     xmlns:layout="sap.ui.layout"
-    xmlns:fb="sap.ui.comp.filterbar"
     xmlns:core="sap.ui.core"
-    displayBlock="true">
+    displayBlock="true"
+    height="100%">
 
-    <f:FlexibleColumnLayout
-        id="flexibleColumnLayout"
-        layout="{layout>/layout}"
-        backgroundDesign="Solid">
-
-        <f:beginColumnPages>
-            <f:DynamicPage
+    <f:DynamicPage
                 id="dynamicPageId"
                 toggleHeaderOnTitleClick="false">
 
@@ -36,104 +30,75 @@
                 <!-- Dynamic Page Header -->
                 <f:header>
                     <f:DynamicPageHeader pinnable="true">
-                        <layout:VerticalLayout>
-                            <fb:FilterBar
-                                id="filterBar"
-                                useToolbar="false"
-                                search=".onSearch"
-                                reset=".onReset"
-                                showGoOnFB="true"
-                                filterBarExpanded="true">
+                        <VBox class="sapUiSmallMargin">
+                            <Toolbar class="sapUiTinyMarginBottom">
+                                <Title text="Filters" level="H3"/>
+                                <ToolbarSpacer/>
+                                <Button
+                                    text="Go"
+                                    type="Emphasized"
+                                    press=".onSearch"/>
+                                <Button
+                                    text="Clear"
+                                    press=".onReset"/>
+                            </Toolbar>
 
-                                <fb:filterGroupItems>
-                                    <fb:FilterGroupItem
-                                        name="scheduleId"
-                                        label="{i18n>scheduleId}"
-                                        groupName="__$INTERNAL$"
-                                        visibleInFilterBar="true">
-                                        <fb:control>
-                                            <Input
-                                                id="scheduleIdFilter"
-                                                placeholder="{i18n>enterScheduleId}"/>
-                                        </fb:control>
-                                    </fb:FilterGroupItem>
+                            <layout:Grid
+                                defaultSpan="L4 M6 S12"
+                                hSpacing="1"
+                                vSpacing="1">
+                                <VBox>
+                                    <Label text="{i18n>scheduleId}" labelFor="scheduleIdFilter"/>
+                                    <Input
+                                        id="scheduleIdFilter"
+                                        placeholder="{i18n>enterScheduleId}"/>
+                                </VBox>
 
-                                    <fb:FilterGroupItem
-                                        name="status"
-                                        label="{i18n>status}"
-                                        groupName="__$INTERNAL$"
-                                        visibleInFilterBar="true">
-                                        <fb:control>
-                                            <Select
-                                                id="statusFilter"
-                                                items="{path: 'schedules>/statusValues'}">
-                                                <core:Item key="{schedules>key}" text="{schedules>text}"/>
-                                            </Select>
-                                        </fb:control>
-                                    </fb:FilterGroupItem>
+                                <VBox>
+                                    <Label text="{i18n>status}" labelFor="statusFilter"/>
+                                    <Select
+                                        id="statusFilter"
+                                        items="{path: 'schedules>/statusValues'}">
+                                        <core:Item key="{schedules>key}" text="{schedules>text}"/>
+                                    </Select>
+                                </VBox>
 
-                                    <fb:FilterGroupItem
-                                        name="category"
-                                        label="{i18n>category}"
-                                        groupName="__$INTERNAL$"
-                                        visibleInFilterBar="true">
-                                        <fb:control>
-                                            <Input
-                                                id="categoryFilter"
-                                                placeholder="{i18n>enterCategory}"/>
-                                        </fb:control>
-                                    </fb:FilterGroupItem>
+                                <VBox>
+                                    <Label text="{i18n>category}" labelFor="categoryFilter"/>
+                                    <Input
+                                        id="categoryFilter"
+                                        placeholder="{i18n>enterCategory}"/>
+                                </VBox>
 
-                                    <fb:FilterGroupItem
-                                        name="issueType"
-                                        label="{i18n>issueType}"
-                                        groupName="__$INTERNAL$"
-                                        visibleInFilterBar="true">
-                                        <fb:control>
-                                            <Input
-                                                id="issueTypeFilter"
-                                                placeholder="{i18n>enterIssueType}"/>
-                                        </fb:control>
-                                    </fb:FilterGroupItem>
+                                <VBox>
+                                    <Label text="{i18n>issueType}" labelFor="issueTypeFilter"/>
+                                    <Input
+                                        id="issueTypeFilter"
+                                        placeholder="{i18n>enterIssueType}"/>
+                                </VBox>
 
-                                    <fb:FilterGroupItem
-                                        name="soldToParty"
-                                        label="{i18n>soldToParty}"
-                                        groupName="__$INTERNAL$"
-                                        visibleInFilterBar="true">
-                                        <fb:control>
-                                            <Input
-                                                id="soldToPartyFilter"
-                                                placeholder="{i18n>enterSoldToParty}"/>
-                                        </fb:control>
-                                    </fb:FilterGroupItem>
+                                <VBox>
+                                    <Label text="{i18n>soldToParty}" labelFor="soldToPartyFilter"/>
+                                    <Input
+                                        id="soldToPartyFilter"
+                                        placeholder="{i18n>enterSoldToParty}"/>
+                                </VBox>
 
-                                    <fb:FilterGroupItem
-                                        name="validFrom"
-                                        label="{i18n>validFrom}"
-                                        groupName="__$INTERNAL$"
-                                        visibleInFilterBar="true">
-                                        <fb:control>
-                                            <DatePicker
-                                                id="validFromFilter"
-                                                placeholder="{i18n>selectDate}"/>
-                                        </fb:control>
-                                    </fb:FilterGroupItem>
+                                <VBox>
+                                    <Label text="{i18n>validFrom}" labelFor="validFromFilter"/>
+                                    <DatePicker
+                                        id="validFromFilter"
+                                        placeholder="{i18n>selectDate}"/>
+                                </VBox>
 
-                                    <fb:FilterGroupItem
-                                        name="validTo"
-                                        label="{i18n>validTo}"
-                                        groupName="__$INTERNAL$"
-                                        visibleInFilterBar="true">
-                                        <fb:control>
-                                            <DatePicker
-                                                id="validToFilter"
-                                                placeholder="{i18n>selectDate}"/>
-                                        </fb:control>
-                                    </fb:FilterGroupItem>
-                                </fb:filterGroupItems>
-                            </fb:FilterBar>
-                        </layout:VerticalLayout>
+                                <VBox>
+                                    <Label text="{i18n>validTo}" labelFor="validToFilter"/>
+                                    <DatePicker
+                                        id="validToFilter"
+                                        placeholder="{i18n>selectDate}"/>
+                                </VBox>
+                            </layout:Grid>
+                        </VBox>
                     </f:DynamicPageHeader>
                 </f:header>
 
@@ -257,6 +222,4 @@
                     </Table>
                 </f:content>
             </f:DynamicPage>
-        </f:beginColumnPages>
-    </f:FlexibleColumnLayout>
 </mvc:View>

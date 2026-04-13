@@ -1,0 +1,192 @@
+{
+  "_version": "1.73.1",
+  "sap.app": {
+    "id": "countingevents",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.21.0",
+      "toolsId": "410754d6-19f2-43ec-ac52-78a810cc4829"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/counting-events/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.136.7",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "countingevents.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "CountingEventsList",
+          "target": "CountingEventsList"
+        },
+        {
+          "pattern": "CountingEvents({key}):?query:",
+          "name": "CountingEventsObjectPage",
+          "target": "CountingEventsObjectPage"
+        },
+        {
+          "pattern": "CountingSchedules:?query:",
+          "name": "CountingSchedulesList",
+          "target": "CountingSchedulesList"
+        },
+        {
+          "pattern": "CountingSchedules({key}):?query:",
+          "name": "CountingSchedulesObjectPage",
+          "target": "CountingSchedulesObjectPage"
+        }
+      ],
+      "targets": {
+        "CountingEventsList": {
+          "type": "Component",
+          "id": "CountingEventsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/CountingEvents",
+              "variantManagement": "Page",
+              "navigation": {
+                "CountingEvents": {
+                  "detail": {
+                    "route": "CountingEventsObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "CountingEventsObjectPage": {
+          "type": "Component",
+          "id": "CountingEventsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/CountingEvents"
+            }
+          }
+        },
+        "CountingSchedulesList": {
+          "type": "Component",
+          "id": "CountingSchedulesList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/CountingSchedules",
+              "variantManagement": "Page",
+              "navigation": {
+                "CountingSchedules": {
+                  "detail": {
+                    "route": "CountingSchedulesObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "CountingSchedulesObjectPage": {
+          "type": "Component",
+          "id": "CountingSchedulesObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/CountingSchedules"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  }
+}

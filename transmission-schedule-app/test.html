@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page</title>
+</head>
+<body>
+    <h1>Server Test</h1>
+    <p>If you can see this, the server is working correctly.</p>
+    <script>
+        console.log("Test page loaded successfully");
+        fetch('./webapp/manifest.json')
+            .then(r => r.json())
+            .then(data => {
+                console.log("Manifest loaded:", data);
+                document.body.innerHTML += "<p>✅ Manifest loads correctly</p>";
+            })
+            .catch(err => {
+                console.error("Error loading manifest:", err);
+                document.body.innerHTML += "<p>❌ Error loading manifest</p>";
+            });
+    </script>
+</body>
+</html>

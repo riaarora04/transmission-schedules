@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Document Parsing - List Report</title>
+
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/1.136.7/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-compat-version="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-frame-options="trusted"
+        data-sap-ui-bindingSyntax="complex">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            sap.ui.require([
+                "sap/f/ShellBar",
+                "sap/f/Avatar",
+                "sap/m/Page",
+                "sap/m/VBox",
+                "sap/m/Table",
+                "sap/m/Column",
+                "sap/m/ColumnListItem",
+                "sap/m/Text",
+                "sap/m/ObjectStatus",
+                "sap/ui/model/json/JSONModel",
+                "sap/m/Label"
+            ], function(ShellBar, Avatar, Page, VBox, Table, Column, ColumnListItem, Text, ObjectStatus, JSONModel, Label) {
+
+                // Sample data
+                var oData = {
+                    documents: [
+                        {
+                            documentID: "DOC-2026-001",
+                            status: "Extracted",
+                            statusState: "Success",
+                            extractionSummary: "Invoice extracted with 5 line items, total amount 15,234.50 USD",
+                            sender: "ACME Corporation",
+                            uploadedBy: "John Smith",
+                            documentType: "Invoice",
+                            uploadedDate: "2026-03-20",
+                            confidenceScore: "95.5%"
+                        },
+                        {
+                            documentID: "DOC-2026-002",
+                            status: "In Review",
+                            statusState: "Warning",
+                            extractionSummary: "Credit note with 2 line items, total amount -3,500.00 EUR",
+                            sender: "GlobalTech GmbH",
+                            uploadedBy: "Sarah Johnson",
+                            documentType: "Credit Note",
+                            uploadedDate: "2026-03-21",
+                            confidenceScore: "88.2%"
+                        },
+                        {
+                            documentID: "DOC-2026-003",
+                            status: "Error",
+                            statusState: "Error",
+                            extractionSummary: "Failed to extract: document format not recognized",
+                            sender: "Unknown",
+                            uploadedBy: "Mike Chen",
+                            documentType: "Invoice",
+                            uploadedDate: "2026-03-22",
+                            confidenceScore: "12.5%"
+                        },
+                        {
+                            documentID: "DOC-2026-004",
+                            status: "Published",
+                            statusState: "Success",
+                            extractionSummary: "Purchase order with 8 items, total value 45,678.90 USD",
+                            sender: "Tech Solutions Inc",
+                            uploadedBy: "Emma Wilson",
+                            documentType: "Purchase Order",
+                            uploadedDate: "2026-03-23",
+                            confidenceScore: "98.7%"
+                        },
+                        {
+                            documentID: "DOC-2026-005",
+                            status: "Processing",
+                            statusState: "Warning",
+                            extractionSummary: "Processing in progress...",
+                            sender: "Industrial Partners Ltd",
+                            uploadedBy: "Lisa Anderson",
+                            documentType: "Delivery Note",
+                            uploadedDate: "2026-03-24",
+                            confidenceScore: "N/A"
+                        }
+                    ]
+                };
+
+                var oModel = new JSONModel(oData);
+
+                // Create ShellBar
+                var oShellBar = new ShellBar({
+                    title: "AI Document Parsing",
+                    homeIcon: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/3840px-SAP_2011_logo.svg.png",
+                    showNavButton: true,
+                    showCopilot: false,
+                    showSearch: true,
+                    showNotifications: true,
+                    notificationsNumber: "3",
+                    profile: new Avatar({
+                        initials: "UN",
+                        displaySize: "XS"
+                    }),
+                    navButtonPressed: function() {
+                        window.history.back();
+                    }
+                });
+
+                // Create Table
+                var oTable = new Table({
+                    headerText: "Documents ({documents>/documents/length})",
+                    mode: "SingleSelectMaster",
+                    columns: [
+                        new Column({ header: new Label({ text: "Document ID" }) }),
+                        new Column({ header: new Label({ text: "Status" }) }),
+                        new Column({ header: new Label({ text: "Extraction Summary" }), width: "30%" }),
+                        new Column({ header: new Label({ text: "Sender" }) }),
+                        new Column({ header: new Label({ text: "Uploaded By" }) }),
+                        new Column({ header: new Label({ text: "Document Type" }) }),
+                        new Column({ header: new Label({ text: "Uploaded Date" }) }),
+                        new Column({ header: new Label({ text: "Confidence" }) })
+                    ],
+                    items: {
+                        path: "documents>/documents",
+                        template: new ColumnListItem({
+                            type: "Navigation",
+                            cells: [
+                                new Text({ text: "{documents>documentID}" }),
+                                new ObjectStatus({
+                                    text: "{documents>status}",
+                                    state: "{documents>statusState}"
+                                }),
+                                new Text({ text: "{documents>extractionSummary}" }),
+                                new Text({ text: "{documents>sender}" }),
+                                new Text({ text: "{documents>uploadedBy}" }),
+                                new Text({ text: "{documents>documentType}" }),
+                                new Text({ text: "{documents>uploadedDate}" }),
+                                new Text({ text: "{documents>confidenceScore}" })
+                            ]
+                        })
+                    }
+                });
+
+                // Create Page
+                var oPage = new Page({
+                    showHeader: false,
+                    content: [
+                        new VBox({
+                            items: [
+                                oShellBar,
+                                oTable
+                            ]
+                        })
+                    ]
+                });
+
+                oPage.setModel(oModel, "documents");
+                oPage.placeAt("content");
+            });
+        });
+    </script>
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+</head>
+<body class="sapUiBody sapUiSizeCompact" id="content">
+</body>
+</html>

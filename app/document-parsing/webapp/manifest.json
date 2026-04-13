@@ -1,0 +1,282 @@
+{
+  "_version": "1.73.1",
+  "sap.app": {
+    "id": "documentparsing",
+    "type": "application",
+    "i18n": {
+      "bundleUrl": "i18n/i18n.properties",
+      "supportedLocales": ["en"],
+      "fallbackLocale": "en"
+    },
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.21.0",
+      "toolsId": "4a096a14-ecc4-41a0-970b-57c1f21b0c17"
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "intent1": {
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          },
+          "semanticObject": "DocumentParsing",
+          "action": "manage",
+          "title": "{{appTitle}}",
+          "subTitle": "{{appDescription}}",
+          "icon": "sap-icon://document-text"
+        }
+      }
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/document-parsing/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://document-text",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.136.7",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.unified": {},
+        "sap.f": {},
+        "sap.suite.ui.microchart": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "documentparsing.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "extends": {
+      "extensions": {
+        "sap.ui.controllerExtensions": {
+          "sap.fe.templates.ObjectPage.ObjectPageController": {
+            "controllerName": "documentparsing.ext.controller.ObjectPageExtension"
+          },
+          "sap.fe.templates.ListReport.ListReportController": {
+            "controllerName": "documentparsing.ext.controller.ListReportExtension"
+          }
+        }
+      }
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "DocumentsList",
+          "target": "DocumentsList"
+        },
+        {
+          "pattern": "Documents({key}):?query:",
+          "name": "DocumentsObjectPage",
+          "target": "DocumentsObjectPage"
+        }
+      ],
+      "targets": {
+        "DocumentsList": {
+          "type": "Component",
+          "id": "DocumentsList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Documents",
+              "variantManagement": "Page",
+              "initialLoad": true,
+              "enhanceI18n": "i18n/custom.properties",
+              "views": {
+                "paths": [
+                  {
+                    "key": "SELF_BILLING",
+                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionVariant#SelfBilling"
+                  },
+                  {
+                    "key": "AUTOMATIC_POSTING",
+                    "annotationPath": "com.sap.vocabularies.UI.v1.SelectionVariant#AutomaticPosting"
+                  }
+                ]
+              },
+              "navigation": {
+                "Documents": {
+                  "detail": {
+                    "route": "DocumentsObjectPage"
+                  }
+                }
+              },
+              "content": {
+                "header": {
+                  "actions": {
+                    "Create": {
+                      "requiresDialog": false
+                    }
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "creationMode": {
+                      "name": "NewPage"
+                    },
+                    "createAtEnd": true
+                  },
+                  "actions": {
+                    "ExtractAction": {
+                      "press": "documentparsing.ext.controller.ListReportExtension.onExtractDocuments",
+                      "visible": true,
+                      "enabled": "{= ${internal>selectedContexts}.length > 0}",
+                      "text": "Extract"
+                    }
+                  }
+                },
+                "@com.sap.vocabularies.UI.v1.SelectionFields": {
+                  "filterFields": {
+                    "uploadedDate": {
+                      "settings": {
+                        "operatorConfiguration": [
+                          {
+                            "operator": "EQ",
+                            "path": "uploadedDate"
+                          },
+                          {
+                            "operator": "BT",
+                            "path": "uploadedDate"
+                          },
+                          {
+                            "operator": "GE",
+                            "path": "uploadedDate"
+                          },
+                          {
+                            "operator": "LE",
+                            "path": "uploadedDate"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "DocumentsObjectPage": {
+          "type": "Component",
+          "id": "DocumentsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Documents",
+              "content": {
+                "body": {
+                  "sections": {
+                    "AttachmentSection": {
+                      "template": "documentparsing.ext.fragment.AttachmentUpload",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "GeneralInformationTab"
+                      },
+                      "title": "Upload & Extract Document",
+                      "type": "XMLFragment"
+                    },
+                    "ExtractionSummaryInfo": {
+                      "template": "documentparsing.ext.fragment.ExtractionSummaryInfo",
+                      "position": {
+                        "placement": "Before",
+                        "anchor": "ExtractedBillingDocumentsTab"
+                      },
+                      "title": "AI Extraction Details",
+                      "type": "XMLFragment"
+                    }
+                  }
+                },
+                "footer": {
+                  "template": "documentparsing.ext.fragment.ObjectPageFooter",
+                  "type": "XMLFragment"
+                }
+              },
+              "controlConfiguration": {
+                "extractedDocuments/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable",
+                    "enableExport": true,
+                    "selectionMode": "None"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  }
+}

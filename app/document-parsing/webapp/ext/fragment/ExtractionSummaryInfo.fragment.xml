@@ -1,0 +1,57 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:l="sap.ui.layout">
+    <VBox class="sapUiSmallMargin">
+        <!-- Extraction Summary Title -->
+        <Title text="Extraction Summary" level="H4" class="sapUiSmallMarginBottom"/>
+
+        <!-- AI Disclaimer Banner -->
+        <MessageStrip
+            text="Created with AI. Verify results before use"
+            type="Information"
+            showIcon="true"
+            class="sapUiSmallMarginBottom">
+        </MessageStrip>
+
+        <!-- Statistics Grid - 2 Columns -->
+        <l:Grid
+            defaultSpan="XL6 L6 M6 S12"
+            class="sapUiSmallMarginBottom">
+            <l:content>
+                <!-- Left Column Stats -->
+                <VBox class="sapUiSmallMarginEnd">
+                    <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                        <Label text="Transmissions:" class="sapUiTinyMarginEnd"/>
+                        <Text text="{sender}" wrapping="false"/>
+                    </HBox>
+                    <HBox alignItems="Center">
+                        <Label text="Self Billing Documents:" class="sapUiTinyMarginEnd"/>
+                        <Text text="12" wrapping="false"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Right Column Stats -->
+                <VBox>
+                    <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                        <Label text="Product Items:" class="sapUiTinyMarginEnd"/>
+                        <Text text="{productItemsTotal}" wrapping="false"/>
+                    </HBox>
+                    <HBox alignItems="Center">
+                        <Label text="Billing Documents:" class="sapUiTinyMarginEnd"/>
+                        <Text text="{billingDocsTotal}" wrapping="false"/>
+                    </HBox>
+                </VBox>
+            </l:content>
+        </l:Grid>
+
+        <!-- Extracted Date -->
+        <HBox alignItems="Center">
+            <Label text="Extracted On/At:" class="sapUiTinyMarginEnd"/>
+            <Text text="{
+                path: 'processingDate',
+                type: 'sap.ui.model.type.DateTime',
+                formatOptions: {
+                    pattern: 'MMMM dd, yyyy hh:mm:ss'
+                }
+            }"/>
+        </HBox>
+    </VBox>
+</core:FragmentDefinition>

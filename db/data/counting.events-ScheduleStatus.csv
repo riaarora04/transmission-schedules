@@ -1,0 +1,6 @@
+code;name;descr
+DRAFT;Draft;Schedule is in draft state
+ACTIVE;Active;Schedule is active and generating events
+INACTIVE;Inactive;Schedule is inactive
+COMPLETED;Completed;Schedule has completed all events
+CANCELLED;Cancelled;Schedule has been cancelled

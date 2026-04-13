@@ -26,9 +26,9 @@
     },
     "sap.ui5": {
         "rootView": {
-            "viewName": "transmissionschedules.view.ListReport",
+            "viewName": "transmissionschedules.view.App",
             "type": "XML",
-            "id": "listReport",
+            "id": "app",
             "async": true
         },
         "dependencies": {
@@ -37,9 +37,7 @@
                 "sap.ui.core": {},
                 "sap.m": {},
                 "sap.f": {},
-                "sap.ui.layout": {},
-                "sap.ui.comp": {},
-                "sap.ui.table": {}
+                "sap.ui.layout": {}
             }
         },
         "models": {

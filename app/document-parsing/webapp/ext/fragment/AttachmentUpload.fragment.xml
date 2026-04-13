@@ -1,0 +1,131 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:upload="sap.m.upload"
+    xmlns:f="sap.f"
+    xmlns:illustrated="sap.m.IllustratedMessage">
+    <VBox class="sapUiSmallMargin">
+        <!-- Attachment Header with Actions -->
+        <HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBottom">
+            <Title text="Attachment (1)" level="H3"/>
+            <HBox>
+                <Button
+                    text="Extract"
+                    icon="sap-icon://synchronize"
+                    type="Transparent"
+                    press="documentparsing.ext.controller.ObjectPageExtension.onExtractPress"
+                    visible="{= ${status_code} === 'UPLOADED'}"
+                    class="sapUiTinyMarginEnd"/>
+                <Button
+                    text="Upload"
+                    icon="sap-icon://upload"
+                    type="Emphasized"
+                    press="documentparsing.ext.controller.ObjectPageExtension.onUploadPress"
+                    visible="true"
+                    class="sapUiTinyMarginEnd"/>
+                <Button
+                    text="Stop Analysis"
+                    icon="sap-icon://stop"
+                    type="Transparent"
+                    visible="{= ${status_code} === 'ANALYSING'}"/>
+            </HBox>
+        </HBox>
+
+        <!-- File Upload Table or Illustrated Message -->
+        <VBox visible="{= !!${fileName} &amp;&amp; (${status_code} === 'UPLOADED' || ${status_code} === 'ANALYSING' || ${status_code} === 'READY_FOR_REVIEW' || ${status_code} === 'PUBLISHED' || ${status_code} === 'ERROR')}">
+            <Table
+                id="attachmentTable"
+                inset="false"
+                mode="None"
+                sticky="ColumnHeaders"
+                noDataText="">
+                <columns>
+                    <Column width="30%">
+                        <Text text="File Name"/>
+                    </Column>
+                    <Column width="25%">
+                        <Text text="Upload Progress"/>
+                    </Column>
+                    <Column width="15%">
+                        <Text text="Status"/>
+                    </Column>
+                    <Column width="15%">
+                        <Text text="File Size"/>
+                    </Column>
+                    <Column width="15%">
+                        <Text text="Last Modified"/>
+                    </Column>
+                </columns>
+                <items>
+                    <!-- File row - shows different states based on document status -->
+                    <ColumnListItem>
+                        <cells>
+                            <!-- File Name with Icon -->
+                            <HBox alignItems="Center">
+                                <core:Icon
+                                    src="{= ${fileName}.endsWith('.pdf') ? 'sap-icon://pdf-attachment' : ${fileName}.endsWith('.xls') || ${fileName}.endsWith('.xlsx') ? 'sap-icon://excel-attachment' : ${fileName}.endsWith('.doc') || ${fileName}.endsWith('.docx') ? 'sap-icon://doc-attachment' : 'sap-icon://document'}"
+                                    size="2.5rem"
+                                    color="#0070f2"
+                                    class="sapUiTinyMarginEnd"/>
+                                <VBox>
+                                    <Link text="{fileName}"/>
+                                    <Text text="{documentType/name}" class="sapUiTinyText"/>
+                                </VBox>
+                            </HBox>
+
+                            <!-- Upload Progress - changes based on status -->
+                            <VBox>
+                                <ProgressIndicator
+                                    percentValue="{= ${status_code} === 'UPLOADED' ? 100 : ${status_code} === 'ANALYSING' ? 50 : 100}"
+                                    displayValue="{= ${status_code} === 'UPLOADED' ? '100%' : ${status_code} === 'ANALYSING' ? '50%' : '100%'}"
+                                    state="{= ${status_code} === 'ANALYSING' ? 'Warning' : 'Success'}"
+                                    width="100%"/>
+                            </VBox>
+
+                            <!-- Status - shows current document status with icon -->
+                            <HBox alignItems="Center">
+                                <core:Icon
+                                    src="{= ${status_code} === 'ANALYSING' ? 'sap-icon://synchronize' : ''}"
+                                    color="#0070f2"
+                                    class="sapUiTinyMarginEnd"
+                                    visible="{= ${status_code} === 'ANALYSING'}"/>
+                                <Text text="{= ${status_code} === 'UPLOADED' ? 'Uploaded' : ${status_code} === 'ANALYSING' ? 'Analysing...' : ${status_code} === 'READY_FOR_REVIEW' ? 'Ready For Review' : ${status_code} === 'PUBLISHED' ? 'Published' : 'Error'}"/>
+                            </HBox>
+
+                            <!-- File Size -->
+                            <Text text="{
+                                path: 'fileSize',
+                                formatter: '.formatter.formatFileSize'
+                            }"/>
+
+                            <!-- Last Modified -->
+                            <VBox>
+                                <Text text="{uploadedBy}"/>
+                                <Text text="{
+                                    path: 'uploadedDate',
+                                    type: 'sap.ui.model.type.DateTime',
+                                    formatOptions: {
+                                        pattern: 'MM/dd/yy, hh:mm:ss a'
+                                    }
+                                }" class="sapUiTinyText"/>
+                            </VBox>
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </VBox>
+
+        <!-- Illustrated Message - No Files Yet -->
+        <VBox
+            visible="{= !${fileName} || ${fileName} === ''}"
+            alignItems="Center"
+            justifyContent="Center"
+            class="sapUiMediumMarginTop">
+            <IllustratedMessage
+                illustrationType="sapIllus-Spot-NoData"
+                title="There are no files yet"
+                description="When there are, you'll see them here."/>
+        </VBox>
+
+    </VBox>
+</core:FragmentDefinition>

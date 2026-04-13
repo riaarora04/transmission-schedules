@@ -1,0 +1,14 @@
+id,parent_id,text,type,expectedValue,actualValue
+d1014-1,1014,Quantity mismatch in delivery,Posting Quantity,120 units,100 units
+d1015-1,1015,Wrong exchange partner posted,Exchange Partner,EP-1234,EP-5678
+d1016-1,1016,Posting date does not match delivery schedule,Posting Date,2024-11-28,2024-11-30
+d1017-1,1017,Delivery note reference incorrect,Delivery Note,DN-4571,DN-4570
+d1018-1,1018,Quantity difference found,Posting Quantity,75 units,70 units
+d1018-2,1018,Posting date mismatch,Posting Date,2024-12-28,2024-12-30
+d1019-1,1019,Material code variation,Material Code,MN3929,MN3929A
+d1020-1,1020,Delivery note DN-4574 not posted,Missing Document,DN-4574,Not posted
+d1020-2,1020,Delivery note DN-4575 not posted,Missing Document,DN-4575,Not posted
+d1020-3,1020,Delivery note DN-4576 not posted,Missing Document,DN-4576,Not posted
+d1021-1,1021,Goods receipt not created,Missing Document,GR-8890,Not posted
+d1022-1,1022,Invoice missing,Missing Document,INV-5678,Not posted
+d1022-2,1022,Packing list missing,Missing Document,PL-3456,Not posted

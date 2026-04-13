@@ -1,0 +1,6 @@
+code;name;descr;criticality
+UPLOADED;Uploaded;Document uploaded, pending extraction;0
+ANALYSING;Analysing;Document is being analysed by AI;2
+READY_FOR_REVIEW;Ready for Review;Extracted data ready for review;2
+ERROR;Error;Error occurred during processing;1
+PUBLISHED;Published;Document published to target system;3

@@ -1,0 +1,139 @@
+/* ShellBar Styling */
+.sapFShellBar {
+    box-shadow: 0 0.0625rem 0.125rem 0 rgba(0, 0, 0, 0.15);
+    z-index: 3;
+}
+
+/* Ensure app container starts below ShellBar */
+.sapUiBody {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Object Page Header Styling */
+.sapUxAPObjectPageHeaderObjectImage {
+    background-color: var(--sapObjectHeader_Background, white);
+}
+
+/* AI Extraction Summary Info Text */
+.sapMText.aiExtractionInfo {
+    font-size: var(--sapFontSize, 14px);
+    color: var(--sapContent_LabelColor, #556b82);
+}
+
+.sapMText.aiExtractionInfo .sapMLnk {
+    color: var(--sapLinkColor, #0064d9);
+    font-weight: normal;
+}
+
+/* Table Highlight for Extracted Billing Documents */
+.sapMListTbl tbody tr {
+    border-left: 6px solid transparent;
+}
+
+.sapMListTbl tbody tr.highlightedRow {
+    border-left-color: var(--sapInformationBorderColor, #0070f2);
+}
+
+/* Checkbox alignment in tables */
+.sapMCb {
+    vertical-align: middle;
+}
+
+/* Message Strip for AI info */
+.sapMMsgStrip.aiInfoStrip {
+    background-color: var(--sapInformationBackground, #e1f4ff);
+    border-color: var(--sapMessage_InformationBorderColor, #7bcfff);
+}
+
+/* Draft status badge */
+.sapMObjectStatus.draftStatus {
+    color: var(--sapButton_Lite_TextColor, #0064d9);
+}
+
+/* Form field spacing */
+.sapUiForm .sapUiFormResGridCont {
+    gap: 1rem;
+}
+
+/* Attachment Section Styling */
+#attachmentTable .sapMListTblCell {
+    padding: 0.5rem;
+}
+
+/* Progress Indicator Styling */
+.sapMPI {
+    height: 0.5rem;
+}
+
+.sapMPI .sapMPIBarSuccess {
+    background-color: var(--sapSuccessColor, #2da44e);
+}
+
+.sapMPI .sapMPIBarInformation {
+    background-color: var(--sapInformativeColor, #0070f2);
+}
+
+/* Busy Indicator for Analysing state */
+.sapUiBusy {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* File Icon Styling */
+.sapMListTbl .sapUiIcon[src*="document"] {
+    color: var(--sapContent_IconColor, #0070f2);
+}
+
+/* Empty State Illustration */
+.sapMIllustratedMessage {
+    padding: 2rem;
+}
+
+/* AI Sparkle Icon in Extraction Summary Column Header */
+/* Target the column header that contains "Extraction Summary" */
+.sapMListTblHeaderCell .sapMText[id*="extractionSummary"],
+.sapMListTblHeaderCell .sapMLabel[id*="extractionSummary"],
+.sapMListTblHeaderCell .sapMText:has([title*="Extraction Summary"]),
+.sapMListTblHeaderCell span:has-text("Extraction Summary"),
+.sapMListTblHeaderCell span:has-text("✨ Extraction Summary") {
+    color: var(--sapHighlightColor, #0064d9);
+    font-weight: 600;
+    padding-left: 22px;
+    background-image: url('../images/ai-sparkle.svg');
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 16px 16px;
+}
+
+/* Alternative: Target by checking text content */
+.sapMListTblHeaderCell:nth-child(3) .sapMText,
+.sapMListTblHeaderCell:nth-child(3) .sapMLabel {
+    color: var(--sapHighlightColor, #0064d9);
+    font-weight: 600;
+    padding-left: 22px;
+    background-image: url('../images/ai-sparkle.svg');
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 16px 16px;
+}
+
+/* Remove emoji from text since we're using the SVG icon */
+.sapMListTblHeaderCell .sapMText::first-line {
+    display: inline-block;
+}
+
+/* Style for AI-generated content indicator */
+.sapMListTblCell .aiGeneratedContent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+}
+
+.sapMListTblCell .aiGeneratedContent::before {
+    content: url('../images/ai-sparkle.svg');
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}

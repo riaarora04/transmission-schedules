@@ -1,0 +1,6 @@
+code;name;descr
+SINGLE;Single;Single occurrence
+MONTHLY;Monthly;Repeats monthly
+YEARLY;Yearly;Repeats yearly
+QUARTERLY;Quarterly;Repeats quarterly
+WEEKLY;Weekly;Repeats weekly

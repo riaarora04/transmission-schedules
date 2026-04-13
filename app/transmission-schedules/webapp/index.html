@@ -6,7 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Manage Transmission Job Schedules</title>
     <style>
-        html, body, body > div, #container, #container-uiarea {
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #shellBarPlaceholder {
+            position: relative;
+            z-index: 1;
+        }
+        #container {
+            height: calc(100% - 44px);
+        }
+        #container-uiarea {
             height: 100%;
         }
     </style>
@@ -14,6 +26,7 @@
         id="sap-ui-bootstrap"
         src="https://sapui5.hana.ondemand.com/1.136.7/resources/sap-ui-core.js"
         data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
         data-sap-ui-resource-roots='{
             "transmissionschedules": "./"
         }'
@@ -22,8 +35,61 @@
         data-sap-ui-async="true"
         data-sap-ui-frame-options="trusted"
     ></script>
+    <script>
+        sap.ui.require([
+            "sap/f/ShellBar",
+            "sap/m/Avatar",
+            "sap/m/MessageToast"
+        ], function(ShellBar, Avatar, MessageToast) {
+            sap.ui.getCore().attachInit(function() {
+                // Create ShellBar
+                var oShellBar = new ShellBar({
+                    title: "Transmission Job Schedules",
+                    secondaryTitle: "Schedule Management",
+                    homeIcon: "sap-icon://home",
+                    logo: "https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg",
+                    showMenuButton: false,
+                    showNavButton: false,
+                    showCoPilot: true,
+                    showSearch: true,
+                    showNotifications: true,
+                    showProductSwitch: true,
+                    notificationsNumber: "3",
+                    profile: new Avatar({
+                        initials: "SD",
+                        backgroundColor: "Accent6"
+                    }),
+                    homeIconPressed: function() {
+                        MessageToast.show("Home pressed");
+                    },
+                    notificationsPressed: function() {
+                        MessageToast.show("You have 3 notifications");
+                    },
+                    productSwitchPressed: function() {
+                        MessageToast.show("Product Switch");
+                    },
+                    avatarPressed: function() {
+                        MessageToast.show("User Profile");
+                    },
+                    coPilotPressed: function() {
+                        MessageToast.show("CoPilot Assistant");
+                    },
+                    searchButtonPressed: function(oEvent) {
+                        var sQuery = oEvent.getParameter("query");
+                        if (sQuery) {
+                            MessageToast.show("Search: " + sQuery);
+                        }
+                    }
+                });
+
+                // Render ShellBar
+                oShellBar.placeAt("shellBarPlaceholder");
+            });
+        });
+    </script>
 </head>
 <body class="sapUiBody sapUiSizeCompact" id="content">
+    <div id="shellBarPlaceholder"></div>
     <div
         data-sap-ui-component
         data-name="transmissionschedules"

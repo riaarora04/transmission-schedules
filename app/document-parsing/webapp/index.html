@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AI Document Parsing</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #shellBarContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 3;
+            box-shadow: 0 0.0625rem 0.125rem 0 rgba(0, 0, 0, 0.15);
+        }
+        #appContainer {
+            margin-top: 2.75rem;
+            height: calc(100vh - 2.75rem);
+        }
+    </style>
+    <script
+        id="sap-ui-bootstrap"
+        src="https://sapui5.hana.ondemand.com/1.136.7/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.unified"
+        data-sap-ui-resource-roots='{
+            "documentparsing": "./"
+        }'
+        data-sap-ui-compat-version="edge"
+        data-sap-ui-async="true"
+        data-sap-ui-frame-options="trusted"
+    ></script>
+    <script>
+        sap.ui.getCore().attachInit(function() {
+            // Create ShellBar
+            sap.ui.require([
+                "sap/f/ShellBar",
+                "sap/f/Avatar",
+                "sap/m/Menu",
+                "sap/m/MenuItem",
+                "sap/ui/core/ComponentContainer"
+            ], function(ShellBar, Avatar, Menu, MenuItem, ComponentContainer) {
+
+                var oShellBar = new ShellBar({
+                    title: "AI Document Parsing",
+                    homeIcon: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/3840px-SAP_2011_logo.svg.png",
+                    showNavButton: true,
+                    showCopilot: false,
+                    showSearch: true,
+                    showNotifications: true,
+                    showProductSwitcher: false,
+                    notificationsNumber: "3",
+                    menu: new Menu({
+                        items: [
+                            new MenuItem({ text: "Settings", icon: "sap-icon://action-settings" }),
+                            new MenuItem({ text: "Help", icon: "sap-icon://sys-help" })
+                        ]
+                    }),
+                    profile: new Avatar({
+                        initials: "UN",
+                        displaySize: "XS"
+                    }),
+                    homeIconPressed: function() {
+                        sap.m.MessageToast.show("Navigate to home");
+                    },
+                    navButtonPressed: function() {
+                        window.history.back();
+                    }
+                });
+
+                oShellBar.placeAt("shellBarContainer");
+
+                // Create Component Container
+                new ComponentContainer({
+                    id: "container",
+                    name: "documentparsing",
+                    settings: {
+                        id: "documentparsing"
+                    },
+                    manifest: true,
+                    height: "100%",
+                    handleValidation: true
+                }).placeAt("appContainer");
+            });
+        });
+    </script>
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+</head>
+<body class="sapUiBody sapUiSizeCompact">
+    <div id="shellBarContainer"></div>
+    <div id="appContainer"></div>
+</body>
+</html>

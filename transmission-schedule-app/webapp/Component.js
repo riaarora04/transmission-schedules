@@ -32,12 +32,11 @@ sap.ui.define([
         },
 
         getHelper: function() {
-            var oFCL = this.getRootControl().byId("flexibleColumnLayout");
-            var oParams = jQuery.sap.getUriParameters();
+            var oFCL = this.getRootControl().byId("app").byId("flexibleColumnLayout");
             var oSettings = {
                 defaultTwoColumnLayoutType: fioriLibrary.LayoutType.TwoColumnsMidExpanded,
                 defaultThreeColumnLayoutType: fioriLibrary.LayoutType.ThreeColumnsMidExpanded,
-                maxColumnsCount: oParams.get("maxColumnsCount")
+                maxColumnsCount: 2
             };
 
             return FlexibleColumnLayoutSemanticHelper.getInstanceFor(oFCL, oSettings);

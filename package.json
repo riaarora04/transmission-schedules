@@ -6,15 +6,19 @@
   "scripts": {
     "start": "cds run",
     "watch": "cds watch",
-    "watch-transmission-schedules": "cds watch --open transmissionschedules/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-transmission-schedules": "cds watch --open transmissionschedules/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-document-parsing": "cds watch --open documentparsing/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-packaging-issues": "cds watch --open packagingissues/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-counting-events": "cds watch --open countingevents/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "dependencies": {
-    "@sap/cds": "^7",
+    "@cap-js/sqlite": "^2.2.0",
+    "@sap/cds": "^9",
     "express": "^4",
     "sqlite3": "^6.0.1"
   },
   "devDependencies": {
-    "@sap/cds-dk": "^7",
+    "@sap/cds-dk": "^9",
     "cds-plugin-ui5": "^0.13.0"
   },
   "cds": {
@@ -35,6 +39,9 @@
     "app/*"
   ],
   "sapux": [
-    "app/transmission-schedules"
+    "app/transmission-schedules",
+    "app/document-parsing",
+    "app/packaging-issues",
+    "app/counting-events"
   ]
 }

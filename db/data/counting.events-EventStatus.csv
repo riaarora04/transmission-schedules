@@ -1,0 +1,6 @@
+code;name;descr;criticality
+PLANNED;Counting Planned;Event is scheduled but not started;2
+IN_PROGRESS;In Progress;Counting is currently ongoing;5
+COMPLETED;Completed;Counting has been completed successfully;3
+CANCELLED;Cancelled;Event has been cancelled;1
+ON_HOLD;On Hold;Event is temporarily paused;5

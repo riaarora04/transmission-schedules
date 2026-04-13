@@ -1,0 +1,157 @@
+{
+	"issues": [
+		{
+			"id": "1011",
+			"category": "Inquiry",
+			"status": "New",
+			"priority": "High",
+			"description": "Renting for MAT5678",
+			"summary": "10 PC of Aeroplast...",
+			"summaryFull": "10 PC of Aeroplast Cube with Plant XYZ is requested instead of 8 PC of Aeroplast Cylinder with Plant ABC.",
+			"materialCode": "L1...",
+			"issues": [
+				{
+					"type": "Posting Quantity",
+					"original": "8 PC",
+					"requested": "10 PC"
+				},
+				{
+					"type": "Material",
+					"original": "Aeroplast Cylinder",
+					"requested": "Aeroplast Cylinder"
+				},
+				{
+					"type": "Posting Date",
+					"original": "Aug 4, 2024",
+					"requested": "Aug 5, 2024"
+				},
+				{
+					"type": "Exchange Partner",
+					"original": "Plant ABC",
+					"requested": "Plant XYZ"
+				}
+			]
+		},
+		{
+			"id": "1012",
+			"category": "Inquiry",
+			"status": "In Progress",
+			"priority": "High",
+			"description": "Inquiry for account and ma...",
+			"summary": "9 October, 2025...",
+			"summaryFull": "9 October, 2025 is requested instead of 11 October, 2025",
+			"materialCode": "L1...",
+			"issues": []
+		},
+		{
+			"id": "1013",
+			"category": "Inquiry",
+			"status": "Approved",
+			"priority": "High",
+			"description": "Material MZ389393 query",
+			"summary": "9 October, 2025...",
+			"summaryFull": "9 October, 2025 is requested",
+			"materialCode": "L1...",
+			"issues": []
+		},
+		{
+			"id": "1014",
+			"category": "Posting Difference",
+			"status": "Rejected",
+			"priority": "Very High",
+			"description": "Differences in MN3923",
+			"summary": "9 October, 2025...",
+			"summaryFull": "9 October, 2025 is requested",
+			"materialCode": "MN3923",
+			"issues": []
+		},
+		{
+			"id": "1015",
+			"category": "Posting Difference",
+			"status": "In Progress",
+			"priority": "Very High",
+			"description": "MN3930 has differences",
+			"summary": "9 October, 2025...",
+			"summaryFull": "9 October, 2025 is requested instead of 11 October, 2025",
+			"materialCode": "MN3930",
+			"issues": []
+		},
+		{
+			"id": "1016",
+			"category": "Posting Difference",
+			"status": "In Progress",
+			"priority": "Very High",
+			"description": "MN3932 has differences",
+			"summary": "10 PC of Aeroplast...",
+			"summaryFull": "50 PC on 15 October, 2025 from Plant Berlin is requested instead of 52 PC on 14 October, 2025 from Plant Germany",
+			"materialCode": "MN3932",
+			"issues": []
+		},
+		{
+			"id": "1017",
+			"category": "Posting Difference",
+			"status": "In Progress",
+			"priority": "Very High",
+			"description": "MN3931 has differences",
+			"summary": "10 PC of Aeroplast...",
+			"summaryFull": "Bubble Wrap with Plant XYZ is requested instead of INT Bubble Wrap with Plant ABC.",
+			"materialCode": "MN3931",
+			"issues": []
+		},
+		{
+			"id": "1018",
+			"category": "Posting Difference",
+			"status": "In Progress",
+			"priority": "Very High",
+			"description": "MN3928 has differences",
+			"summary": "9 October, 2025...",
+			"summaryFull": "56 PC of Aeroplast Cube with Plant XYZ is requested instead of 8 PC of Aeroplast Cylinder with Plant ABC.",
+			"materialCode": "MN3928",
+			"issues": []
+		},
+		{
+			"id": "1019",
+			"category": "Posting Difference",
+			"status": "In Progress",
+			"priority": "Very High",
+			"description": "MN3929 has differences",
+			"summary": "9 October, 2025...",
+			"summaryFull": "9 October, 2025 is requested",
+			"materialCode": "MN3929",
+			"issues": []
+		},
+		{
+			"id": "1020",
+			"category": "Posting Missing",
+			"status": "In Progress",
+			"priority": "Low",
+			"description": "Material missing for Pallet...",
+			"summary": "9 October, 2025...",
+			"summaryFull": "9 October, 2025 is requested",
+			"materialCode": "MN3933",
+			"issues": []
+		},
+		{
+			"id": "1021",
+			"category": "Posting Missing",
+			"status": "In Progress",
+			"priority": "Low",
+			"description": "Incorrect delivery as materi...",
+			"summary": "9 October, 2025...",
+			"summaryFull": "9 October, 2025 is requested",
+			"materialCode": "MN3934",
+			"issues": []
+		},
+		{
+			"id": "1022",
+			"category": "Posting Missing",
+			"status": "Rejected",
+			"priority": "Low",
+			"description": "Posting Missing for MAT56",
+			"summary": "9 October, 2025...",
+			"summaryFull": "9 October, 2025 is requested",
+			"materialCode": "MN3936",
+			"issues": []
+		}
+	]
+}

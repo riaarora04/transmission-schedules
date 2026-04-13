@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counting Events - Launchpad</title>
+    <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        id="sap-ui-bootstrap"
+        data-sap-ui-libs="sap.m,sap.f"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: '72', '72full', Arial, Helvetica, sans-serif;
+            background: var(--sapBackgroundColor, #f5f6f7);
+        }
+
+        #app {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shell-bar {
+            height: 2.75rem;
+            background: var(--sapShellColor, #354a5f);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .shell-bar-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--sapTextColor, #1d2d3e);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--sapContent_LabelColor, #556b82);
+        }
+
+        .tiles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+            gap: 1.5rem;
+            max-width: 80rem;
+        }
+
+        .tile {
+            background: white;
+            border: 1px solid var(--sapField_BorderColor, #e5e5e5);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .tile:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-color: var(--sapHighlightColor, #0064d9);
+            transform: translateY(-2px);
+        }
+
+        .tile-icon {
+            font-size: 3rem;
+            color: var(--sapHighlightColor, #0064d9);
+            margin-bottom: 0.5rem;
+        }
+
+        .tile-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--sapTextColor, #1d2d3e);
+        }
+
+        .tile-description {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor, #556b82);
+            line-height: 1.5;
+        }
+
+        .tile-subtitle {
+            font-size: 0.75rem;
+            color: var(--sapContent_LabelColor, #556b82);
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 1.5rem;
+            }
+
+            .tiles-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="shell-bar">
+            <div class="shell-bar-title">Counting Events Management</div>
+        </div>
+
+        <div class="content-area">
+            <div class="page-header">
+                <div class="page-title">Counting Events & Schedules</div>
+                <div class="page-subtitle">Manage counting events and recurring counting schedules</div>
+            </div>
+
+            <div class="tiles-container">
+                <a href="/countingevents/webapp/index.html" class="tile">
+                    <div class="tile-icon">📋</div>
+                    <div class="tile-title">Manage Counting Events</div>
+                    <div class="tile-description">
+                        View and manage individual counting events, track their status, and complete counting activities
+                    </div>
+                    <div class="tile-subtitle">Counting Events</div>
+                </a>
+
+                <a href="/countingevents/webapp/index.html#CountingSchedules" class="tile">
+                    <div class="tile-icon">🔄</div>
+                    <div class="tile-title">Manage Counting Schedules</div>
+                    <div class="tile-description">
+                        Create and maintain recurring counting schedules to automatically generate counting events
+                    </div>
+                    <div class="tile-subtitle">Counting Schedules</div>
+                </a>
+
+                <a href="/" class="tile">
+                    <div class="tile-icon">🏠</div>
+                    <div class="tile-title">Back to Home</div>
+                    <div class="tile-description">
+                        Return to the main application launchpad
+                    </div>
+                    <div class="tile-subtitle">Home</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

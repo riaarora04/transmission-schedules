@@ -1,0 +1,25 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:f="sap.f">
+    <f:ShellBar
+        id="shellBar"
+        title="AI Document Parsing"
+        homeIcon="sap-icon://document-text"
+        showNavButton="true"
+        showCopilot="false"
+        showSearch="true"
+        showNotifications="true"
+        showProductSwitcher="false"
+        notificationsNumber="3">
+        <f:menu>
+            <Menu>
+                <MenuItem text="Settings" icon="sap-icon://action-settings"/>
+                <MenuItem text="Help" icon="sap-icon://sys-help"/>
+            </Menu>
+        </f:menu>
+        <f:profile>
+            <Avatar
+                initials="UN"
+                displaySize="XS"
+                tooltip="User Profile"/>
+        </f:profile>
+    </f:ShellBar>
+</core:FragmentDefinition>

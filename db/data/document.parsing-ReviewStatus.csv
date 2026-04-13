@@ -1,0 +1,6 @@
+code;name;descr;criticality
+PENDING;Pending Review;Awaiting review;2
+IN_REVIEW;In Review;Currently being reviewed;2
+APPROVED;Approved;Review approved;3
+REJECTED;Rejected;Review rejected, needs correction;1
+PUBLISHED;Published;Published to target system;3

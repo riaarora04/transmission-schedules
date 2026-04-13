@@ -1,0 +1,38 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:upload="sap.ui.unified">
+    <VBox class="sapUiSmallMargin">
+        <Title text="Document Upload and Extraction" level="H3" class="sapUiSmallMarginBottom"/>
+        <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+            <upload:FileUploader
+                id="fileUploader"
+                name="documentFile"
+                uploadUrl="/document-parsing/Documents/uploadDocument"
+                tooltip="Upload PDF or image document"
+                fileType="pdf,jpg,jpeg,png"
+                width="400px"
+                class="sapUiSmallMarginEnd"/>
+            <Button
+                text="Upload"
+                press=".onUploadPress"
+                type="Emphasized"
+                icon="sap-icon://upload"
+                class="sapUiTinyMarginEnd"/>
+        </HBox>
+        <HBox alignItems="Center" class="sapUiTinyMarginTop">
+            <Button
+                text="Extract Document"
+                press=".onExtractPress"
+                type="Success"
+                icon="sap-icon://copy"
+                enabled="{= ${status_code} === 'UPLOADED' }"
+                class="sapUiTinyMarginEnd"/>
+            <Button
+                text="Publish Document"
+                press=".onPublishPress"
+                type="Accept"
+                icon="sap-icon://message-success"
+                enabled="{= ${status_code} === 'APPROVED' }"
+                class="sapUiTinyMarginEnd"/>
+        </HBox>
+        <Text text="Supported formats: PDF, JPG, JPEG, PNG" class="sapUiTinyMarginTop"/>
+    </VBox>
+</core:FragmentDefinition>

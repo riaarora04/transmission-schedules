@@ -1,0 +1,15 @@
+<mvc:View
+    controllerName="transmissionschedules.controller.App"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    displayBlock="true"
+    height="100%">
+
+    <f:FlexibleColumnLayout
+        id="flexibleColumnLayout"
+        layout="{layout>/layout}"
+        backgroundDesign="Solid">
+    </f:FlexibleColumnLayout>
+
+</mvc:View>

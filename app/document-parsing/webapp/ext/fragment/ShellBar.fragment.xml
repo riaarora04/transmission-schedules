@@ -1,0 +1,22 @@
+<core:FragmentDefinition xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:f="sap.f">
+    <f:ShellBar
+        id="customShellBar"
+        title="AI Document Parsing"
+        homeIcon="sap-icon://document-text"
+        showNavButton="false"
+        showCopilot="false"
+        showSearch="true"
+        showNotifications="true"
+        showProductSwitcher="false"
+        notificationsNumber="3"
+        homeIconPressed=".onHomeIconPressed"
+        searchButtonPressed=".onSearchButtonPressed">
+        <f:profile>
+            <Avatar
+                initials="UN"
+                displaySize="XS"
+                press=".onUserPress"
+                tooltip="User Profile"/>
+        </f:profile>
+    </f:ShellBar>
+</core:FragmentDefinition>

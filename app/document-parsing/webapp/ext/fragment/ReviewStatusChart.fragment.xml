@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:suite="sap.suite.ui.microchart">
+
+    <suite:RadialMicroChart
+        size="M"
+        percentage="{confidenceScore}"
+        total="100">
+        <suite:fraction>
+            <suite:RadialMicroChartValue
+                value="{confidenceScore}"
+                color="Good"/>
+        </suite:fraction>
+    </suite:RadialMicroChart>
+
+</core:FragmentDefinition>

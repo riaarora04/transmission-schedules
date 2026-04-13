@@ -1,0 +1,6 @@
+code;name;descr
+REGULAR;Regular;Regular scheduled counting event
+ADHOC;Ad-hoc;Unscheduled counting event
+TESTING;Testing;Test counting event
+AUDIT;Audit;Audit counting event
+YEAR_END;Year-End;Year-end inventory counting

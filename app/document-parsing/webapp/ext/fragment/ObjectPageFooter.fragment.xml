@@ -1,0 +1,14 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m">
+    <OverflowToolbar
+        design="Solid"
+        style="Background:var(--sapPageFooter_Background,white);BorderTop:1px solid var(--sapPageFooter_BorderColor,#d9d9d9);BoxShadow:0px 0px 0px 0px rgba(34,53,72,0.48), 0px 1px 30px 0px rgba(34,53,72,0.25)">
+        <ToolbarSpacer/>
+        <Button
+            text="Publish"
+            type="Accept"
+            press="documentparsing.ext.controller.ObjectPageExtension.onPublishPress"
+            visible="{= ${status_code} === 'READY_FOR_REVIEW'}"/>
+    </OverflowToolbar>
+</core:FragmentDefinition>

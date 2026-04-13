@@ -1,0 +1,38 @@
+[
+  {
+    "ID": "cs10001-0000-0000-0000-000000000001",
+    "scheduleID": "S00034",
+    "description": "Monthly Packaging Count",
+    "eventType_code": "REGULAR",
+    "countingGroup": "Returnable Packaging",
+    "countingGroupDesc": "Monthly counting for returnable packaging",
+    "externalReference": "RP-MONTHLY-2025",
+    "startDate": "2025-06-25",
+    "endDate": "2025-12-25",
+    "closingDate": "2025-12-26",
+    "frequency_code": "MONTHLY",
+    "repeatOn": 25,
+    "repeatUnit": "Month",
+    "status_code": "ACTIVE",
+    "isActive": true,
+    "numberOfEvents": 5
+  },
+  {
+    "ID": "cs10001-0000-0000-0000-000000000002",
+    "scheduleID": "S00035",
+    "description": "Yearly Inventory Count",
+    "eventType_code": "REGULAR",
+    "countingGroup": "Full Inventory",
+    "countingGroupDesc": "Annual full inventory counting",
+    "externalReference": "INV-YEARLY-2026",
+    "startDate": "2026-06-25",
+    "endDate": "2027-06-25",
+    "closingDate": "2026-06-26",
+    "frequency_code": "YEARLY",
+    "repeatOn": 25,
+    "repeatUnit": "Year",
+    "status_code": "ACTIVE",
+    "isActive": true,
+    "numberOfEvents": 2
+  }
+]
