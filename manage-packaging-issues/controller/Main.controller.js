@@ -281,26 +281,26 @@ sap.ui.define([
 			const oDialogModel = this.getView().getModel("dialog");
 			const aIssueIds = oDialogModel.getProperty("/issueIds");
 			const oModel = this.getView().getModel();
+			const aIssues = oModel.getProperty("/issues");
 
-			// Call OData action
-			const oAction = oModel.bindContext("/approveIssues(...)");
-			oAction.setParameter("issueIds", aIssueIds);
-
-			oAction.execute().then(() => {
-				// Refresh the table
-				oModel.refresh();
-
-				// Show success message
-				MessageBox.success(aIssueIds.length + " issues approved successfully!");
-
-				// Close dialog
-				this.byId("approveDialog").close();
-
-				// Clear selection
-				this._clearTableSelection();
-			}).catch((oError) => {
-				MessageBox.error("Error approving issues: " + oError.message);
+			// Update status to "Approved" for selected issues
+			aIssues.forEach(function (oIssue) {
+				if (aIssueIds.includes(oIssue.id)) {
+					oIssue.status = "Approved";
+				}
 			});
+
+			// Update model
+			oModel.setProperty("/issues", aIssues);
+
+			// Show success message
+			MessageBox.success(aIssueIds.length + " issues approved successfully!");
+
+			// Close dialog
+			this.byId("approveDialog").close();
+
+			// Clear selection
+			this._clearTableSelection();
 		},
 
 		onCancelApprove: function () {
@@ -311,27 +311,26 @@ sap.ui.define([
 			const oDialogModel = this.getView().getModel("dialog");
 			const aIssueIds = oDialogModel.getProperty("/issueIds");
 			const oModel = this.getView().getModel();
+			const aIssues = oModel.getProperty("/issues");
 
-			// Call OData action
-			const oAction = oModel.bindContext("/rejectIssues(...)");
-			oAction.setParameter("issueIds", aIssueIds);
-			oAction.setParameter("reason", "Rejected by user");
-
-			oAction.execute().then(() => {
-				// Refresh the table
-				oModel.refresh();
-
-				// Show success message
-				MessageBox.error(aIssueIds.length + " issues rejected successfully!");
-
-				// Close dialog
-				this.byId("rejectDialog").close();
-
-				// Clear selection
-				this._clearTableSelection();
-			}).catch((oError) => {
-				MessageBox.error("Error rejecting issues: " + oError.message);
+			// Update status to "Rejected" for selected issues
+			aIssues.forEach(function (oIssue) {
+				if (aIssueIds.includes(oIssue.id)) {
+					oIssue.status = "Rejected";
+				}
 			});
+
+			// Update model
+			oModel.setProperty("/issues", aIssues);
+
+			// Show success message
+			MessageBox.error(aIssueIds.length + " issues rejected successfully!");
+
+			// Close dialog
+			this.byId("rejectDialog").close();
+
+			// Clear selection
+			this._clearTableSelection();
 		},
 
 		onCancelReject: function () {

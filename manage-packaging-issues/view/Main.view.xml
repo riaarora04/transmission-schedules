@@ -151,10 +151,7 @@
 			<VBox class="sapUiSmallMarginTop">
 				<!-- Table Toolbar -->
 				<OverflowToolbar>
-					<Title text="{
-						parts: ['i18n>tableTitle', '/PackagingIssues/$count'],
-						formatter: 'formatter.formatTableTitle'
-					}" level="H4"/>
+					<Title text="{i18n>tableTitle} ({/issues/length})" level="H4"/>
 					<ToolbarSpacer/>
 					<Button text="{i18n>createButton}" type="Default" press=".onCreate"/>
 					<Button id="approveButton" text="{i18n>approveButton}" type="Accept" press=".onApprove" enabled="false"/>
@@ -171,7 +168,7 @@
 				<!-- Issues Table -->
 				<Table
 					id="issuesTable"
-					items="{/PackagingIssues}"
+					items="{/issues}"
 					mode="MultiSelect"
 					selectionChange=".onSelectionChange"
 					sticky="ColumnHeaders,HeaderToolbar">
