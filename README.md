@@ -1,4 +1,22 @@
-# Manage Transmission Job Schedules
+# SAP Fiori Partner Portal
+
+Enterprise web applications built with SAP UI5 Web Components and Fiori Horizon theme.
+
+## 🚀 Live Demo
+
+**Live Site:** [https://riaarora04.github.io/transmission-schedules/](https://riaarora04.github.io/transmission-schedules/)
+
+---
+
+## 📦 Featured App: Packaging Order Bulk Approval
+
+**Direct Link:** [https://riaarora04.github.io/transmission-schedules/packaging-order-view.html](https://riaarora04.github.io/transmission-schedules/packaging-order-view.html)
+
+Order empty returnable materials with bulk approval workflow, advanced filtering, and status tracking.
+
+---
+
+# Manage Transmission Job Schedules (CAP Backend)
 
 A SAP Fiori Elements application for managing transmission job schedules, built on the SAP Cloud Application Programming Model (CAP) with strict adherence to SAP Fiori Design Guidelines.
 
@@ -13,6 +31,14 @@ A SAP Fiori Elements application for managing transmission job schedules, built 
 
 ## Technology Stack
 
+### Static Web Apps (GitHub Pages)
+- **UI Framework**: SAP UI5 Web Components
+- **Design System**: SAP Fiori Horizon Theme
+- **Styling**: CSS Custom Properties (Design Tokens)
+- **Architecture**: Vanilla HTML with Web Components
+- **Hosting**: GitHub Pages
+
+### CAP Backend Application
 - **Backend**: SAP Cloud Application Programming Model (CAP) v7+
 - **Frontend**: SAPUI5 Fiori Elements (List Report + Object Page)
 - **Database**: SQLite (development) / HANA (production)
@@ -20,6 +46,21 @@ A SAP Fiori Elements application for managing transmission job schedules, built 
 - **Theme**: SAP Horizon (Fiori 3.0)
 
 ## Project Structure
+
+### Static Web Applications
+
+```
+.
+├── index.html                          # Landing page with app links
+├── packaging-order-view.html           # 📦 Bulk approval app (Featured)
+├── packaging-orders-ui5.html           # Orders list view
+├── packaging-order-create-ui5.html     # Create new order
+├── packaging-order-detail-ui5.html     # Order details
+├── transmission-job-schedules.html     # Job schedules UI
+└── manage-transmission-jobs.html       # Job management UI
+```
+
+### CAP Backend Structure
 
 ```
 /
