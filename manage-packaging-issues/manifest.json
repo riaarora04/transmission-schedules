@@ -13,16 +13,6 @@
 		"sourceTemplate": {
 			"id": "@ui5/mcp-server:js",
 			"version": "0.2.10"
-		},
-		"dataSources": {
-			"mainService": {
-				"uri": "/odata/v4/packaging-issues/",
-				"type": "OData",
-				"settings": {
-					"annotations": [],
-					"odataVersion": "4.0"
-				}
-			}
 		}
 	},
 
