@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assisted Document Parsing - Fiori Launchpad</title>
-
-    <!-- Figma Capture Script -->
-    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+    <title>SAP Fiori Apps - Partner Portal</title>
 
     <!-- SAP UI5 Core -->
     <script src="https://sdk.openui5.org/resources/sap-ui-core.js"
         id="sap-ui-bootstrap"
-        data-sap-ui-libs="sap.m,sap.f,sap.ui.table"
+        data-sap-ui-libs="sap.m,sap.f"
         data-sap-ui-theme="sap_horizon"
         data-sap-ui-compatVersion="edge"
         data-sap-ui-async="true">
@@ -23,9 +20,7 @@
         import "@ui5/webcomponents-fiori/dist/Assets.js";
         import "@ui5/webcomponents-fiori/dist/ShellBar.js";
         import "@ui5/webcomponents/dist/Button.js";
-        import "@ui5/webcomponents/dist/Input.js";
         import "@ui5/webcomponents/dist/Icon.js";
-        import "@ui5/webcomponents/dist/Avatar.js";
     </script>
 
     <style>
@@ -42,117 +37,107 @@
             color: var(--sapTextColor, #1d2d3e);
         }
 
-        /* Shell Bar */
         ui5-shellbar {
             --_ui5_shellbar_height: 2.75rem;
         }
 
-        /* Tab Navigation */
-        .tab-container {
-            background: white;
-            border-bottom: 1px solid var(--sapList_BorderColor, #d9d9d9);
-            display: flex;
-            gap: 2rem;
-            padding: 0 3rem;
-            box-shadow: 0 2px 2px rgba(85, 107, 130, 0.05);
-        }
-
-        .tab-item {
-            padding: 0.25rem 0.25rem 0.75rem;
-            font-family: '72', sans-serif;
-            font-weight: bold;
-            font-size: 0.875rem;
-            color: var(--sapTextColor, #1d2d3e);
-            text-decoration: none;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .tab-item.active {
-            color: var(--sapInformativeColor, #0070f2);
-            border-bottom-color: var(--sapInformativeColor, #0070f2);
-        }
-
-        .tab-item:hover {
-            color: var(--sapInformativeColor, #0070f2);
-        }
-
-        /* Content Area */
         .content {
             padding: 3rem;
-            max-width: 1440px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Section Title */
-        .section-title {
-            font-family: '72-Bold', sans-serif;
-            font-size: 1.25rem;
-            color: var(--sapGroup_TitleTextColor, #1d2d3e);
-            margin-bottom: 1rem;
-            padding: 0.5rem 0;
-        }
-
-        /* Tiles */
-        .tiles-container {
+        .hero {
+            background: white;
+            padding: 3rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 3rem;
         }
 
-        .tiles-row {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .tile {
-            background: white;
-            border-radius: 1rem;
-            padding: 1rem;
-            width: 11rem;
-            height: 11rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            box-shadow: 0 0 2px 0 rgba(34, 54, 73, 0.2), 0 2px 4px 0 rgba(34, 54, 73, 0.2);
-            transition: box-shadow 0.2s;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .tile:hover {
-            box-shadow: 0 0 4px 0 rgba(34, 54, 73, 0.3), 0 4px 8px 0 rgba(34, 54, 73, 0.3);
-        }
-
-        .tile-header {
+        h1 {
             font-family: '72-Bold', sans-serif;
-            font-size: 0.875rem;
-            color: var(--sapTile_TitleTextColor, #1d2d3e);
-            line-height: 1.4;
-            min-height: 3.625rem;
+            font-size: 2rem;
+            color: var(--sapTextColor, #1d2d3e);
+            margin-bottom: 1rem;
         }
 
-        .tile-subtitle {
-            font-family: '72', sans-serif;
-            font-size: 0.875rem;
-            color: var(--sapTile_TextColor, #556b82);
+        .subtitle {
+            font-size: 1rem;
+            color: var(--sapContent_LabelColor, #556b82);
+            margin-bottom: 2rem;
         }
 
-        .tile-icon {
-            flex: 1;
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .app-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .app-card h2 {
+            font-family: '72-Bold', sans-serif;
+            font-size: 1.25rem;
+            color: var(--sapTextColor, #1d2d3e);
+            margin-bottom: 0.5rem;
+        }
+
+        .app-card p {
+            font-size: 0.875rem;
+            color: var(--sapContent_LabelColor, #556b82);
+            line-height: 1.5;
+        }
+
+        .app-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--sapHighlightColor, #0064d9);
+            border-radius: 8px;
             display: flex;
-            align-items: flex-end;
-            justify-content: flex-start;
-            font-size: 1.75rem;
-            color: var(--sapTile_IconColor, #5a7da0);
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: white;
+            font-size: 1.5rem;
         }
 
-        .tile-icon.ai {
-            color: var(--sapInformativeColor, #0070f2);
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--sapInformativeColor, #0070f2);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            margin-top: 0.5rem;
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 768px) {
             .content {
                 padding: 1.5rem;
+            }
+
+            .hero {
+                padding: 2rem;
+            }
+
+            .apps-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -160,104 +145,61 @@
 <body>
     <!-- Shell Bar -->
     <ui5-shellbar
-        primary-title="S/4HANA Cloud"
-        secondary-title="Home"
-        show-co-pilot
-        show-search-field
+        primary-title="Partner Portal"
         show-notifications
         show-product-switch>
-        <ui5-avatar slot="profile" initials="SD" color-scheme="Accent6"></ui5-avatar>
     </ui5-shellbar>
-
-    <!-- Tab Navigation -->
-    <div class="tab-container">
-        <a href="#" class="tab-item active">Self-Billing Processing</a>
-        <a href="#" class="tab-item">Self-Billing Analytics</a>
-        <a href="#" class="tab-item">Self-Billing Configuration</a>
-        <a href="#" class="tab-item">Self-Billing Archiving</a>
-        <a href="#" class="tab-item">Self-Billing Logs</a>
-    </div>
 
     <!-- Main Content -->
     <div class="content">
-        <!-- First Section -->
-        <div class="tiles-container">
-            <div class="tiles-row">
-                <a href="#" class="tile">
-                    <div class="tile-header">Manage Self-Billing</div>
-                    <div class="tile-subtitle">Automatic Posting</div>
-                    <div class="tile-icon"></div>
-                </a>
-
-                <a href="list-report.html" class="tile">
-                    <div class="tile-header">Manage Self-Billing</div>
-                    <div class="tile-subtitle">Invoice Creation</div>
-                    <div class="tile-icon"></div>
-                </a>
-
-                <a href="create-new.html" class="tile">
-                    <div class="tile-header">AI Assisted Document Parsing</div>
-                    <div class="tile-icon ai"></div>
-                </a>
-
-                <a href="transmission-schedules-standalone.html" class="tile">
-                    <div class="tile-header">Manage Transmission Job Schedules</div>
-                    <div class="tile-subtitle">Schedule Management</div>
-                    <div class="tile-icon"></div>
-                </a>
-            </div>
+        <div class="hero">
+            <h1>SAP Fiori Partner Portal</h1>
+            <p class="subtitle">Enterprise applications built with SAP UI5 Web Components and Fiori Horizon theme</p>
         </div>
 
-        <!-- Analytics Section -->
-        <div class="tiles-container">
-            <div class="section-title">Self-Billing Analytics</div>
-            <div class="tiles-row">
-                <a href="#" class="tile">
-                    <div class="tile-header">Manage Price Deviation</div>
-                    <div class="tile-icon"></div>
-                </a>
+        <div class="apps-grid">
+            <!-- Packaging Order Bulk Approval -->
+            <a href="packaging-order-view.html" class="app-card">
+                <div class="app-icon">📦</div>
+                <h2>Packaging Order Bulk Approval</h2>
+                <p>Order empty returnable materials with bulk approval workflow, filters, and status tracking.</p>
+                <span class="badge">Featured</span>
+            </a>
 
-                <a href="#" class="tile">
-                    <div class="tile-header">Manage Quantity Deviation</div>
-                    <div class="tile-icon"></div>
-                </a>
+            <!-- Packaging Orders List (UI5) -->
+            <a href="packaging-orders-ui5.html" class="app-card">
+                <div class="app-icon">📋</div>
+                <h2>Packaging Orders List</h2>
+                <p>Comprehensive list view of all packaging orders with advanced filtering and sorting.</p>
+            </a>
 
-                <a href="#" class="tile">
-                    <div class="tile-header">Manage Tax Deviation</div>
-                    <div class="tile-icon"></div>
-                </a>
-            </div>
-        </div>
+            <!-- Create Packaging Order -->
+            <a href="packaging-order-create-ui5.html" class="app-card">
+                <div class="app-icon">➕</div>
+                <h2>Create Packaging Order</h2>
+                <p>Create new packaging orders with material selection and quantity management.</p>
+            </a>
 
-        <!-- Configuration Section -->
-        <div class="tiles-container">
-            <div class="section-title">Self-Billing Configuration</div>
-            <div class="tiles-row">
-                <a href="#" class="tile">
-                    <div class="tile-header">Manage Tolerance Group</div>
-                    <div class="tile-icon"></div>
-                </a>
+            <!-- Packaging Order Detail -->
+            <a href="packaging-order-detail-ui5.html" class="app-card">
+                <div class="app-icon">🔍</div>
+                <h2>Packaging Order Details</h2>
+                <p>View detailed information about individual packaging orders including items and status.</p>
+            </a>
 
-                <a href="#" class="tile">
-                    <div class="tile-header">Define Sold-to Party Parameters</div>
-                    <div class="tile-icon"></div>
-                </a>
+            <!-- Transmission Job Schedules -->
+            <a href="transmission-job-schedules.html" class="app-card">
+                <div class="app-icon">📅</div>
+                <h2>Transmission Job Schedules</h2>
+                <p>Manage and monitor transmission job schedules with configuration options.</p>
+            </a>
 
-                <a href="#" class="tile">
-                    <div class="tile-header">Define Sender Parameters</div>
-                    <div class="tile-icon"></div>
-                </a>
-
-                <a href="#" class="tile">
-                    <div class="tile-header">Define General Parameters</div>
-                    <div class="tile-icon"></div>
-                </a>
-
-                <a href="#" class="tile">
-                    <div class="tile-header">Customize Self Billing Process</div>
-                    <div class="tile-icon"></div>
-                </a>
-            </div>
+            <!-- Manage Transmission Jobs -->
+            <a href="manage-transmission-jobs.html" class="app-card">
+                <div class="app-icon">⚙️</div>
+                <h2>Manage Transmission Jobs</h2>
+                <p>Configure and manage transmission jobs for data transfer and processing.</p>
+            </a>
         </div>
     </div>
 </body>
