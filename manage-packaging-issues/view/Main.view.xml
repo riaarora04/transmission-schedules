@@ -1,0 +1,401 @@
+<mvc:View
+	controllerName="com.sap.packaging.issues.controller.Main"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core"
+	xmlns:layout="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+	displayBlock="true"
+	core:require="{
+		formatter: 'com/sap/packaging/issues/model/formatter'
+	}">
+
+	<Page
+		id="page"
+		title="{i18n>appTitle}"
+		showHeader="true">
+		<content>
+			<!-- Filter Bar -->
+			<VBox class="filterBar">
+				<!-- Title Area -->
+				<HBox justifyContent="SpaceBetween" alignItems="Start" class="sapUiSmallMarginBottom">
+					<VBox>
+						<HBox alignItems="Center">
+							<Link text="Standard" class="variantTitle"/>
+							<Button icon="sap-icon://slim-arrow-down" type="Transparent" class="sapUiTinyMarginBegin"/>
+						</HBox>
+					</VBox>
+					<HBox>
+						<Button icon="sap-icon://action" type="Transparent"/>
+					</HBox>
+				</HBox>
+
+				<!-- Filter Fields Grid -->
+				<FlexBox wrap="Wrap" justifyContent="Start" alignItems="End" class="filterFieldsContainer">
+					<!-- Search Field -->
+					<VBox class="filterField">
+						<SearchField id="searchField" placeholder="{i18n>searchPlaceholder}" width="256px"/>
+					</VBox>
+
+					<!-- Editing Status -->
+					<VBox class="filterField">
+						<Label text="{i18n>editingStatus}" class="filterLabel"/>
+						<Select id="editingStatusSelect" width="256px">
+							<items>
+								<core:Item key="all" text="All"/>
+								<core:Item key="new" text="{i18n>statusNew}"/>
+								<core:Item key="inProgress" text="{i18n>statusInProgress}"/>
+							</items>
+						</Select>
+					</VBox>
+
+					<!-- Issue ID -->
+					<VBox class="filterField">
+						<Label text="{i18n>issueId}" class="filterLabel"/>
+						<Input id="issueIdInput" placeholder="*15...30*" width="256px" showValueHelp="true" valueHelpOnly="false"/>
+					</VBox>
+
+					<!-- Material -->
+					<VBox class="filterField">
+						<Label text="{i18n>material}" class="filterLabel"/>
+						<Input id="materialInput" width="256px" showValueHelp="true" valueHelpOnly="false"/>
+					</VBox>
+
+					<!-- Returnable Packaging Account -->
+					<VBox class="filterField">
+						<Label text="{i18n>returnableAccount}" class="filterLabel"/>
+						<DatePicker id="returnableAccountInput" value="Jan 26, 2024" width="256px"/>
+					</VBox>
+
+					<!-- Exchange Partner -->
+					<VBox class="filterField">
+						<Label text="{i18n>exchangePartner}" class="filterLabel"/>
+						<Input id="exchangePartnerInput" width="256px" showValueHelp="true" valueHelpOnly="false"/>
+					</VBox>
+
+					<!-- Location Partner -->
+					<VBox class="filterField">
+						<Label text="{i18n>locationPartner}" class="filterLabel"/>
+						<Input id="locationPartnerInput" width="256px" showValueHelp="true" valueHelpOnly="false"/>
+					</VBox>
+
+					<!-- Posting Document Number -->
+					<VBox class="filterField">
+						<Label text="{i18n>postingDocNumber}" class="filterLabel"/>
+						<Input id="postingDocInput" width="256px" showValueHelp="true" valueHelpOnly="false"/>
+					</VBox>
+
+					<!-- Category -->
+					<VBox class="filterField">
+						<Label text="{i18n>category}" class="filterLabel"/>
+						<Select id="categorySelect" width="256px">
+							<items>
+								<core:Item key="" text=""/>
+								<core:Item key="inquiry" text="{i18n>categoryInquiry}"/>
+								<core:Item key="postingDifference" text="{i18n>categoryPostingDifference}"/>
+								<core:Item key="postingMissing" text="{i18n>categoryPostingMissing}"/>
+							</items>
+						</Select>
+					</VBox>
+
+					<!-- Status -->
+					<VBox class="filterField">
+						<Label text="{i18n>status}" class="filterLabel"/>
+						<DatePicker id="statusInput" value="Jan 26, 2024" width="256px"/>
+					</VBox>
+
+					<!-- Priority -->
+					<VBox class="filterField">
+						<Label text="{i18n>priority}" class="filterLabel"/>
+						<Select id="prioritySelect" width="256px">
+							<items>
+								<core:Item key="" text=""/>
+								<core:Item key="high" text="{i18n>priorityHigh}"/>
+								<core:Item key="veryHigh" text="{i18n>priorityVeryHigh}"/>
+								<core:Item key="low" text="{i18n>priorityLow}"/>
+							</items>
+						</Select>
+					</VBox>
+
+					<!-- Processor -->
+					<VBox class="filterField">
+						<Label text="{i18n>processor}" class="filterLabel"/>
+						<Input id="processorInput" width="256px" showValueHelp="true" valueHelpOnly="false"/>
+					</VBox>
+
+					<!-- Transaction Type -->
+					<VBox class="filterField">
+						<Label text="{i18n>transactionType}" class="filterLabel"/>
+						<Select id="transactionTypeSelect" width="256px">
+							<items>
+								<core:Item key="" text=""/>
+							</items>
+						</Select>
+					</VBox>
+				</FlexBox>
+
+				<!-- Filter Actions -->
+				<HBox justifyContent="End" alignItems="Center" class="filterActions">
+					<Button text="{i18n>goButton}" type="Emphasized" press=".onFilterGo" class="sapUiTinyMarginEnd"/>
+					<Button text="{i18n>adaptFilters}" type="Transparent" press=".onAdaptFilters"/>
+				</HBox>
+
+				<!-- Collapse/Expand Buttons -->
+				<HBox justifyContent="Center" alignItems="Center" class="filterToggle">
+					<Button icon="sap-icon://collapse" type="Default" tooltip="Collapse" class="sapUiTinyMarginEnd"/>
+					<Button icon="sap-icon://pushpin-off" type="Default" tooltip="Pin"/>
+				</HBox>
+			</VBox>
+
+			<!-- Table with Toolbar -->
+			<VBox class="sapUiSmallMarginTop">
+				<!-- Table Toolbar -->
+				<OverflowToolbar>
+					<Title text="{
+						parts: ['i18n>tableTitle', '/PackagingIssues/$count'],
+						formatter: 'formatter.formatTableTitle'
+					}" level="H4"/>
+					<ToolbarSpacer/>
+					<Button text="{i18n>createButton}" type="Default" press=".onCreate"/>
+					<Button id="approveButton" text="{i18n>approveButton}" type="Accept" press=".onApprove" enabled="false"/>
+					<Button id="rejectButton" text="{i18n>rejectButton}" type="Reject" press=".onReject" enabled="false"/>
+					<ToolbarSeparator/>
+					<Button icon="sap-icon://action-settings" type="Transparent" tooltip="Settings"/>
+					<ToolbarSeparator/>
+					<Button icon="sap-icon://excel-attachment" type="Transparent" tooltip="Export to Excel"/>
+					<Button icon="sap-icon://print" type="Transparent" tooltip="Print"/>
+					<ToolbarSeparator/>
+					<Button icon="sap-icon://full-screen" type="Transparent" tooltip="Full Screen"/>
+				</OverflowToolbar>
+
+				<!-- Issues Table -->
+				<Table
+					id="issuesTable"
+					items="{/PackagingIssues}"
+					mode="MultiSelect"
+					selectionChange=".onSelectionChange"
+					sticky="ColumnHeaders,HeaderToolbar">
+					<columns>
+						<Column width="5rem">
+							<Text text="{i18n>columnIssueId}"/>
+						</Column>
+						<Column width="10rem">
+							<Text text="{i18n>columnCategory}"/>
+						</Column>
+						<Column width="8rem">
+							<Text text="{i18n>columnStatus}"/>
+						</Column>
+						<Column width="7rem">
+							<Text text="{i18n>columnPriority}"/>
+						</Column>
+						<Column width="15rem" >
+							<Text text="{i18n>columnIssueDescription}"/>
+						</Column>
+						<Column width="12rem">
+							<Text text="{i18n>columnSummary}"/>
+						</Column>
+						<Column width="10rem">
+							<Text text="{i18n>columnMaterialCode}"/>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem type="Active">
+							<cells>
+								<Text text="{id}"/>
+								<Text text="{category}"/>
+								<ObjectStatus
+									text="{status}"
+									state="{
+										path: 'status',
+										formatter: 'formatter.formatStatusState'
+									}"/>
+								<ObjectStatus
+									text="{priority}"
+									state="{
+										path: 'priority',
+										formatter: 'formatter.formatPriorityState'
+									}"/>
+								<Text text="{description}"/>
+								<HBox>
+									<Text text="{summary}" class="sapUiTinyMarginEnd"/>
+									<Link text="{i18n>columnMoreLink}" press=".onShowSummary"/>
+								</HBox>
+								<Text text="{materialCode}"/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</content>
+	</Page>
+
+	<!-- Summary Popover -->
+	<Popover
+		id="summaryPopover"
+		placement="Bottom"
+		showHeader="true"
+		contentWidth="710px"
+		title="{i18n>popoverTitle}">
+		<content>
+			<VBox class="sapUiNoMargin">
+				<!-- Form Items Section -->
+				<VBox class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiTinyMarginTop sapUiTinyMarginBottom">
+					<VBox class="sapUiTinyMarginBottom">
+						<Label text="{i18n>popoverIssueId}" class="sapUiTinyMarginBottom"/>
+						<Text text="{popover>/id}"/>
+					</VBox>
+					<VBox class="sapUiTinyMarginTop">
+						<Label text="{i18n>popoverSummary}" class="sapUiTinyMarginBottom"/>
+						<Text text="{popover>/summaryFull}"/>
+					</VBox>
+				</VBox>
+
+				<!-- Natural Language Summary Section -->
+				<VBox class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiTinyMarginTop" visible="{= ${popover>/summaryText} !== ''}">
+					<Text text="{popover>/summaryText}" class="summaryText"/>
+				</VBox>
+
+				<!-- Issues Table Section -->
+				<VBox class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop" visible="{= ${popover>/issues/length} > 0}">
+					<Title text="Issues ({popover>/issues/length})" level="H5" class="sapUiTinyMarginBottom"/>
+					<Table
+						id="popoverIssuesTable"
+						items="{popover>/issues}"
+						mode="None"
+						class="popoverTable">
+						<columns>
+							<Column width="12rem">
+								<Text text="{i18n>popoverIssueType}"/>
+							</Column>
+							<Column width="12rem">
+								<Text text="{i18n>popoverOriginalValue}"/>
+							</Column>
+							<Column>
+								<Text text="{i18n>popoverRequestedValue}"/>
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{popover>type}"/>
+									<Text text="{popover>original}"/>
+									<Text text="{popover>requested}"/>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</VBox>
+			</VBox>
+		</content>
+	</Popover>
+
+	<!-- Approve Dialog -->
+	<Dialog
+		id="approveDialog"
+		title="{i18n>approveDialogTitle}"
+		contentWidth="1094px">
+		<content>
+			<VBox class="sapUiNoMargin">
+				<!-- Message Text -->
+				<Text text="{dialog>/message}" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
+
+				<!-- Issues Table -->
+				<VBox class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiTinyMarginTop">
+					<Table
+						id="dialogTable"
+						items="{dialog>/selectedIssues}"
+						mode="Delete"
+						delete=".onRemoveFromDialog"
+						class="approveDialogTable">
+						<headerToolbar>
+							<OverflowToolbar>
+								<Title text="{dialog>/issuesTitle}" level="H5"/>
+							</OverflowToolbar>
+						</headerToolbar>
+						<columns>
+							<Column width="11rem">
+								<Text text="{i18n>columnIssueId}"/>
+							</Column>
+							<Column width="13rem">
+								<Text text="{i18n>columnCategory}"/>
+							</Column>
+							<Column>
+								<Text text="{i18n>columnSummary}"/>
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{dialog>id}"/>
+									<Text text="{dialog>category}"/>
+									<Text text="{dialog>summaryFull}"/>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</VBox>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button text="{i18n>approveConfirmButton}" type="Success" press=".onConfirmApprove"/>
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>cancelButton}" type="Transparent" press=".onCancelApprove"/>
+		</endButton>
+	</Dialog>
+
+	<!-- Reject Dialog -->
+	<Dialog
+		id="rejectDialog"
+		title="{i18n>rejectDialogTitle}"
+		contentWidth="1094px">
+		<content>
+			<VBox class="sapUiNoMargin">
+				<!-- Message Text -->
+				<Text text="{dialog>/message}" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
+
+				<!-- Issues Table -->
+				<VBox class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiTinyMarginTop">
+					<Table
+						id="rejectDialogTable"
+						items="{dialog>/selectedIssues}"
+						mode="Delete"
+						delete=".onRemoveFromRejectDialog"
+						class="approveDialogTable">
+						<headerToolbar>
+							<OverflowToolbar>
+								<Title text="{dialog>/issuesTitle}" level="H5"/>
+							</OverflowToolbar>
+						</headerToolbar>
+						<columns>
+							<Column width="11rem">
+								<Text text="{i18n>columnIssueId}"/>
+							</Column>
+							<Column width="13rem">
+								<Text text="{i18n>columnCategory}"/>
+							</Column>
+							<Column>
+								<Text text="{i18n>columnSummary}"/>
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem>
+								<cells>
+									<Text text="{dialog>id}"/>
+									<Text text="{dialog>category}"/>
+									<Text text="{dialog>summaryFull}"/>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</VBox>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button text="{i18n>rejectConfirmButton}" type="Reject" press=".onConfirmReject"/>
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>cancelButton}" type="Transparent" press=".onCancelReject"/>
+		</endButton>
+	</Dialog>
+</mvc:View>

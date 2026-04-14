@@ -8,11 +8,11 @@ Enterprise web applications built with SAP UI5 Web Components and Fiori Horizon 
 
 ---
 
-## 📦 Featured App: Packaging Order Bulk Approval
+## 📦 Featured App: Manage Packaging Issues
 
-**Direct Link:** [https://riaarora04.github.io/transmission-schedules/packaging-order-view.html](https://riaarora04.github.io/transmission-schedules/packaging-order-view.html)
+**Direct Link:** [https://riaarora04.github.io/transmission-schedules/manage-packaging-issues/](https://riaarora04.github.io/transmission-schedules/manage-packaging-issues/)
 
-Order empty returnable materials with bulk approval workflow, advanced filtering, and status tracking.
+Bulk approve or reject packaging issues with advanced filtering, status tracking, and streamlined workflow management.
 
 ---
 
