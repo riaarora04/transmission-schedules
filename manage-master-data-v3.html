@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Master Data - SAP Fiori</title>
+
+    <script id="sap-ui-bootstrap"
+        src="https://sdk.openui5.org/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m,sap.f,sap.ui.unified"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="true">
+    </script>
+
+    <script>
+        sap.ui.getCore().attachInit(function() {
+
+            // Shell Bar
+            var oShellBar = new sap.f.ShellBar({
+                title: "Manage Master Data",
+                homeIcon: "https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg",
+                showMenuButton: true,
+                showNavButton: true,
+                showCopilot: false,
+                showSearch: true,
+                showNotifications: true,
+                showProductSwitcher: false,
+                notificationsNumber: "2",
+                profile: new sap.f.Avatar({
+                    initials: "RA"
+                })
+            });
+
+            // Page
+            var oPage = new sap.m.Page({
+                customHeader: oShellBar,
+                showHeader: true,
+                content: []
+            });
+
+            // Page header with title and actions
+            var oHeaderToolbar = new sap.m.OverflowToolbar({
+                content: [
+                    new sap.m.Title({
+                        text: "Manage Master Data",
+                        level: "H2"
+                    }),
+                    new sap.m.ToolbarSpacer(),
+                    new sap.m.Button("uploadBtn", {
+                        text: "Upload File",
+                        type: "Emphasized",
+                        enabled: false,
+                        press: function() {
+                            var oModel = oTable.getModel();
+                            var sSelected = oModel.getProperty("/selectedObject");
+                            if (!sSelected) {
+                                sap.m.MessageBox.warning("Please select an object from the table first.");
+                                return;
+                            }
+                            oUploadDialog.open();
+                        }
+                    }),
+                    new sap.m.Button({
+                        text: "Refresh",
+                        press: function() {
+                            sap.m.MessageToast.show("Refreshing data...");
+                        }
+                    }),
+                    new sap.m.Button({
+                        text: "Download Template",
+                        press: function() {
+                            sap.m.MessageToast.show("Downloading template...");
+                        }
+                    }),
+                    new sap.m.Button("downloadBtn", {
+                        text: "Download File",
+                        enabled: false,
+                        press: function() {
+                            oDownloadDialog.open();
+                        }
+                    }),
+                    new sap.m.Button("viewLogsBtn", {
+                        text: "View Application Logs",
+                        enabled: false,
+                        press: function() {
+                            sap.m.MessageBox.information("View Application Logs functionality will be implemented in a future release.");
+                        }
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop");
+
+            // Table with 7 columns including Log Details
+            var oTable = new sap.m.Table({
+                mode: "None",
+                columns: [
+                    new sap.m.Column({
+                        width: "12%",
+                        hAlign: "Begin",
+                        header: new sap.m.Text({ text: "Object" })
+                    }),
+                    new sap.m.Column({
+                        width: "18%",
+                        header: new sap.m.Text({ text: "File Name" })
+                    }),
+                    new sap.m.Column({
+                        width: "12%",
+                        header: new sap.m.Text({ text: "Status" })
+                    }),
+                    new sap.m.Column({
+                        width: "10%",
+                        hAlign: "End",
+                        header: new sap.m.Text({ text: "Total Records" })
+                    }),
+                    new sap.m.Column({
+                        width: "12%",
+                        hAlign: "End",
+                        header: new sap.m.Text({ text: "Records with Errors" })
+                    }),
+                    new sap.m.Column({
+                        width: "21%",
+                        header: new sap.m.Text({ text: "Error Details" })
+                    }),
+                    new sap.m.Column({
+                        width: "15%",
+                        header: new sap.m.Text({ text: "Uploaded On/At" })
+                    })
+                ]
+            }).addStyleClass("sapUiSmallMarginBegin sapUiSmallMarginEnd");
+
+            // Bind table items
+            oTable.bindItems({
+                path: "/masterData",
+                template: new sap.m.ColumnListItem({
+                    cells: [
+                        new sap.m.HBox({
+                            items: [
+                                new sap.m.RadioButton({
+                                    groupName: "objectSelection",
+                                    select: function(oEvent) {
+                                        var oSource = oEvent.getSource();
+                                        var oContext = oSource.getBindingContext();
+                                        var sObject = oContext.getProperty("object");
+
+                                        oTable.getModel().setProperty("/selectedObject", sObject);
+                                        oTable.getModel().refresh(true);
+                                        sap.ui.getCore().byId("uploadBtn").setEnabled(true);
+                                        sap.ui.getCore().byId("downloadBtn").setEnabled(true);
+                                        sap.ui.getCore().byId("viewLogsBtn").setEnabled(true);
+                                    }
+                                }).addStyleClass("sapUiTinyMarginEnd"),
+                                new sap.m.Text({ text: "{object}" })
+                            ],
+                            alignItems: "Center"
+                        }),
+                        new sap.m.Text({ text: "{fileName}" }),
+                        new sap.m.ObjectStatus({
+                            text: "{status}",
+                            state: "{statusState}",
+                            icon: "{statusIcon}"
+                        }),
+                        new sap.m.Text({
+                            text: "{totalRecords}",
+                            textAlign: "End"
+                        }),
+                        new sap.m.Text({
+                            text: "{recordsWithErrors}",
+                            textAlign: "End"
+                        }),
+                        new sap.m.HBox({
+                            items: [
+                                new sap.m.Text({
+                                    text: "{logDetailShort}",
+                                    visible: "{= !!${logDetailShort} }"
+                                }),
+                                new sap.m.Link({
+                                    text: "more",
+                                    visible: "{= !!${logDetailFull} }",
+                                    press: function(oEvent) {
+                                        var oSource = oEvent.getSource();
+                                        var oContext = oSource.getBindingContext();
+                                        var sFullLog = oContext.getProperty("logDetailFull");
+                                        var sObject = oContext.getProperty("object");
+
+                                        // Create popover
+                                        var oPopover = new sap.m.Popover({
+                                            title: "Error Details - " + sObject,
+                                            contentWidth: "400px",
+                                            placement: "Left",
+                                            content: [
+                                                new sap.m.VBox({
+                                                    items: [
+                                                        new sap.m.Text({
+                                                            text: sFullLog
+                                                        }).addStyleClass("sapUiSmallMargin")
+                                                    ]
+                                                })
+                                            ],
+                                            footer: new sap.m.Toolbar({
+                                                content: [
+                                                    new sap.m.ToolbarSpacer(),
+                                                    new sap.m.Button({
+                                                        text: "View Application Logs",
+                                                        type: "Transparent",
+                                                        press: function() {
+                                                            oPopover.close();
+                                                            sap.m.MessageBox.information("View Application Logs functionality will be implemented in a future release.");
+                                                        }
+                                                    })
+                                                ]
+                                            }),
+                                            afterClose: function() {
+                                                oPopover.destroy();
+                                            }
+                                        });
+
+                                        oPopover.openBy(oSource);
+                                    }
+                                }).addStyleClass("sapUiTinyMarginBegin")
+                            ]
+                        }),
+                        new sap.m.Text({ text: "{uploadedAt}" })
+                    ]
+                })
+            });
+
+            // Upload Dialog
+            var oUploadDialog = new sap.m.Dialog({
+                title: "Upload File",
+                contentWidth: "500px",
+                content: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Object" }),
+                            new sap.m.Input("uploadObjectInput", {
+                                value: "{/selectedObject}",
+                                editable: false
+                            }),
+                            new sap.m.Label({ text: "Select File" }),
+                            new sap.ui.unified.FileUploader("fileUploader", {
+                                placeholder: "Choose a file...",
+                                fileType: ["csv","xlsx","xls"],
+                                width: "100%"
+                            }),
+                            new sap.m.Label({
+                                text: "Destination",
+                                visible: "{= ${/objectsWithoutDestination}.indexOf(${/selectedObject}) === -1 }"
+                            }),
+                            new sap.m.Select("destinationSelect", {
+                                items: [
+                                    new sap.ui.core.Item({ text: "Production System" }),
+                                    new sap.ui.core.Item({ text: "Quality System" }),
+                                    new sap.ui.core.Item({ text: "Development System" }),
+                                    new sap.ui.core.Item({ text: "Sandbox" })
+                                ],
+                                visible: "{= ${/objectsWithoutDestination}.indexOf(${/selectedObject}) === -1 }"
+                            }),
+                            new sap.m.Label({ text: "Operation" }),
+                            new sap.m.RadioButtonGroup("operationGroup", {
+                                columns: 2,
+                                selectedIndex: 0,
+                                buttons: [
+                                    new sap.m.RadioButton({ text: "Add Records" }),
+                                    new sap.m.RadioButton({ text: "Delete Records" })
+                                ]
+                            })
+                        ]
+                    }).addStyleClass("sapUiSmallMargin")
+                ],
+                beginButton: new sap.m.Button({
+                    text: "Upload",
+                    type: "Emphasized",
+                    press: function() {
+                        var oFileUploader = sap.ui.getCore().byId("fileUploader");
+                        if (!oFileUploader.getValue()) {
+                            sap.m.MessageBox.warning("Please select a file to upload.");
+                            return;
+                        }
+
+                        var sObject = oTable.getModel().getProperty("/selectedObject");
+                        var objectsWithoutDest = oTable.getModel().getProperty("/objectsWithoutDestination");
+                        var sDest = "";
+
+                        // Only get destination if object requires it
+                        if (objectsWithoutDest.indexOf(sObject) === -1) {
+                            sDest = sap.ui.getCore().byId("destinationSelect").getSelectedItem().getText();
+                        }
+
+                        var iOp = sap.ui.getCore().byId("operationGroup").getSelectedIndex();
+                        var sOp = iOp === 0 ? "Add Records" : "Delete Records";
+
+                        var sMessage = "Upload initiated successfully:\n\n" +
+                            "Object: " + sObject + "\n" +
+                            "File: " + oFileUploader.getValue() + "\n";
+
+                        if (sDest) {
+                            sMessage += "Destination: " + sDest + "\n";
+                        }
+
+                        sMessage += "Operation: " + sOp;
+
+                        sap.m.MessageBox.success(sMessage);
+
+                        oFileUploader.clear();
+                        oUploadDialog.close();
+                    }
+                }),
+                endButton: new sap.m.Button({
+                    text: "Cancel",
+                    press: function() {
+                        sap.ui.getCore().byId("fileUploader").clear();
+                        oUploadDialog.close();
+                    }
+                })
+            });
+
+            // Download Dialog
+            var oDownloadDialog = new sap.m.Dialog({
+                title: "Download File",
+                contentWidth: "450px",
+                content: [
+                    new sap.m.VBox({
+                        items: [
+                            new sap.m.Label({ text: "Object" }),
+                            new sap.m.Input({
+                                value: "{/selectedObject}",
+                                editable: false
+                            }),
+                            new sap.m.Label({ text: "Destination" }),
+                            new sap.m.Select("downloadDestSelect", {
+                                items: [
+                                    new sap.ui.core.Item({ text: "Production System" }),
+                                    new sap.ui.core.Item({ text: "Quality System" }),
+                                    new sap.ui.core.Item({ text: "Development System" }),
+                                    new sap.ui.core.Item({ text: "Sandbox" })
+                                ]
+                            })
+                        ]
+                    }).addStyleClass("sapUiSmallMargin")
+                ],
+                beginButton: new sap.m.Button({
+                    text: "Download",
+                    type: "Emphasized",
+                    press: function() {
+                        var sObject = oTable.getModel().getProperty("/selectedObject");
+                        var sDest = sap.ui.getCore().byId("downloadDestSelect").getSelectedItem().getText();
+
+                        sap.m.MessageBox.success(
+                            "Download initiated successfully:\n\n" +
+                            "Object: " + sObject + "\n" +
+                            "Destination: " + sDest
+                        );
+
+                        oDownloadDialog.close();
+                    }
+                }),
+                endButton: new sap.m.Button({
+                    text: "Cancel",
+                    press: function() {
+                        oDownloadDialog.close();
+                    }
+                })
+            });
+
+            // Sample data - with actual objects from requirements
+            var oData = {
+                selectedObject: "",
+                objectsWithoutDestination: [
+                    "Sales Organisation",
+                    "Order Reason",
+                    "Product",
+                    "Unit of Measure",
+                    "Plant",
+                    "Billing type",
+                    "Sales Document type",
+                    "Condition Type",
+                    "Tax Code"
+                ],
+                masterData: [
+                    {
+                        object: "Sold-to Party",
+                        fileName: "SoldToParty_2026.csv",
+                        status: "Uploaded",
+                        statusState: "Success",
+                        statusIcon: "sap-icon://sys-enter-2",
+                        totalRecords: "1,245",
+                        recordsWithErrors: "0",
+                        uploadedAt: "Apr 27, 2026, 9:15:30 AM",
+                        logDetailShort: "",
+                        logDetailFull: ""
+                    },
+                    {
+                        object: "Sales Organisation",
+                        fileName: "",
+                        status: "New",
+                        statusState: "Information",
+                        statusIcon: "sap-icon://information",
+                        totalRecords: "523",
+                        recordsWithErrors: "12",
+                        uploadedAt: "Apr 26, 2026, 2:22:18 PM",
+                        logDetailShort: "",
+                        logDetailFull: ""
+                    },
+                    {
+                        object: "Order Reason",
+                        fileName: "order_reasons.csv",
+                        status: "Uploaded",
+                        statusState: "Success",
+                        statusIcon: "sap-icon://sys-enter-2",
+                        totalRecords: "89",
+                        recordsWithErrors: "0",
+                        uploadedAt: "Apr 25, 2026, 11:03:45 AM",
+                        logDetailShort: "",
+                        logDetailFull: ""
+                    },
+                    {
+                        object: "Company Code",
+                        fileName: "CompanyCode_import.xlsx",
+                        status: "Error",
+                        statusState: "Error",
+                        statusIcon: "sap-icon://error",
+                        totalRecords: "156",
+                        recordsWithErrors: "23",
+                        uploadedAt: "Apr 24, 2026, 4:47:12 PM",
+                        logDetailShort: "Validation failed. Duplicate codes...",
+                        logDetailFull: "23 records failed validation. Issues: Duplicate company codes (rows 45, 67, 89), Missing currency field (rows 102, 115, 128), Invalid country codes (rows 134, 145, 151). Correct and re-upload."
+                    },
+                    {
+                        object: "Product",
+                        fileName: "products_master.csv",
+                        status: "Upload Failed",
+                        statusState: "Error",
+                        statusIcon: "sap-icon://error",
+                        totalRecords: "0",
+                        recordsWithErrors: "0",
+                        uploadedAt: "Apr 23, 2026, 8:31:05 AM",
+                        logDetailShort: "Invalid file format. Encoding...",
+                        logDetailFull: "File format error. Invalid character encoding (expected UTF-8, found ISO-8859-1). Missing required columns: Product ID, Product Name, Category. Download template and reformat."
+                    },
+                    {
+                        object: "Unit of Measure",
+                        fileName: "UoM_filled.xlsx",
+                        status: "Partially Uploaded",
+                        statusState: "Warning",
+                        statusIcon: "sap-icon://alert",
+                        totalRecords: "525",
+                        recordsWithErrors: "45",
+                        uploadedAt: "Apr 22, 2026, 1:15:20 PM",
+                        logDetailShort: "45 of 525 failed. Check and re-upload...",
+                        logDetailFull: "45 of 525 records failed. Issues: Invalid UoM codes (15), Duplicates (12), Missing conversion factors (10), Invalid decimals (8). 480 records uploaded successfully. Check and re-upload."
+                    },
+                    {
+                        object: "Plant",
+                        fileName: "",
+                        status: "New",
+                        statusState: "Information",
+                        statusIcon: "sap-icon://information",
+                        totalRecords: "0",
+                        recordsWithErrors: "0",
+                        uploadedAt: "Apr 21, 2026, 10:30:15 AM",
+                        logDetailShort: "",
+                        logDetailFull: ""
+                    },
+                    {
+                        object: "Foreign VAT Code",
+                        fileName: "VAT_codes.xlsx",
+                        status: "Uploaded",
+                        statusState: "Success",
+                        statusIcon: "sap-icon://sys-enter-2",
+                        totalRecords: "78",
+                        recordsWithErrors: "0",
+                        uploadedAt: "Apr 20, 2026, 3:45:22 PM",
+                        logDetailShort: "",
+                        logDetailFull: ""
+                    },
+                    {
+                        object: "Billing type",
+                        fileName: "",
+                        status: "New",
+                        statusState: "Information",
+                        statusIcon: "sap-icon://information",
+                        totalRecords: "0",
+                        recordsWithErrors: "0",
+                        uploadedAt: "Apr 19, 2026, 9:12:40 AM",
+                        logDetailShort: "",
+                        logDetailFull: ""
+                    },
+                    {
+                        object: "Sales Document type",
+                        fileName: "sales_doc_types.xlsx",
+                        status: "Uploaded",
+                        statusState: "Success",
+                        statusIcon: "sap-icon://sys-enter-2",
+                        totalRecords: "45",
+                        recordsWithErrors: "0",
+                        uploadedAt: "Apr 18, 2026, 2:20:55 PM",
+                        logDetailShort: "",
+                        logDetailFull: ""
+                    },
+                    {
+                        object: "Condition Type",
+                        fileName: "",
+                        status: "New",
+                        statusState: "Information",
+                        statusIcon: "sap-icon://information",
+                        totalRecords: "0",
+                        recordsWithErrors: "0",
+                        uploadedAt: "Apr 17, 2026, 11:55:10 AM",
+                        logDetailShort: "",
+                        logDetailFull: ""
+                    }
+                ]
+            };
+
+            var oModel = new sap.ui.model.json.JSONModel(oData);
+            oTable.setModel(oModel);
+            oUploadDialog.setModel(oModel);
+            oDownloadDialog.setModel(oModel);
+
+            oPage.addContent(oHeaderToolbar);
+            oPage.addContent(oTable);
+
+            var oApp = new sap.m.App();
+            oApp.addPage(oPage);
+            oApp.placeAt("content");
+        });
+    </script>
+
+    <style>
+        html, body, #content {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Selected row background color */
+        .sapMListTblRow.sapMLIBSelected {
+            background-color: var(--sapList_SelectionBackgroundColor, #e5f0fa) !important;
+        }
+
+        /* Align Object column header with text (accounting for radio button space) */
+        .sapMListTblHeaderCell:first-child .sapMText {
+            padding-left: 2.5rem;
+        }
+    </style>
+</head>
+<body class="sapUiBody" id="content">
+</body>
+</html>
